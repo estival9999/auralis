@@ -1,0 +1,1 @@
+# Módulo windows - todas as janelas da aplicação 

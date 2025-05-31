@@ -1,0 +1,18 @@
+# Requirements para Windows
+PyQt6==6.7.0
+PyQt6-Qt6==6.7.0
+PyQt6-sip==13.6.0
+
+# Supabase e dependências
+supabase==2.10.0
+python-dotenv==1.0.0
+
+# OpenAI
+openai==0.28.1
+
+# Áudio para Windows
+pyaudio
+SpeechRecognition
+
+# Utilitários
+requests==2.31.0
