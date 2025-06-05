@@ -631,7 +631,23 @@ PRÓXIMOS PASSOS:
             border_color=self.cores["primaria"],
             placeholder_text="Ex: Reunião de Planejamento"
         )
-        self.entry_titulo_audio.pack(pady=(0, 15))
+        self.entry_titulo_audio.pack(pady=(0, 8))
+        
+        ctk.CTkLabel(
+            frame_form, 
+            text="Observações (opcional)", 
+            font=ctk.CTkFont(size=11),
+            text_color=self.cores["texto_secundario"]
+        ).pack(pady=(0, 2))
+        
+        self.text_obs_audio = ctk.CTkTextbox(
+            frame_form, 
+            width=270,
+            height=40,
+            font=ctk.CTkFont(size=10),
+            fg_color=self.cores["fundo"]
+        )
+        self.text_obs_audio.pack(pady=(0, 10))
         
         # Botão grande de gravação
         self.btn_gravar_audio = ctk.CTkButton(
@@ -720,10 +736,14 @@ PRÓXIMOS PASSOS:
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     arquivo_temp = f"reuniao_texto_{timestamp}.txt"
                     
-                    # Salvar conteúdo
+                    # Salvar conteúdo com cabeçalho completo
                     with open(arquivo_temp, "w", encoding="utf-8") as f:
                         f.write(f"Título: {titulo}\n")
-                        f.write(f"Data: {datetime.now().strftime('%d/%m/%Y %H:%M')}\n")
+                        f.write(f"Responsável: {self.usuario_logado.get('username', 'Não identificado')}\n")
+                        f.write(f"Data: {datetime.now().strftime('%d/%m/%Y')}\n")
+                        f.write(f"Hora: {datetime.now().strftime('%H:%M')}\n")
+                        if hasattr(self, 'observacoes_reuniao'):
+                            f.write(f"Observações: {self.observacoes_reuniao}\n")
                         f.write(f"\n{conteudo}")
                     
                     # Processar embeddings
@@ -792,8 +812,10 @@ PRÓXIMOS PASSOS:
             )
             return
         
-        # Salvar título para uso posterior
+        # Salvar informações para uso posterior
         self.titulo_reuniao_audio = titulo
+        self.observacoes_reuniao_audio = self.text_obs_audio.get("1.0", "end-1c").strip()
+        self.data_inicio_gravacao = datetime.now()
         
         # Alternar estado do botão
         if not hasattr(self, 'gravando_reuniao') or not self.gravando_reuniao:
@@ -854,10 +876,22 @@ PRÓXIMOS PASSOS:
             transcricao = self.audio_recorder.get_transcription()
             
             if transcricao:
+                # Criar cabeçalho completo
+                cabecalho = f"""Título: {self.titulo_reuniao_audio}
+Responsável: {self.usuario_logado.get('username', 'Não identificado')}
+Data: {self.data_inicio_gravacao.strftime('%d/%m/%Y')}
+Hora: {self.data_inicio_gravacao.strftime('%H:%M')}"""
+                
+                if self.observacoes_reuniao_audio:
+                    cabecalho += f"\nObservações: {self.observacoes_reuniao_audio}"
+                
+                # Combinar cabeçalho com transcrição
+                conteudo_completo = f"{cabecalho}\n\n{transcricao}"
+                
                 # Processar como texto
                 self.janela.after(0, lambda: self.processar_reuniao_texto(
                     self.titulo_reuniao_audio, 
-                    transcricao
+                    conteudo_completo
                 ))
             else:
                 self.janela.after(0, lambda: messagebox.showerror(

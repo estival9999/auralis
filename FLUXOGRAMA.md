@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 7
+- Total de alterações: 8
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 16:23
+- Última alteração: 06/01/2025 16:45
 
 ## 🔄 Fluxo de Alterações
 
@@ -33,6 +33,8 @@ flowchart TD
     A4_1 --> README6[README_06_01_1615_006.md]
     A4 --> A4_2[Sistema de Gravação]
     A4_2 --> README7[README_06_01_1623_007.md]
+    A4 --> A4_3[Metadados e Reconstrução]
+    A4_3 --> README8[README_06_01_1645_008.md]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
@@ -42,6 +44,7 @@ flowchart TD
     style README5 fill:#9f9,stroke:#333,stroke-width:2px
     style README6 fill:#9f9,stroke:#333,stroke-width:2px
     style README7 fill:#9f9,stroke:#333,stroke-width:2px
+    style README8 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -145,15 +148,20 @@ flowchart TD
   - Processamento de embeddings idêntico ao texto
   - Busca semântica funciona com áudio transcrito
 - **Resultado**: ✅ Sistema multimodal texto/áudio funcionando
-  - Interface de áudio já existe em FRONT.py (linhas 869-1083)
-  - Sistema modular permite fácil extensão
-  - Pipeline de embeddings totalmente reutilizável
-  - Estados de gravação já implementados
-- **Recomendações**:
-  - Criar módulo audio_processor.py
-  - Adicionar seleção de modo (áudio/texto)
-  - Usar OpenAI Whisper para transcrição
-  - Manter pipeline existente de embeddings
+
+#### 8. Sistema de Metadados e Reconstrução - README_06_01_1645_008
+- **Tipo**: Feature/Enhancement  
+- **Descrição**: Cabeçalho completo e sistema de reconstrução de reuniões
+- **Alterações principais**:
+  - Cabeçalho com responsável, data, hora, título e observações
+  - Novos campos no banco de dados
+  - Embeddings salvos como JSONB
+  - Sistema de reconstrução de reuniões completas
+- **SQL gerado**:
+  - Novas colunas: responsavel, hora_inicio, titulo, observacoes, embedding_jsonb
+  - Funções: reconstruir_reuniao_completa, buscar_reunioes_por_responsavel
+  - View: v_reunioes_unicas
+- **Resultado**: ✅ Sistema completo de metadados e reconstrução
 - **Resultado**: ✅ Arquitetura mapeada e pronta para implementação
 
 ## 🎯 Próximas Etapas Planejadas

@@ -90,31 +90,58 @@ class ProcessadorEmbeddings:
         
         return chunks
     
-    def extrair_metadados(self, texto: str, nome_arquivo: str) -> Dict:
+    def extrair_metadados_completos(self, texto: str, nome_arquivo: str) -> Dict:
         """
-        Extrai metadados do texto e nome do arquivo
+        Extrai metadados completos incluindo cabeçalho
         """
         metadados = {}
+        linhas = texto.split('\n')
         
-        # Tentar extrair data do nome do arquivo
-        data_match = re.search(r'(\d{2})[_-](\d{2})[_-](\d{4})', nome_arquivo)
-        if data_match:
-            dia, mes, ano = data_match.groups()
-            try:
-                data_reuniao = datetime(int(ano), int(mes), int(dia))
-                metadados['data_reuniao'] = data_reuniao.date()
-            except:
-                pass
+        # Extrair informações do cabeçalho
+        for i, linha in enumerate(linhas[:10]):
+            if linha.startswith('Título:'):
+                metadados['titulo'] = linha.replace('Título:', '').strip()
+            elif linha.startswith('Responsável:'):
+                metadados['responsavel'] = linha.replace('Responsável:', '').strip()
+            elif linha.startswith('Data:'):
+                data_str = linha.replace('Data:', '').strip()
+                # Converter formato DD/MM/YYYY para YYYY-MM-DD
+                try:
+                    from datetime import datetime as dt
+                    data_obj = dt.strptime(data_str, '%d/%m/%Y')
+                    metadados['data_reuniao'] = data_obj.date()
+                except:
+                    # Tentar extrair do nome do arquivo como fallback
+                    data_match = re.search(r'(\d{4})(\d{2})(\d{2})', nome_arquivo)
+                    if data_match:
+                        ano, mes, dia = data_match.groups()
+                        try:
+                            metadados['data_reuniao'] = datetime(int(ano), int(mes), int(dia)).date()
+                        except:
+                            pass
+            elif linha.startswith('Hora:'):
+                metadados['hora_inicio'] = linha.replace('Hora:', '').strip()
+            elif linha.startswith('Observações:'):
+                metadados['observacoes'] = linha.replace('Observações:', '').strip()
         
-        # Identificar possíveis participantes (nomes próprios)
-        nomes_proprios = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', texto)
-        participantes_unicos = list(set(nomes_proprios))[:10]  # Limitar a 10
-        if participantes_unicos:
-            metadados['participantes'] = participantes_unicos
+        # Extrair participantes mencionados no texto
+        participantes = []
+        for linha in linhas:
+            # Procurar por padrões como "João disse:", "Maria respondeu:"
+            match = re.match(r'^([A-Z][a-záêçõ]+(?:\s+[A-Z][a-záêçõ]+)*)\s*(?:disse|respondeu|comentou|afirmou|perguntou):', linha)
+            if match:
+                participantes.append(match.group(1))
         
-        # Identificar temas principais (palavras mais frequentes significativas)
-        palavras = re.findall(r'\b\w{4,}\b', texto.lower())
-        palavras_comuns = ['para', 'pela', 'pelo', 'como', 'quando', 'onde', 'porque', 'então', 'assim', 'depois', 'antes']
+        # Adicionar participantes únicos
+        if participantes:
+            metadados['participantes'] = list(set(participantes))[:10]
+        
+        # Extrair temas principais
+        texto_sem_cabecalho = '\n'.join(linhas[10:])  # Pular cabeçalho
+        palavras = re.findall(r'\b\w{4,}\b', texto_sem_cabecalho.lower())
+        palavras_comuns = ['para', 'pela', 'pelo', 'como', 'quando', 'onde', 'porque', 
+                          'então', 'assim', 'depois', 'antes', 'título', 'data', 
+                          'hora', 'responsável', 'observações']
         palavras_filtradas = [p for p in palavras if p not in palavras_comuns]
         
         from collections import Counter
@@ -162,9 +189,15 @@ class ProcessadorEmbeddings:
         
         nome_arquivo = Path(caminho_arquivo).name
         
-        # Extrair metadados
-        metadados = self.extrair_metadados(texto_completo, nome_arquivo)
+        # Extrair metadados completos do cabeçalho
+        metadados = self.extrair_metadados_completos(texto_completo, nome_arquivo)
+        
+        # Extrair campos específicos
+        titulo = metadados.get('titulo', '')
+        responsavel = metadados.get('responsavel', '')
         data_reuniao = metadados.get('data_reuniao')
+        hora_inicio = metadados.get('hora_inicio', '')
+        observacoes = metadados.get('observacoes', '')
         
         # Criar chunks
         chunks = self.criar_chunks_inteligentes(texto_completo)
@@ -183,16 +216,27 @@ class ProcessadorEmbeddings:
                 if 'data_reuniao' in metadados_json:
                     metadados_json['data_reuniao'] = str(metadados_json['data_reuniao'])
                 
+                # Converter embedding para JSONB
+                import json
+                embedding_jsonb = json.dumps(embedding)
+                
                 dados = {
                     'arquivo_origem': nome_arquivo,
                     'chunk_numero': chunk['numero'],
                     'chunk_texto': chunk['texto'],
-                    'embedding': embedding,
-                    'metadados': metadados_json
+                    'embedding': embedding,  # Mantém para compatibilidade
+                    'embedding_jsonb': embedding_jsonb,  # Nova coluna JSONB
+                    'metadados': metadados_json,
+                    'titulo': titulo,
+                    'responsavel': responsavel,
+                    'observacoes': observacoes
                 }
                 
                 if data_reuniao:
                     dados['data_reuniao'] = str(data_reuniao)
+                
+                if hora_inicio:
+                    dados['hora_inicio'] = hora_inicio
                 
                 # Inserir no Supabase
                 resultado = self.supabase.table('reunioes_embbed').insert(dados).execute()
