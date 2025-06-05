@@ -8,12 +8,12 @@ import re
 from typing import List, Dict, Optional, Tuple
 import json
 
-import openai
+from openai import OpenAI
 from supabase import create_client, Client
 import numpy as np
 from dotenv import load_dotenv
 
-load_env()
+load_dotenv()
 
 class AgenteBuscaReunioes:
     def __init__(self):
@@ -21,7 +21,7 @@ class AgenteBuscaReunioes:
         self.openai_api_key = os.getenv('OPENAI_API_KEY')
         if not self.openai_api_key:
             raise ValueError("OPENAI_API_KEY não encontrada no .env")
-        openai.api_key = self.openai_api_key
+        self.client = OpenAI(api_key=self.openai_api_key)
         
         # Configurar Supabase
         self.supabase_url = os.getenv('SUPABASE_URL')
@@ -50,11 +50,11 @@ Ao receber uma pergunta:
     def gerar_embedding_pergunta(self, pergunta: str) -> List[float]:
         """Gera embedding para a pergunta do usuário"""
         try:
-            response = openai.Embedding.create(
+            response = self.client.embeddings.create(
                 model="text-embedding-ada-002",
                 input=pergunta
             )
-            return response['data'][0]['embedding']
+            return response.data[0].embedding
         except Exception as e:
             print(f"Erro ao gerar embedding da pergunta: {e}")
             raise
@@ -89,7 +89,7 @@ Pergunta: {pergunta}
 Responda em JSON com: tipo_busca, entidades, busca_conexoes (true/false)"""
         
         try:
-            response = openai.ChatCompletion.create(
+            response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "Você é um analisador de perguntas. Responda apenas em JSON."},
@@ -98,7 +98,7 @@ Responda em JSON com: tipo_busca, entidades, busca_conexoes (true/false)"""
                 temperature=0
             )
             
-            return json.loads(response.choices[0].message['content'])
+            return json.loads(response.choices[0].message.content)
         except:
             return {
                 "tipo_busca": "geral",
@@ -181,7 +181,7 @@ PERGUNTA DO USUÁRIO:
 Forneça uma resposta clara e direta. Se não encontrar a informação, diga claramente."""
         
         try:
-            response = openai.ChatCompletion.create(
+            response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": self.system_prompt},
@@ -191,7 +191,7 @@ Forneça uma resposta clara e direta. Se não encontrar a informação, diga cla
                 max_tokens=500
             )
             
-            return response.choices[0].message['content']
+            return response.choices[0].message.content
         except Exception as e:
             return f"Erro ao processar resposta: {str(e)}"
     

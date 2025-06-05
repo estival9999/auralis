@@ -10,7 +10,7 @@ from typing import List, Dict, Tuple
 from datetime import datetime
 import hashlib
 
-import openai
+from openai import OpenAI
 from supabase import create_client, Client
 import numpy as np
 from dotenv import load_dotenv
@@ -23,7 +23,7 @@ class ProcessadorEmbeddings:
         self.openai_api_key = os.getenv('OPENAI_API_KEY')
         if not self.openai_api_key:
             raise ValueError("OPENAI_API_KEY não encontrada no .env")
-        openai.api_key = self.openai_api_key
+        self.client = OpenAI(api_key=self.openai_api_key)
         
         # Configurar Supabase
         self.supabase_url = os.getenv('SUPABASE_URL')
@@ -130,11 +130,11 @@ class ProcessadorEmbeddings:
         Gera embedding usando OpenAI
         """
         try:
-            response = openai.Embedding.create(
+            response = self.client.embeddings.create(
                 model="text-embedding-ada-002",
                 input=texto
             )
-            return response['data'][0]['embedding']
+            return response.data[0].embedding
         except Exception as e:
             print(f"Erro ao gerar embedding: {e}")
             raise
@@ -174,12 +174,17 @@ class ProcessadorEmbeddings:
                 embedding = self.gerar_embedding(chunk['texto'])
                 
                 # Preparar dados para inserção
+                # Converter data para string nos metadados
+                metadados_json = metadados.copy()
+                if 'data_reuniao' in metadados_json:
+                    metadados_json['data_reuniao'] = str(metadados_json['data_reuniao'])
+                
                 dados = {
                     'arquivo_origem': nome_arquivo,
                     'chunk_numero': chunk['numero'],
                     'chunk_texto': chunk['texto'],
                     'embedding': embedding,
-                    'metadados': metadados
+                    'metadados': metadados_json
                 }
                 
                 if data_reuniao:
