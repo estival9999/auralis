@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 4
+- Total de alterações: 5
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 05/01/2025 19:57
+- Última alteração: 05/01/2025 20:03
 
 ## 🔄 Fluxo de Alterações
 
@@ -24,11 +24,16 @@ flowchart TD
     A2 --> A2_2[Correção Busca Semântica]
     A2_2 --> README4[README_05_01_1957_004.md]
     
+    A2 --> A3[💬 Melhorias UX]
+    A3 --> A3_1[Respostas Naturais]
+    A3_1 --> README5[README_05_01_2003_005.md]
+    
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
     style README2 fill:#9f9,stroke:#333,stroke-width:2px
     style README3 fill:#9f9,stroke:#333,stroke-width:2px
     style README4 fill:#9f9,stroke:#333,stroke-width:2px
+    style README5 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -90,15 +95,31 @@ flowchart TD
   - Cache em memória para performance
 - **Resultado**: ✅ Sistema de busca semântica totalmente funcional
 
+### 💬 Melhorias UX (05/01/2025)
+
+#### 5. Implementação de Respostas Naturais - README_05_01_2003_005
+- **Tipo**: UX/Enhancement
+- **Descrição**: Correção de respostas verbosas e implementação de chat natural
+- **Problemas corrigidos**:
+  - Respostas excessivamente longas para saudações
+  - Despejo de informações não solicitadas
+  - Falta de naturalidade nas interações
+- **Soluções implementadas**:
+  - Detecção precoce de saudações
+  - Respostas limitadas a 2-3 frases
+  - Prompt focado em concisão e naturalidade
+  - Redução de temperatura (0.3) e tokens (150)
+- **Resultado**: ✅ Chat natural e conversacional
+
 ## 🎯 Próximas Etapas Planejadas
-1. Implementar função RPC no Supabase com pgvector
+1. Implementar memória de conversa
 2. Adicionar mais conteúdo de reuniões
-3. Melhorar interface do usuário
-4. Implementar cache persistente
+3. Criar função RPC no Supabase
+4. Melhorar interface visual
 
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 8 (incluindo novos arquivos de busca)
-- Novos arquivos: 15+ (incluindo scripts de teste e debug)
-- Linhas de código: ~500 (incluindo correções e novos módulos)
-- Tempo total: ~37 minutos
-- Commits realizados: 3
+- Arquivos modificados: 9 (incluindo ajustes UX)
+- Novos arquivos: 8 (essenciais + documentação)
+- Linhas de código: ~600 (total de alterações)
+- Tempo total: ~42 minutos
+- Commits realizados: 5

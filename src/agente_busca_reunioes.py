@@ -36,20 +36,21 @@ class AgenteBuscaReunioes:
         self.busca_semantica = BuscaSemanticaLocal(self.supabase)
         
         # Prompt sistema aprimorado
-        self.system_prompt = """Você é um assistente especializado em analisar informações de reuniões corporativas.
+        self.system_prompt = """Você é um assistente de reuniões corporativas. Seja CONCISO e NATURAL.
 
-Suas capacidades incluem:
-1. Buscar informações específicas (definições, decisões, responsáveis, problemas)
-2. Identificar conexões entre diferentes reuniões
-3. Fornecer respostas claras e diretas
-4. Citar trechos relevantes quando apropriado
-5. Quando não encontrar informações específicas, fornecer um resumo geral do que está disponível
+REGRAS CRÍTICAS:
+1. Para saudações (olá, oi, bom dia): responda APENAS com uma saudação breve e pergunte como pode ajudar
+2. Para perguntas vagas: peça esclarecimento de forma educada
+3. Para perguntas específicas: responda diretamente ao que foi perguntado
+4. NUNCA despeje informações não solicitadas
+5. Mantenha respostas curtas a menos que seja pedido detalhamento
 
-IMPORTANTE:
-- Se não encontrar a informação exata solicitada, forneça informações relacionadas ou um resumo do que está disponível
-- Sempre tente extrair valor do contexto fornecido
-- Seja criativo na interpretação das informações disponíveis
-- Evite respostas genéricas como "não encontrei informações"
+Suas capacidades:
+- Buscar informações específicas de reuniões quando perguntado
+- Responder sobre decisões, participantes, problemas discutidos
+- Fornecer resumos quando solicitado
+
+IMPORTANTE: Seja conversacional e natural. Não pareça um robô que despeja informações.
 
 Ao receber uma pergunta:
 - Identifique exatamente o que está sendo perguntado
@@ -127,6 +128,18 @@ Responda em JSON com: tipo_busca, entidades, busca_conexoes (true/false)"""
         """Processa uma pergunta e retorna a resposta"""
         print(f"Processando pergunta: {pergunta}")
         
+        # Detectar saudações simples
+        saudacoes = ['olá', 'ola', 'oi', 'bom dia', 'boa tarde', 'boa noite', 'hey', 'e aí', 'e ai']
+        pergunta_lower = pergunta.lower().strip()
+        
+        if pergunta_lower in saudacoes:
+            return "Olá! Como posso ajudá-lo com informações sobre as reuniões?"
+        
+        # Detectar perguntas muito vagas
+        if len(pergunta_lower.split()) <= 2 and pergunta_lower not in ['resumo', 'decisões', 'participantes', 'problemas']:
+            if 'que' in pergunta_lower or 'o que' in pergunta_lower:
+                return "Desculpe, não entendi. Você gostaria de saber sobre decisões, participantes, problemas discutidos ou um resumo das reuniões?"
+        
         # Analisar pergunta
         analise = self.analisar_pergunta(pergunta)
         print(f"Análise: {analise}")
@@ -201,23 +214,21 @@ Responda em JSON com: tipo_busca, entidades, busca_conexoes (true/false)"""
         elif tipo_busca == 'problema':
             instrucoes_extras += "\nIdentifique problemas mencionados e possíveis soluções discutidas."
         
-        prompt = f"""Com base no contexto das reuniões abaixo, responda à pergunta do usuário.
+        prompt = f"""Responda de forma CONCISA e DIRETA.
 {instrucoes_extras}
 
-INSTRUÇÕES IMPORTANTES:
-1. Se não encontrar a informação exata solicitada, extraia informações relacionadas ou relevantes
-2. Sempre forneça valor, mesmo que seja um resumo geral do que foi discutido
-3. Se a pergunta for sobre participantes e não houver lista explícita, mencione qualquer pessoa citada no contexto
-4. Se a pergunta for sobre objetivos e não estiver explícito, infira dos temas discutidos
-5. Seja criativo e útil, evite respostas genéricas
+REGRAS:
+1. Seja breve - máximo 2-3 frases a menos que seja pedido mais detalhes
+2. Vá direto ao ponto
+3. Use linguagem natural e conversacional
+4. Se não souber, diga brevemente e sugira o que você pode informar
 
 CONTEXTO DAS REUNIÕES:
 {contexto}
 
-PERGUNTA DO USUÁRIO:
-{pergunta}
+PERGUNTA: {pergunta}
 
-Forneça uma resposta útil e informativa baseada no contexto disponível."""
+Resposta concisa:"""
         
         try:
             response = self.client.chat.completions.create(
@@ -226,8 +237,8 @@ Forneça uma resposta útil e informativa baseada no contexto disponível."""
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.6,  # Aumentar para mais criatividade
-                max_tokens=500
+                temperature=0.3,  # Reduzir para respostas mais focadas
+                max_tokens=150  # Limitar tamanho da resposta
             )
             
             return response.choices[0].message.content
