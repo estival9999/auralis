@@ -53,6 +53,14 @@ import numpy as np
 # Este import deve acontecer após load_env() para garantir configuração correta
 from main import AURALISBackend, process_message_async
 
+# Importar processador de áudio
+try:
+    from src.audio_processor import AudioRecorder
+    AUDIO_DISPONIVEL = True
+except ImportError:
+    print("⚠️  Módulo de áudio não disponível. Instale pyaudio: pip install pyaudio")
+    AUDIO_DISPONIVEL = False
+
 class SistemaTFT:
     """
     Classe principal da interface gráfica do sistema AURALIS.
@@ -69,6 +77,9 @@ class SistemaTFT:
         print("🚀 Inicializando backend AURALIS...")
         # Backend conectado APENAS ao Supabase
         self.backend = AURALISBackend()  # Sem mocks - apenas Supabase
+        
+        # Inicializar gravador de áudio se disponível
+        self.audio_recorder = AudioRecorder() if AUDIO_DISPONIVEL else None
         
         # Paleta de cores personalizada otimizada para tema escuro
         # Cores cuidadosamente selecionadas para boa visibilidade e acessibilidade
@@ -498,39 +509,48 @@ PRÓXIMOS PASSOS:
         self.frame_atual = ctk.CTkFrame(self.container_principal, fg_color=self.cores["fundo"])
         self.frame_atual.pack(fill="both", expand=True)
         
-        self.criar_cabecalho_voltar("🎙️ Nova Gravação")
+        self.criar_cabecalho_voltar("📝 Nova Reunião")
         
-        # Botões
-        frame_btns = ctk.CTkFrame(self.frame_atual, height=36, fg_color=self.cores["fundo"])
-        frame_btns.pack(fill="x", padx=10, pady=(2, 2))
-        frame_btns.pack_propagate(False)
+        # Tabs para escolher método
+        self.tab_selecionada = ctk.StringVar(value="texto")
         
-        inner_btns = ctk.CTkFrame(frame_btns, fg_color=self.cores["fundo"])
-        inner_btns.place(relx=0.5, rely=0.5, anchor="center")
+        frame_tabs = ctk.CTkFrame(self.frame_atual, height=36, fg_color=self.cores["fundo"])
+        frame_tabs.pack(fill="x", padx=10, pady=(5, 5))
         
-        ctk.CTkButton(
-            inner_btns,
-            text="Cancelar",
-            width=140,
-            height=30,
-            fg_color=self.cores["secundaria"],
-            font=ctk.CTkFont(size=12, weight="bold"),
-            command=lambda: self.transicao_rapida(self.mostrar_menu_principal)
-        ).pack(side="left", padx=5)
+        ctk.CTkSegmentedButton(
+            frame_tabs,
+            values=["📝 Texto", "🎤 Áudio"],
+            variable=self.tab_selecionada,
+            command=self.alternar_tab_entrada,
+            fg_color=self.cores["superficie"],
+            selected_color=self.cores["primaria"],
+            unselected_color=self.cores["secundaria"],
+            selected_hover_color=self.cores["primaria"],
+            unselected_hover_color=self.cores["secundaria"]
+        ).pack(expand=True, fill="x")
         
-        ctk.CTkButton(
-            inner_btns,
-            text="Iniciar",
-            width=140,
-            height=30,
-            fg_color=self.cores["sucesso"],
-            font=ctk.CTkFont(size=12, weight="bold"),
-            command=self.iniciar_gravacao
-        ).pack(side="left", padx=5)
+        # Container para conteúdo das tabs
+        self.frame_conteudo_tab = ctk.CTkFrame(self.frame_atual, fg_color=self.cores["fundo"])
+        self.frame_conteudo_tab.pack(fill="both", expand=True, padx=10, pady=(0, 5))
         
-        # Formulário
-        frame_form = ctk.CTkFrame(self.frame_atual, fg_color=self.cores["superficie"])
-        frame_form.pack(fill="both", expand=True, padx=10, pady=(0, 8))
+        # Criar tab de texto inicial
+        self._criar_tab_texto()
+        
+    def alternar_tab_entrada(self, valor):
+        """Alterna entre entrada de texto e áudio"""
+        # Limpar conteúdo atual
+        for widget in self.frame_conteudo_tab.winfo_children():
+            widget.destroy()
+            
+        if valor == "📝 Texto":
+            self._criar_tab_texto()
+        else:  # "🎤 Áudio"
+            self._criar_tab_audio()
+    
+    def _criar_tab_texto(self):
+        """Cria interface para entrada de texto"""
+        frame_form = ctk.CTkFrame(self.frame_conteudo_tab, fg_color=self.cores["superficie"])
+        frame_form.pack(fill="both", expand=True)
         
         ctk.CTkLabel(
             frame_form, 
@@ -551,21 +571,327 @@ PRÓXIMOS PASSOS:
         
         ctk.CTkLabel(
             frame_form, 
-            text="Observações (opcional)", 
+            text="Conteúdo da Reunião", 
             font=ctk.CTkFont(size=11),
             text_color=self.cores["texto_secundario"]
         ).pack(pady=(0, 2))
         
-        self.text_obs = ctk.CTkTextbox(
+        self.text_conteudo = ctk.CTkTextbox(
             frame_form, 
             width=270,
-            height=40,
+            height=80,
             font=ctk.CTkFont(size=10),
             fg_color=self.cores["fundo"]
         )
-        self.text_obs.pack(pady=(0, 8))
+        self.text_conteudo.pack(pady=(0, 8))
+        
+        # Botões
+        frame_btns = ctk.CTkFrame(frame_form, fg_color="transparent")
+        frame_btns.pack(pady=(5, 10))
+        
+        ctk.CTkButton(
+            frame_btns,
+            text="Cancelar",
+            width=120,
+            height=30,
+            fg_color=self.cores["secundaria"],
+            font=ctk.CTkFont(size=12),
+            command=lambda: self.transicao_rapida(self.mostrar_menu_principal)
+        ).pack(side="left", padx=5)
+        
+        ctk.CTkButton(
+            frame_btns,
+            text="Salvar",
+            width=120,
+            height=30,
+            fg_color=self.cores["sucesso"],
+            font=ctk.CTkFont(size=12),
+            command=self.salvar_reuniao_texto
+        ).pack(side="left", padx=5)
         
         self.entry_titulo.focus_set()
+    
+    def _criar_tab_audio(self):
+        """Cria interface para gravação de áudio"""
+        frame_form = ctk.CTkFrame(self.frame_conteudo_tab, fg_color=self.cores["superficie"])
+        frame_form.pack(fill="both", expand=True)
+        
+        ctk.CTkLabel(
+            frame_form, 
+            text="Título da Reunião", 
+            font=ctk.CTkFont(size=11),
+            text_color=self.cores["texto_secundario"]
+        ).pack(pady=(8, 2))
+        
+        self.entry_titulo_audio = ctk.CTkEntry(
+            frame_form, 
+            width=270,
+            height=30,
+            fg_color=self.cores["fundo"],
+            border_color=self.cores["primaria"],
+            placeholder_text="Ex: Reunião de Planejamento"
+        )
+        self.entry_titulo_audio.pack(pady=(0, 15))
+        
+        # Botão grande de gravação
+        self.btn_gravar_audio = ctk.CTkButton(
+            frame_form,
+            text="🎤 Iniciar Gravação",
+            width=200,
+            height=50,
+            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=self.cores["perigo"],
+            hover_color="#C62828",
+            command=self.iniciar_gravacao_audio
+        )
+        self.btn_gravar_audio.pack(pady=20)
+        
+        # Status da gravação
+        self.label_status_audio = ctk.CTkLabel(
+            frame_form,
+            text="Clique para começar a gravar",
+            font=ctk.CTkFont(size=11),
+            text_color=self.cores["texto_secundario"]
+        )
+        self.label_status_audio.pack()
+        
+        # Botões
+        frame_btns = ctk.CTkFrame(frame_form, fg_color="transparent")
+        frame_btns.pack(pady=(15, 10))
+        
+        ctk.CTkButton(
+            frame_btns,
+            text="Cancelar",
+            width=120,
+            height=30,
+            fg_color=self.cores["secundaria"],
+            font=ctk.CTkFont(size=12),
+            command=lambda: self.transicao_rapida(self.mostrar_menu_principal)
+        ).pack(side="left", padx=5)
+        
+        self.entry_titulo_audio.focus_set()
+    
+    def salvar_reuniao_texto(self):
+        """Salva reunião inserida por texto"""
+        titulo = self.entry_titulo.get().strip()
+        conteudo = self.text_conteudo.get("1.0", "end-1c").strip()
+        
+        if not titulo:
+            self.entry_titulo.configure(
+                border_color=self.cores["perigo"], 
+                border_width=2
+            )
+            self.entry_titulo.focus_set()
+            return
+            
+        if not conteudo:
+            messagebox.showwarning(
+                "Conteúdo vazio",
+                "Por favor, insira o conteúdo da reunião.",
+                parent=self.janela
+            )
+            return
+        
+        # Processar e salvar no banco
+        self.processar_reuniao_texto(titulo, conteudo)
+    
+    def processar_reuniao_texto(self, titulo: str, conteudo: str):
+        """Processa e salva reunião de texto no banco"""
+        try:
+            # Mostrar loading
+            loading = ctk.CTkToplevel(self.janela)
+            loading.title("Processando...")
+            loading.geometry("200x100")
+            loading.resizable(False, False)
+            
+            ctk.CTkLabel(
+                loading,
+                text="Processando reunião...\nAguarde...",
+                font=ctk.CTkFont(size=12)
+            ).pack(expand=True)
+            
+            loading.update()
+            
+            # Processar em thread separada
+            def processar():
+                try:
+                    # Criar arquivo temporário
+                    from datetime import datetime
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    arquivo_temp = f"reuniao_texto_{timestamp}.txt"
+                    
+                    # Salvar conteúdo
+                    with open(arquivo_temp, "w", encoding="utf-8") as f:
+                        f.write(f"Título: {titulo}\n")
+                        f.write(f"Data: {datetime.now().strftime('%d/%m/%Y %H:%M')}\n")
+                        f.write(f"\n{conteudo}")
+                    
+                    # Processar embeddings
+                    from src.embeddings_processor import ProcessadorEmbeddings
+                    processador = ProcessadorEmbeddings()
+                    
+                    metadados = {
+                        'titulo': titulo,
+                        'data_reuniao': datetime.now().date(),
+                        'tipo': 'texto',
+                        'duracao': 'N/A'
+                    }
+                    
+                    sucesso = processador.processar_arquivo(arquivo_temp, metadados)
+                    
+                    # Remover arquivo temporário
+                    import os
+                    os.remove(arquivo_temp)
+                    
+                    # Callback na thread principal
+                    self.janela.after(0, lambda: self.finalizar_processamento_texto(loading, sucesso))
+                    
+                except Exception as e:
+                    self.janela.after(0, lambda: self.erro_processamento_texto(loading, str(e)))
+            
+            threading.Thread(target=processar, daemon=True).start()
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao processar reunião: {str(e)}", parent=self.janela)
+    
+    def finalizar_processamento_texto(self, loading, sucesso):
+        """Finaliza processamento de texto"""
+        loading.destroy()
+        
+        if sucesso:
+            messagebox.showinfo(
+                "Sucesso",
+                "Reunião salva com sucesso!",
+                parent=self.janela
+            )
+            self.transicao_rapida(self.mostrar_menu_principal)
+        else:
+            messagebox.showerror(
+                "Erro",
+                "Erro ao salvar reunião no banco de dados.",
+                parent=self.janela
+            )
+    
+    def erro_processamento_texto(self, loading, erro):
+        """Trata erro no processamento"""
+        loading.destroy()
+        messagebox.showerror("Erro", f"Erro ao processar: {erro}", parent=self.janela)
+    
+    def iniciar_gravacao_audio(self):
+        """Inicia gravação de áudio da reunião"""
+        titulo = self.entry_titulo_audio.get().strip()
+        
+        if not titulo:
+            self.entry_titulo_audio.configure(
+                border_color=self.cores["perigo"], 
+                border_width=2
+            )
+            self.entry_titulo_audio.focus_set()
+            return
+        
+        if not self.audio_recorder:
+            messagebox.showwarning(
+                "Áudio não disponível",
+                "Instale pyaudio para usar esta funcionalidade:\npip install pyaudio",
+                parent=self.janela
+            )
+            return
+        
+        # Salvar título para uso posterior
+        self.titulo_reuniao_audio = titulo
+        
+        # Alternar estado do botão
+        if not hasattr(self, 'gravando_reuniao') or not self.gravando_reuniao:
+            # Iniciar gravação
+            self.gravando_reuniao = True
+            self.btn_gravar_audio.configure(
+                text="⏹️ Parar Gravação",
+                fg_color=self.cores["sucesso"]
+            )
+            self.label_status_audio.configure(
+                text="🔴 Gravando...",
+                text_color=self.cores["perigo"]
+            )
+            
+            try:
+                self.audio_recorder.toggle_recording()
+                # Mostrar tempo de gravação
+                self.tempo_inicio_gravacao = time.time()
+                self.atualizar_tempo_gravacao()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao iniciar gravação: {str(e)}", parent=self.janela)
+                self.gravando_reuniao = False
+                
+        else:
+            # Parar gravação
+            self.gravando_reuniao = False
+            self.btn_gravar_audio.configure(
+                text="⏳ Processando...",
+                state="disabled"
+            )
+            self.label_status_audio.configure(
+                text="Processando transcrição...",
+                text_color=self.cores["audio_processando"]
+            )
+            
+            try:
+                self.audio_recorder.toggle_recording()
+                # Processar em thread separada
+                threading.Thread(target=self.processar_gravacao_reuniao, daemon=True).start()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao parar gravação: {str(e)}", parent=self.janela)
+    
+    def atualizar_tempo_gravacao(self):
+        """Atualiza tempo de gravação na tela"""
+        if hasattr(self, 'gravando_reuniao') and self.gravando_reuniao:
+            tempo_decorrido = int(time.time() - self.tempo_inicio_gravacao)
+            minutos = tempo_decorrido // 60
+            segundos = tempo_decorrido % 60
+            self.label_status_audio.configure(
+                text=f"🔴 Gravando... {minutos:02d}:{segundos:02d}"
+            )
+            self.janela.after(1000, self.atualizar_tempo_gravacao)
+    
+    def processar_gravacao_reuniao(self):
+        """Processa gravação da reunião"""
+        try:
+            # Obter transcrição
+            transcricao = self.audio_recorder.get_transcription()
+            
+            if transcricao:
+                # Processar como texto
+                self.janela.after(0, lambda: self.processar_reuniao_texto(
+                    self.titulo_reuniao_audio, 
+                    transcricao
+                ))
+            else:
+                self.janela.after(0, lambda: messagebox.showerror(
+                    "Erro", 
+                    "Não foi possível transcrever o áudio.", 
+                    parent=self.janela
+                ))
+                
+        except Exception as e:
+            self.janela.after(0, lambda: messagebox.showerror(
+                "Erro", 
+                f"Erro ao processar áudio: {str(e)}", 
+                parent=self.janela
+            ))
+        finally:
+            # Resetar interface
+            self.janela.after(0, lambda: self.resetar_interface_audio())
+    
+    def resetar_interface_audio(self):
+        """Reseta interface de áudio após processamento"""
+        self.btn_gravar_audio.configure(
+            text="🎤 Iniciar Gravação",
+            fg_color=self.cores["perigo"],
+            state="normal"
+        )
+        self.label_status_audio.configure(
+            text="Clique para começar a gravar",
+            text_color=self.cores["texto_secundario"]
+        )
     
     def iniciar_gravacao(self):
         titulo = self.entry_titulo.get().strip()
@@ -942,14 +1268,32 @@ PRÓXIMOS PASSOS:
 
     def alternar_gravacao(self):
         """Alterna entre estados de gravação ao clicar"""
+        if not self.audio_recorder:
+            messagebox.showwarning(
+                "Áudio não disponível",
+                "Instale pyaudio para usar esta funcionalidade:\npip install pyaudio",
+                parent=self.janela
+            )
+            self.fechar_audio()
+            return
+            
         if self.audio_estado == "idle":
-            # Iniciar gravação
+            # Iniciar gravação real
             self.audio_estado = "recording"
             self.btn_microfone.configure(
                 text="🔴",
                 fg_color=self.cores["audio_ativo"]
             )
             self.label_instrucao.configure(text="Gravando... Clique para parar")
+            
+            # Iniciar gravação real
+            try:
+                self.audio_recorder.toggle_recording()
+                # Atualizar nível de áudio em tempo real
+                self.atualizar_nivel_audio()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao iniciar gravação: {str(e)}", parent=self.janela)
+                self.fechar_audio()
             
         elif self.audio_estado == "recording":
             # Parar gravação e processar
@@ -959,10 +1303,16 @@ PRÓXIMOS PASSOS:
                 fg_color=self.cores["audio_processando"],
                 state="disabled"
             )
-            self.label_instrucao.configure(text="Processando...")
+            self.label_instrucao.configure(text="Processando transcrição...")
             
-            # Simular processamento
-            self.janela.after(1500, self.processar_e_fechar)
+            # Parar gravação real
+            try:
+                self.audio_recorder.toggle_recording()
+                # Processar em thread separada
+                threading.Thread(target=self.processar_audio_gravado, daemon=True).start()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao parar gravação: {str(e)}", parent=self.janela)
+                self.fechar_audio()
 
     def animar_particulas(self):
         """Animação de partículas flutuantes"""
@@ -1062,17 +1412,72 @@ PRÓXIMOS PASSOS:
         
         return f"#{r:02x}{g:02x}{b:02x}"
 
-    def processar_e_fechar(self):
-        """Processa e retorna resultado"""
-        # Adicionar resposta
+    def atualizar_nivel_audio(self):
+        """Atualiza partículas baseado no nível de áudio"""
+        if self.audio_estado == "recording" and self.audio_recorder:
+            nivel = self.audio_recorder.get_audio_level()
+            
+            # Adicionar mais partículas baseado no nível
+            if nivel > 0.3 and random.random() > (1 - nivel):
+                for _ in range(int(nivel * 5)):
+                    self.particulas.append({
+                        'x': random.randint(50, 270),
+                        'y': 200,
+                        'vy': -random.uniform(1, 4) * nivel,
+                        'size': random.uniform(2, 6) * nivel,
+                        'life': 1.0
+                    })
+            
+            # Continuar atualizando
+            self.janela.after(50, self.atualizar_nivel_audio)
+    
+    def processar_audio_gravado(self):
+        """Processa o áudio gravado em thread separada"""
+        try:
+            # Obter transcrição
+            transcricao = self.audio_recorder.get_transcription()
+            
+            if transcricao:
+                # Executar na thread principal
+                self.janela.after(0, lambda: self.processar_transcricao(transcricao))
+            else:
+                self.janela.after(0, lambda: self.erro_transcricao("Não foi possível transcrever o áudio"))
+                
+        except Exception as e:
+            self.janela.after(0, lambda: self.erro_transcricao(str(e)))
+    
+    def processar_transcricao(self, transcricao: str):
+        """Processa a transcrição obtida"""
+        # Adicionar transcrição ao chat
         self.text_chat.configure(state="normal")
-        self.text_chat.insert("end", "🎤 [Comando de voz processado]\n")
-        self.text_chat.insert("end", "🤖 Aqui está o resumo que você solicitou...\n\n")
+        self.text_chat.insert("end", f"🎤 {transcricao}\n")
         self.text_chat.configure(state="disabled")
         self.text_chat.see("end")
         
-        # Fechar interface
+        # Fechar interface de áudio
         self.fechar_audio()
+        
+        # Processar como mensagem normal
+        self.entry_chat.configure(state="disabled")
+        self._mostrar_processando()
+        
+        # Processar mensagem via backend
+        process_message_async(
+            self.backend,
+            transcricao,
+            self._resposta_ia_callback,
+            self._erro_ia_callback
+        )
+    
+    def erro_transcricao(self, erro: str):
+        """Trata erro na transcrição"""
+        messagebox.showerror("Erro na transcrição", f"Erro: {erro}", parent=self.janela)
+        self.fechar_audio()
+        
+    def processar_e_fechar(self):
+        """Processa e retorna resultado"""
+        # Método mantido para compatibilidade
+        pass
 
     def fechar_audio(self):
         """Fecha interface de áudio e volta para assistente"""

@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 6
+- Total de alterações: 7
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 16:15
+- Última alteração: 06/01/2025 16:23
 
 ## 🔄 Fluxo de Alterações
 
@@ -28,9 +28,11 @@ flowchart TD
     A3 --> A3_1[Respostas Naturais]
     A3_1 --> README5[README_05_01_2003_005.md]
     
-    A3 --> A4[🎤 Análise de Arquitetura]
+    A3 --> A4[🎤 Entrada de Áudio]
     A4 --> A4_1[Análise para Áudio]
     A4_1 --> README6[README_06_01_1615_006.md]
+    A4 --> A4_2[Sistema de Gravação]
+    A4_2 --> README7[README_06_01_1623_007.md]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
@@ -39,6 +41,7 @@ flowchart TD
     style README4 fill:#9f9,stroke:#333,stroke-width:2px
     style README5 fill:#9f9,stroke:#333,stroke-width:2px
     style README6 fill:#9f9,stroke:#333,stroke-width:2px
+    style README7 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -116,7 +119,7 @@ flowchart TD
   - Redução de temperatura (0.3) e tokens (150)
 - **Resultado**: ✅ Chat natural e conversacional
 
-### 🎤 Análise de Arquitetura (06/01/2025)
+### 🎤 Entrada de Áudio (06/01/2025)
 
 #### 6. Análise para Implementação de Áudio - README_06_01_1615_006
 - **Tipo**: Analysis/Planning
@@ -127,6 +130,21 @@ flowchart TD
   - Pontos de integração identificados
   - Reutilização do processamento de embeddings
 - **Descobertas principais**:
+
+#### 7. Sistema de Gravação e Transcrição - README_06_01_1623_007
+- **Tipo**: Feature
+- **Descrição**: Implementação completa de entrada de reuniões por áudio
+- **Componentes criados**:
+  - src/audio_processor.py: Sistema de gravação e transcrição
+  - Interface com tabs no FRONT.py
+  - Fragmentação automática de arquivos > 25MB
+  - Integração com OpenAI Whisper
+- **Funcionalidades**:
+  - Gravação em tempo real com feedback visual
+  - Transcrição automática para português
+  - Processamento de embeddings idêntico ao texto
+  - Busca semântica funciona com áudio transcrito
+- **Resultado**: ✅ Sistema multimodal texto/áudio funcionando
   - Interface de áudio já existe em FRONT.py (linhas 869-1083)
   - Sistema modular permite fácil extensão
   - Pipeline de embeddings totalmente reutilizável
