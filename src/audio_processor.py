@@ -60,15 +60,34 @@ class AudioProcessor:
         self.recording = True
         self.frames = []
         
-        # Inicializar PyAudio
-        self.p = pyaudio.PyAudio()
-        self.stream = self.p.open(
-            format=self.format,
-            channels=self.channels,
-            rate=self.rate,
-            input=True,
-            frames_per_buffer=self.chunk
-        )
+        # Inicializar PyAudio com tratamento de erro
+        try:
+            self.p = pyaudio.PyAudio()
+            
+            # Verificar se há dispositivos de entrada disponíveis
+            input_device_count = self.p.get_device_count()
+            has_input = False
+            for i in range(input_device_count):
+                info = self.p.get_device_info_by_index(i)
+                if info['maxInputChannels'] > 0:
+                    has_input = True
+                    break
+            
+            if not has_input:
+                raise Exception("Nenhum dispositivo de entrada de áudio encontrado")
+            
+            self.stream = self.p.open(
+                format=self.format,
+                channels=self.channels,
+                rate=self.rate,
+                input=True,
+                frames_per_buffer=self.chunk,
+                stream_callback=None
+            )
+        except Exception as e:
+            if self.p:
+                self.p.terminate()
+            raise Exception(f"Erro ao inicializar áudio: {str(e)}")
         
         # Thread de gravação
         def record():

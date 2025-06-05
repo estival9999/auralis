@@ -139,9 +139,12 @@ class ProcessadorEmbeddings:
             print(f"Erro ao gerar embedding: {e}")
             raise
     
-    def processar_arquivo(self, caminho_arquivo: str):
+    def processar_arquivo(self, caminho_arquivo: str) -> bool:
         """
         Processa um arquivo de reunião completo
+        
+        Returns:
+            bool: True se processado com sucesso
         """
         print(f"Processando arquivo: {caminho_arquivo}")
         
@@ -151,11 +154,11 @@ class ProcessadorEmbeddings:
                 texto_completo = f.read()
         except Exception as e:
             print(f"Erro ao ler arquivo: {e}")
-            return
+            return False
         
         if not texto_completo.strip():
             print("Arquivo vazio, pulando...")
-            return
+            return False
         
         nome_arquivo = Path(caminho_arquivo).name
         
@@ -168,6 +171,7 @@ class ProcessadorEmbeddings:
         print(f"Criados {len(chunks)} chunks")
         
         # Processar cada chunk
+        chunks_processados = 0
         for chunk in chunks:
             try:
                 # Gerar embedding
@@ -193,9 +197,13 @@ class ProcessadorEmbeddings:
                 # Inserir no Supabase
                 resultado = self.supabase.table('reunioes_embbed').insert(dados).execute()
                 print(f"Chunk {chunk['numero']} inserido com sucesso")
+                chunks_processados += 1
                 
             except Exception as e:
                 print(f"Erro ao processar chunk {chunk['numero']}: {e}")
+        
+        # Retornar True se pelo menos um chunk foi processado
+        return chunks_processados > 0
     
     def processar_pasta(self, caminho_pasta: str):
         """

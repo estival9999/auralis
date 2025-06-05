@@ -730,14 +730,8 @@ PRÓXIMOS PASSOS:
                     from src.embeddings_processor import ProcessadorEmbeddings
                     processador = ProcessadorEmbeddings()
                     
-                    metadados = {
-                        'titulo': titulo,
-                        'data_reuniao': datetime.now().date(),
-                        'tipo': 'texto',
-                        'duracao': 'N/A'
-                    }
-                    
-                    sucesso = processador.processar_arquivo(arquivo_temp, metadados)
+                    # O processador extrai metadados automaticamente do arquivo
+                    sucesso = processador.processar_arquivo(arquivo_temp)
                     
                     # Remover arquivo temporário
                     import os
@@ -747,7 +741,8 @@ PRÓXIMOS PASSOS:
                     self.janela.after(0, lambda: self.finalizar_processamento_texto(loading, sucesso))
                     
                 except Exception as e:
-                    self.janela.after(0, lambda: self.erro_processamento_texto(loading, str(e)))
+                    erro_msg = str(e)
+                    self.janela.after(0, lambda: self.erro_processamento_texto(loading, erro_msg))
             
             threading.Thread(target=processar, daemon=True).start()
             
