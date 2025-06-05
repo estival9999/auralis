@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 5
+- Total de alterações: 6
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 05/01/2025 20:03
+- Última alteração: 06/01/2025 16:15
 
 ## 🔄 Fluxo de Alterações
 
@@ -28,12 +28,17 @@ flowchart TD
     A3 --> A3_1[Respostas Naturais]
     A3_1 --> README5[README_05_01_2003_005.md]
     
+    A3 --> A4[🎤 Análise de Arquitetura]
+    A4 --> A4_1[Análise para Áudio]
+    A4_1 --> README6[README_06_01_1615_006.md]
+    
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
     style README2 fill:#9f9,stroke:#333,stroke-width:2px
     style README3 fill:#9f9,stroke:#333,stroke-width:2px
     style README4 fill:#9f9,stroke:#333,stroke-width:2px
     style README5 fill:#9f9,stroke:#333,stroke-width:2px
+    style README6 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -111,15 +116,41 @@ flowchart TD
   - Redução de temperatura (0.3) e tokens (150)
 - **Resultado**: ✅ Chat natural e conversacional
 
+### 🎤 Análise de Arquitetura (06/01/2025)
+
+#### 6. Análise para Implementação de Áudio - README_06_01_1615_006
+- **Tipo**: Analysis/Planning
+- **Descrição**: Análise detalhada da arquitetura para adicionar gravação de áudio
+- **Pontos analisados**:
+  - Pipeline atual de processamento de texto
+  - Interface de áudio parcialmente implementada
+  - Pontos de integração identificados
+  - Reutilização do processamento de embeddings
+- **Descobertas principais**:
+  - Interface de áudio já existe em FRONT.py (linhas 869-1083)
+  - Sistema modular permite fácil extensão
+  - Pipeline de embeddings totalmente reutilizável
+  - Estados de gravação já implementados
+- **Recomendações**:
+  - Criar módulo audio_processor.py
+  - Adicionar seleção de modo (áudio/texto)
+  - Usar OpenAI Whisper para transcrição
+  - Manter pipeline existente de embeddings
+- **Resultado**: ✅ Arquitetura mapeada e pronta para implementação
+
 ## 🎯 Próximas Etapas Planejadas
-1. Implementar memória de conversa
-2. Adicionar mais conteúdo de reuniões
-3. Criar função RPC no Supabase
-4. Melhorar interface visual
+1. Implementar gravação de áudio real com Whisper
+2. Criar módulo audio_processor.py
+3. Adicionar seleção de modo áudio/texto
+4. Implementar memória de conversa
+5. Adicionar mais conteúdo de reuniões
+6. Criar função RPC no Supabase
+7. Melhorar interface visual
 
 ## 📈 Métricas do Projeto
 - Arquivos modificados: 9 (incluindo ajustes UX)
-- Novos arquivos: 8 (essenciais + documentação)
+- Novos arquivos: 9 (essenciais + documentação)
 - Linhas de código: ~600 (total de alterações)
-- Tempo total: ~42 minutos
+- Tempo total: ~67 minutos
 - Commits realizados: 5
+- Análises realizadas: 1
