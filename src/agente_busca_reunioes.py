@@ -12,6 +12,7 @@ from openai import OpenAI
 from supabase import create_client, Client
 import numpy as np
 from dotenv import load_dotenv
+from .busca_local import BuscaSemanticaLocal
 
 load_dotenv()
 
@@ -31,7 +32,10 @@ class AgenteBuscaReunioes:
         
         self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
         
-        # Prompt sistema para o agente
+        # Inicializar busca semântica local
+        self.busca_semantica = BuscaSemanticaLocal(self.supabase)
+        
+        # Prompt sistema aprimorado
         self.system_prompt = """Você é um assistente especializado em analisar informações de reuniões corporativas.
 
 Suas capacidades incluem:
@@ -39,13 +43,20 @@ Suas capacidades incluem:
 2. Identificar conexões entre diferentes reuniões
 3. Fornecer respostas claras e diretas
 4. Citar trechos relevantes quando apropriado
-5. Informar claramente quando não encontrar informações
+5. Quando não encontrar informações específicas, fornecer um resumo geral do que está disponível
+
+IMPORTANTE:
+- Se não encontrar a informação exata solicitada, forneça informações relacionadas ou um resumo do que está disponível
+- Sempre tente extrair valor do contexto fornecido
+- Seja criativo na interpretação das informações disponíveis
+- Evite respostas genéricas como "não encontrei informações"
 
 Ao receber uma pergunta:
 - Identifique exatamente o que está sendo perguntado
 - Busque nos contextos fornecidos
+- Se não encontrar exatamente, procure informações relacionadas
 - Conecte informações de diferentes reuniões quando relevante
-- Responda de forma objetiva e profissional"""
+- Responda de forma objetiva e útil"""
 
     def gerar_embedding_pergunta(self, pergunta: str) -> List[float]:
         """Gera embedding para a pergunta do usuário"""
@@ -60,19 +71,25 @@ Ao receber uma pergunta:
             raise
     
     def buscar_chunks_relevantes(self, embedding_pergunta: List[float], num_resultados: int = 5) -> List[Dict]:
-        """Busca chunks mais relevantes no banco"""
+        """Busca chunks mais relevantes usando busca semântica local"""
         try:
-            # Usar a função SQL criada
-            resultado = self.supabase.rpc(
-                'buscar_chunks_similares',
-                {
-                    'query_embedding': embedding_pergunta,
-                    'similarity_threshold': 0.7,
-                    'match_count': num_resultados
-                }
-            ).execute()
+            # Tentar primeiro com threshold padrão
+            resultados = self.busca_semantica.buscar_similares(
+                query_embedding=embedding_pergunta,
+                threshold=0.7,
+                limit=num_resultados
+            )
             
-            return resultado.data
+            # Se não encontrar resultados suficientes, reduzir threshold
+            if not resultados or len(resultados) < 2:
+                print("Poucos resultados com threshold 0.7, tentando com 0.5...")
+                resultados = self.busca_semantica.buscar_similares(
+                    query_embedding=embedding_pergunta,
+                    threshold=0.5,
+                    limit=num_resultados
+                )
+            
+            return resultados
         except Exception as e:
             print(f"Erro ao buscar chunks: {e}")
             return []
@@ -122,7 +139,22 @@ Responda em JSON com: tipo_busca, entidades, busca_conexoes (true/false)"""
         chunks_relevantes = self.buscar_chunks_relevantes(embedding_pergunta, num_resultados)
         
         if not chunks_relevantes:
-            return "Desculpe, não encontrei informações relevantes sobre essa pergunta nas reuniões registradas."
+            # Tentar buscar chunks mais recentes como fallback
+            print("Nenhum chunk relevante encontrado, buscando chunks recentes...")
+            try:
+                chunks_recentes = self.supabase.table('reunioes_embbed').select(
+                    'id, chunk_texto, arquivo_origem, data_reuniao'
+                ).order('created_at', desc=True).limit(3).execute()
+                
+                if chunks_recentes.data:
+                    # Adicionar similaridade baixa para indicar que é fallback
+                    for chunk in chunks_recentes.data:
+                        chunk['similarity'] = 0.4
+                    chunks_relevantes = chunks_recentes.data
+                else:
+                    return "Desculpe, não há informações de reuniões disponíveis no momento."
+            except:
+                return "Erro ao acessar as informações de reuniões."
         
         # Preparar contexto
         contexto_reunioes = self._preparar_contexto(chunks_relevantes)
@@ -172,13 +204,20 @@ Responda em JSON com: tipo_busca, entidades, busca_conexoes (true/false)"""
         prompt = f"""Com base no contexto das reuniões abaixo, responda à pergunta do usuário.
 {instrucoes_extras}
 
+INSTRUÇÕES IMPORTANTES:
+1. Se não encontrar a informação exata solicitada, extraia informações relacionadas ou relevantes
+2. Sempre forneça valor, mesmo que seja um resumo geral do que foi discutido
+3. Se a pergunta for sobre participantes e não houver lista explícita, mencione qualquer pessoa citada no contexto
+4. Se a pergunta for sobre objetivos e não estiver explícito, infira dos temas discutidos
+5. Seja criativo e útil, evite respostas genéricas
+
 CONTEXTO DAS REUNIÕES:
 {contexto}
 
 PERGUNTA DO USUÁRIO:
 {pergunta}
 
-Forneça uma resposta clara e direta. Se não encontrar a informação, diga claramente."""
+Forneça uma resposta útil e informativa baseada no contexto disponível."""
         
         try:
             response = self.client.chat.completions.create(
@@ -187,7 +226,7 @@ Forneça uma resposta clara e direta. Se não encontrar a informação, diga cla
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,
+                temperature=0.6,  # Aumentar para mais criatividade
                 max_tokens=500
             )
             

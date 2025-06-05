@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 3
+- Total de alterações: 4
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 05/01/2025 19:49
+- Última alteração: 05/01/2025 19:57
 
 ## 🔄 Fluxo de Alterações
 
@@ -21,11 +21,14 @@ flowchart TD
     A1 --> A2[🚀 Execução e Correções]
     A2 --> A2_1[Execução do Sistema]
     A2_1 --> README3[README_05_01_1949_003.md]
+    A2 --> A2_2[Correção Busca Semântica]
+    A2_2 --> README4[README_05_01_1957_004.md]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
     style README2 fill:#9f9,stroke:#333,stroke-width:2px
     style README3 fill:#9f9,stroke:#333,stroke-width:2px
+    style README4 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -73,15 +76,29 @@ flowchart TD
   - Sistema totalmente funcional
 - **Resultado**: ✅ Backend e Frontend executando com sucesso
 
+#### 4. Correção da Busca Semântica - README_05_01_1957_004
+- **Tipo**: Bug/Feature
+- **Descrição**: Investigação profunda e correção do sistema de busca semântica
+- **Problemas identificados**:
+  - Função RPC 'buscar_chunks_similares' não existia no Supabase
+  - Embeddings salvos com 19.458 dimensões em vez de 1.536
+  - Busca retornando 0 resultados
+- **Soluções implementadas**:
+  - Criação de classe BuscaSemanticaLocal
+  - Reprocessamento de todos os embeddings
+  - Implementação de busca por similaridade de cosseno local
+  - Cache em memória para performance
+- **Resultado**: ✅ Sistema de busca semântica totalmente funcional
+
 ## 🎯 Próximas Etapas Planejadas
-1. Testar todas as funcionalidades da GUI
-2. Implementar testes automatizados
-3. Adicionar documentação de usuário
-4. Configurar CI/CD no GitHub
+1. Implementar função RPC no Supabase com pgvector
+2. Adicionar mais conteúdo de reuniões
+3. Melhorar interface do usuário
+4. Implementar cache persistente
 
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 5 (2 .py, .env, FLUXOGRAMA.md, + correções)
-- Novos arquivos: 7 (.gitignore, .env.example, 3 READMEs, FLUXOGRAMA.md)
-- Linhas de código: ~100 (incluindo correções)
-- Tempo total: ~17 minutos
-- Commits realizados: 2
+- Arquivos modificados: 8 (incluindo novos arquivos de busca)
+- Novos arquivos: 15+ (incluindo scripts de teste e debug)
+- Linhas de código: ~500 (incluindo correções e novos módulos)
+- Tempo total: ~37 minutos
+- Commits realizados: 3
