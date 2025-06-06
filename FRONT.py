@@ -509,112 +509,88 @@ PRÓXIMOS PASSOS:
         self.frame_atual = ctk.CTkFrame(self.container_principal, fg_color=self.cores["fundo"])
         self.frame_atual.pack(fill="both", expand=True)
         
-        self.criar_cabecalho_voltar("📝 Nova Reunião")
+        self.criar_cabecalho_voltar("🎤 Nova Gravação")
         
-        # Tabs para escolher método
-        self.tab_selecionada = ctk.StringVar(value="texto")
-        
-        frame_tabs = ctk.CTkFrame(self.frame_atual, height=36, fg_color=self.cores["fundo"])
-        frame_tabs.pack(fill="x", padx=10, pady=(5, 5))
-        
-        ctk.CTkSegmentedButton(
-            frame_tabs,
-            values=["📝 Texto", "🎤 Áudio"],
-            variable=self.tab_selecionada,
-            command=self.alternar_tab_entrada,
-            fg_color=self.cores["superficie"],
-            selected_color=self.cores["primaria"],
-            unselected_color=self.cores["secundaria"],
-            selected_hover_color=self.cores["primaria"],
-            unselected_hover_color=self.cores["secundaria"]
-        ).pack(expand=True, fill="x")
-        
-        # Container para conteúdo das tabs
+        # Container para formulário
         self.frame_conteudo_tab = ctk.CTkFrame(self.frame_atual, fg_color=self.cores["fundo"])
-        self.frame_conteudo_tab.pack(fill="both", expand=True, padx=10, pady=(0, 5))
+        self.frame_conteudo_tab.pack(fill="both", expand=True, padx=10, pady=(5, 5))
         
-        # Criar tab de texto inicial
-        self._criar_tab_texto()
+        # Criar interface de áudio diretamente
+        self._criar_interface_audio_simplificada()
         
-    def alternar_tab_entrada(self, valor):
-        """Alterna entre entrada de texto e áudio"""
-        # Limpar conteúdo atual
-        for widget in self.frame_conteudo_tab.winfo_children():
-            widget.destroy()
-            
-        if valor == "📝 Texto":
-            self._criar_tab_texto()
-        else:  # "🎤 Áudio"
-            self._criar_tab_audio()
-    
-    def _criar_tab_texto(self):
-        """Cria interface para entrada de texto"""
+    def _criar_interface_audio_simplificada(self):
+        """Cria interface simplificada apenas para áudio"""
         frame_form = ctk.CTkFrame(self.frame_conteudo_tab, fg_color=self.cores["superficie"])
         frame_form.pack(fill="both", expand=True)
         
+        # Título informativo
+        ctk.CTkLabel(
+            frame_form,
+            text="📌 Gravação de Reunião por Áudio",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color=self.cores["texto"]
+        ).pack(pady=(15, 10))
+        
+        # Título
         ctk.CTkLabel(
             frame_form, 
             text="Título da Reunião", 
             font=ctk.CTkFont(size=11),
             text_color=self.cores["texto_secundario"]
-        ).pack(pady=(8, 2))
+        ).pack(pady=(10, 2))
         
-        self.entry_titulo = ctk.CTkEntry(
+        self.entry_titulo_audio = ctk.CTkEntry(
             frame_form, 
             width=270,
-            height=30,
+            height=35,
             fg_color=self.cores["fundo"],
             border_color=self.cores["primaria"],
             placeholder_text="Ex: Reunião de Planejamento"
         )
-        self.entry_titulo.pack(pady=(0, 8))
+        self.entry_titulo_audio.pack(pady=(0, 10))
         
+        # Observações
         ctk.CTkLabel(
             frame_form, 
-            text="Conteúdo da Reunião", 
+            text="Observações (opcional)", 
             font=ctk.CTkFont(size=11),
             text_color=self.cores["texto_secundario"]
         ).pack(pady=(0, 2))
         
-        self.text_conteudo = ctk.CTkTextbox(
+        self.text_obs_audio = ctk.CTkTextbox(
             frame_form, 
             width=270,
-            height=80,
+            height=50,
             font=ctk.CTkFont(size=10),
             fg_color=self.cores["fundo"]
         )
-        self.text_conteudo.pack(pady=(0, 8))
+        self.text_obs_audio.pack(pady=(0, 15))
         
-        # Botões
-        frame_btns = ctk.CTkFrame(frame_form, fg_color="transparent")
-        frame_btns.pack(pady=(5, 10))
-        
+        # Botão grande para prosseguir
         ctk.CTkButton(
-            frame_btns,
+            frame_form,
+            text="🎤 Prosseguir para Gravação",
+            width=250,
+            height=60,
+            font=ctk.CTkFont(size=18, weight="bold"),
+            fg_color=self.cores["perigo"],
+            hover_color="#C62828",
+            corner_radius=30,
+            command=self.prosseguir_para_gravacao
+        ).pack(pady=20)
+        
+        # Botão cancelar menor
+        ctk.CTkButton(
+            frame_form,
             text="Cancelar",
-            width=120,
+            width=100,
             height=30,
             fg_color=self.cores["secundaria"],
             font=ctk.CTkFont(size=12),
             command=lambda: self.transicao_rapida(self.mostrar_menu_principal)
-        ).pack(side="left", padx=5)
+        ).pack(pady=(0, 10))
         
-        ctk.CTkButton(
-            frame_btns,
-            text="Salvar",
-            width=120,
-            height=30,
-            fg_color=self.cores["sucesso"],
-            font=ctk.CTkFont(size=12),
-            command=self.salvar_reuniao_texto
-        ).pack(side="left", padx=5)
-        
-        self.entry_titulo.focus_set()
-    
-    def _criar_tab_audio(self):
-        """Cria interface para gravação de áudio"""
-        frame_form = ctk.CTkFrame(self.frame_conteudo_tab, fg_color=self.cores["superficie"])
-        frame_form.pack(fill="both", expand=True)
+        self.entry_titulo_audio.focus_set()
         
         ctk.CTkLabel(
             frame_form, 
@@ -685,29 +661,38 @@ PRÓXIMOS PASSOS:
         
         self.entry_titulo_audio.focus_set()
     
-    def salvar_reuniao_texto(self):
-        """Salva reunião inserida por texto"""
-        titulo = self.entry_titulo.get().strip()
-        conteudo = self.text_conteudo.get("1.0", "end-1c").strip()
+    def prosseguir_para_gravacao(self):
+        """Valida campos e prossegue para interface de gravação"""
+        titulo = self.entry_titulo_audio.get().strip()
         
         if not titulo:
-            self.entry_titulo.configure(
+            self.entry_titulo_audio.configure(
                 border_color=self.cores["perigo"], 
                 border_width=2
             )
-            self.entry_titulo.focus_set()
+            self.entry_titulo_audio.focus_set()
+            # Resetar borda após 2 segundos
+            self.janela.after(2000, lambda: self.entry_titulo_audio.configure(
+                border_color=self.cores["primaria"],
+                border_width=1
+            ))
             return
-            
-        if not conteudo:
+        
+        if not self.audio_recorder:
             messagebox.showwarning(
-                "Conteúdo vazio",
-                "Por favor, insira o conteúdo da reunião.",
+                "Áudio não disponível",
+                "Instale pyaudio para usar esta funcionalidade:\npip install pyaudio",
                 parent=self.janela
             )
             return
         
-        # Processar e salvar no banco
-        self.processar_reuniao_texto(titulo, conteudo)
+        # Salvar dados e prosseguir
+        self.titulo_reuniao_audio = titulo
+        self.observacoes_reuniao_audio = self.text_obs_audio.get("1.0", "end-1c").strip()
+        self.data_inicio_gravacao = datetime.now()
+        
+        # Ir direto para interface de gravação
+        self._criar_interface_gravacao_reuniao()
     
     def processar_reuniao_texto(self, titulo: str, conteudo: str):
         """Processa e salva reunião de texto no banco"""
@@ -790,33 +775,6 @@ PRÓXIMOS PASSOS:
         loading.destroy()
         messagebox.showerror("Erro", f"Erro ao processar: {erro}", parent=self.janela)
     
-    def iniciar_gravacao_audio(self):
-        """Inicia gravação de áudio da reunião"""
-        titulo = self.entry_titulo_audio.get().strip()
-        
-        if not titulo:
-            self.entry_titulo_audio.configure(
-                border_color=self.cores["perigo"], 
-                border_width=2
-            )
-            self.entry_titulo_audio.focus_set()
-            return
-        
-        if not self.audio_recorder:
-            messagebox.showwarning(
-                "Áudio não disponível",
-                "Instale pyaudio para usar esta funcionalidade:\npip install pyaudio",
-                parent=self.janela
-            )
-            return
-        
-        # Salvar informações para uso posterior
-        self.titulo_reuniao_audio = titulo
-        self.observacoes_reuniao_audio = self.text_obs_audio.get("1.0", "end-1c").strip()
-        self.data_inicio_gravacao = datetime.now()
-        
-        # Abrir interface de gravação de áudio
-        self._criar_interface_gravacao_reuniao()
     
     def _criar_interface_gravacao_reuniao(self):
         """Cria interface de gravação com botão grande"""
@@ -913,7 +871,7 @@ PRÓXIMOS PASSOS:
         self.animar_particulas_reuniao()
     
     def voltar_para_aba_audio(self):
-        """Volta para a aba de áudio"""
+        """Volta para a tela de formulário"""
         self.animacao_ativa_reuniao = False
         if hasattr(self, 'gravando_reuniao') and self.gravando_reuniao:
             # Parar gravação se estiver ativa
@@ -922,7 +880,8 @@ PRÓXIMOS PASSOS:
             except:
                 pass
         self.frame_gravacao_audio.destroy()
-        self.tab_selecionada.set("🎤 Áudio")
+        # Voltar para formulário anterior
+        self.transicao_rapida(self._criar_pre_gravacao)
     
     def alternar_gravacao_reuniao(self):
         """Alterna entre gravar e parar na interface de reunião"""

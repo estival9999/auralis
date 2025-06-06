@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 9
+- Total de alterações: 10
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 17:03
+- Última alteração: 06/01/2025 17:12
 
 ## 🔄 Fluxo de Alterações
 
@@ -37,6 +37,8 @@ flowchart TD
     A4_3 --> README8[README_06_01_1645_008.md]
     A4 --> A4_4[Correção Fluxo Gravação]
     A4_4 --> README9[README_06_01_1703_009.md]
+    A4 --> A4_5[Simplificação para Áudio Único]
+    A4_5 --> README10[README_06_01_1712_010.md]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
@@ -48,6 +50,7 @@ flowchart TD
     style README7 fill:#9f9,stroke:#333,stroke-width:2px
     style README8 fill:#9f9,stroke:#333,stroke-width:2px
     style README9 fill:#9f9,stroke:#333,stroke-width:2px
+    style README10 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -180,6 +183,20 @@ flowchart TD
   - Timer de gravação visível
 - **Resultado**: ✅ Fluxo completo e intuitivo funcionando
 
+#### 10. Simplificação para Áudio Único - README_06_01_1712_010  
+- **Tipo**: Refactoring/UX
+- **Descrição**: Remoção completa da entrada por texto, foco único em áudio
+- **Mudanças principais**:
+  - Removido sistema de abas (Texto/Áudio)
+  - Interface única focada em gravação
+  - Fluxo linear: Formulário → Gravação → Processamento
+  - Botão grande "Prosseguir para Gravação"
+- **Justificativa**:
+  - Complexidade desnecessária causava confusão
+  - Usuário sugere simplificação radical
+  - Foco no que importa: gravação por áudio
+- **Resultado**: ✅ Sistema drasticamente simplificado
+
 ## 🎯 Próximas Etapas Planejadas
 1. Implementar gravação de áudio real com Whisper
 2. Criar módulo audio_processor.py
@@ -190,9 +207,9 @@ flowchart TD
 7. Melhorar interface visual
 
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 10 (incluindo ajustes UX)
-- Novos arquivos: 10 (essenciais + documentação)
-- Linhas de código: ~800 (total de alterações)
-- Tempo total: ~75 minutos
-- Commits realizados: 6
-- Análises realizadas: 1
+- Arquivos modificados: 11 (incluindo ajustes UX)
+- Novos arquivos: 11 (essenciais + documentação)
+- Linhas de código: ~900 (total de alterações)
+- Tempo total: ~85 minutos
+- Commits realizados: 7
+- Análises realizadas: 2
