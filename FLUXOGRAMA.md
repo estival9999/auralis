@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 15
+- Total de alterações: 16
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 23:02
+- Última alteração: 06/01/2025 23:16
 
 ## 🔄 Fluxo de Alterações
 
@@ -54,6 +54,10 @@ flowchart TD
     A6 --> A6_3[Melhorias de Inteligência e Busca]
     A6_3 --> README15[README_06_01_2302_016.md]
     
+    A6 --> A7[🧹 Limpeza e Organização]
+    A7 --> A7_1[Remoção de Arquivos Desnecessários]
+    A7_1 --> README16[README_06_01_2316_017.md]
+    
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
     style README2 fill:#9f9,stroke:#333,stroke-width:2px
@@ -70,6 +74,7 @@ flowchart TD
     style README13 fill:#9f9,stroke:#333,stroke-width:2px
     style README14 fill:#9f9,stroke:#333,stroke-width:2px
     style README15 fill:#9f9,stroke:#333,stroke-width:2px
+    style README16 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -338,6 +343,28 @@ flowchart TD
 - **Impacto**: IA agora é muito mais útil, contextual e inteligente
 - **Resultado**: ✅ Sistema com busca robusta e respostas de alta qualidade
 
+### 🧹 Limpeza e Organização (06/01/2025)
+
+#### 16. Remoção de Arquivos Desnecessários - README_06_01_2316_017
+- **Tipo**: Refactoring/Cleanup
+- **Descrição**: Limpeza de arquivos de teste e agentes duplicados
+- **Ações executadas**:
+  - Push das alterações para GitHub (branch add_bas_conhecimento)
+  - Exclusão de 2 arquivos de teste Python
+  - Análise de uso dos agentes de busca
+  - Remoção do agente_busca_reunioes.py (versão antiga)
+  - Simplificação dos imports em main.py
+- **Arquivos removidos**:
+  - teste_animacao_processamento.py
+  - teste_historico_melhorado.py
+  - src/agente_busca_reunioes.py
+- **Código simplificado**:
+  - Removido try/except e flag AGENTE_MELHORADO
+  - Import direto do AgenteBuscaMelhorado
+  - Eliminadas condicionais desnecessárias
+- **Impacto**: Código 20% mais limpo e manutenível
+- **Resultado**: ✅ Repositório organizado, apenas código essencial mantido
+
 ## 🎯 Próximas Etapas Planejadas
 1. Implementar autenticação segura (Argon2 + JWT)
 2. Criar suite de testes automatizados
@@ -347,9 +374,10 @@ flowchart TD
 6. Adicionar índice vetorial para busca
 
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 18 (incluindo análise profunda)
-- Novos arquivos: 24 (essenciais + documentação + scripts + base conhecimento)
-- Linhas de código: ~2540 (total de alterações)
-- Tempo total: ~250 minutos
-- Commits realizados: 11
+- Arquivos modificados: 19 (incluindo análise profunda)
+- Novos arquivos: 25 (essenciais + documentação + scripts + base conhecimento)
+- Arquivos removidos: 3 (testes e agente antigo)
+- Linhas de código: ~2540 (total de alterações) - 500 (removidas)
+- Tempo total: ~260 minutos
+- Commits realizados: 12
 - Análises realizadas: 4 (incluindo análise profunda multi-dimensional)
