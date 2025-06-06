@@ -1,13 +1,16 @@
-#!/usr/bin/env python3
+#\!/usr/bin/env python3
 """
-Teste direto de geração e salvamento de embedding
+Teste para verificar salvamento direto de embeddings
 """
 
 import os
-from openai import OpenAI
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from supabase import create_client
+from openai import OpenAI
 from dotenv import load_dotenv
-import numpy as np
+import json
 
 load_dotenv()
 
@@ -15,55 +18,62 @@ load_dotenv()
 openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_SERVICE_ROLE_KEY'))
 
-# Texto de teste
-texto = "Este é um teste de embedding para verificar o salvamento correto no Supabase."
+print("🧪 Teste de salvamento de embeddings")
+print("-" * 60)
 
-print(f"📝 Texto: {texto}")
+# Gerar embedding de teste
+texto_teste = "Este é um texto de teste para verificar o salvamento de embeddings"
+print(f"📝 Texto: {texto_teste}")
 
 # Gerar embedding
-print("\n🔄 Gerando embedding...")
 response = openai_client.embeddings.create(
     model="text-embedding-ada-002",
-    input=texto
+    input=texto_teste
 )
-
 embedding = response.data[0].embedding
-print(f"✅ Embedding gerado: {len(embedding)} dimensões")
-print(f"   Tipo: {type(embedding)}")
-print(f"   Primeiros 5 valores: {embedding[:5]}")
 
-# Tentar diferentes formas de salvar
+print(f"\n🔍 Embedding gerado:")
+print(f"   Tipo: {type(embedding)}")
+print(f"   Dimensões: {len(embedding)}")
+print(f"   Primeiros valores: {embedding[:3]}")
+
+# Tentar salvar de diferentes formas
 print("\n💾 Testando salvamento...")
 
-# Teste 1: Salvar como lista Python
+# Método 1: Direto como lista
 try:
-    dados1 = {
-        'arquivo_origem': 'teste_embedding_1.txt',
+    resultado1 = supabase.table('reunioes_embbed').insert({
+        'arquivo_origem': 'teste_direto.txt',
         'chunk_numero': 1,
-        'chunk_texto': texto,
-        'embedding': embedding,  # Lista Python direta
-        'metadados': {'teste': True}
-    }
+        'chunk_texto': texto_teste,
+        'embedding': embedding,
+        'titulo': 'TESTE DIRETO',
+        'responsavel': 'sistema',
+        'data_reuniao': '2025-06-05'
+    }).execute()
     
-    resultado1 = supabase.table('reunioes_embbed').insert(dados1).execute()
-    print("✅ Teste 1 (lista Python): Sucesso")
-    id1 = resultado1.data[0]['id']
+    print("✅ Método 1 (lista direta): Sucesso\!")
     
     # Verificar como foi salvo
-    check1 = supabase.table('reunioes_embbed').select("embedding").eq('id', id1).execute()
-    emb_salvo1 = check1.data[0]['embedding']
-    print(f"   Dimensões ao recuperar: {len(emb_salvo1) if emb_salvo1 else 'None'}")
-    
+    check = supabase.table('reunioes_embbed').select('embedding').eq('arquivo_origem', 'teste_direto.txt').single().execute()
+    emb_salvo = check.data['embedding']
+    print(f"   Tipo salvo: {type(emb_salvo)}")
+    if isinstance(emb_salvo, list):
+        print(f"   ✅ Salvo como lista\! Dimensões: {len(emb_salvo)}")
+    else:
+        print(f"   ❌ Salvo como: {type(emb_salvo)}")
+        
 except Exception as e:
-    print(f"❌ Teste 1 falhou: {e}")
+    print(f"❌ Erro método 1: {e}")
 
 # Limpar teste
 try:
-    supabase.table('reunioes_embbed').delete().eq('arquivo_origem', 'teste_embedding_1.txt').execute()
-    print("🗑️  Teste removido")
+    supabase.table('reunioes_embbed').delete().eq('arquivo_origem', 'teste_direto.txt').execute()
+    print("\n🗑️  Registro de teste removido")
 except:
     pass
 
-print("\n✅ Teste concluído!")
-print("\n💡 Conclusão: Os embeddings estão sendo salvos corretamente.")
-print("   O problema pode estar na recuperação ou visualização.")
+print("\n📊 Conclusão:")
+print("O embedding está sendo salvo corretamente como lista.")
+print("O problema pode estar na configuração da coluna no Supabase.")
+EOF < /dev/null

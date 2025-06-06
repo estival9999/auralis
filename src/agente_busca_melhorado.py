@@ -193,7 +193,15 @@ Suas capacidades:
                     # Obter embedding
                     embedding_chunk = chunk.get('embedding', [])
                     
-                    # Se embedding estiver em formato errado, pular
+                    # Se for string JSON, converter para array
+                    if isinstance(embedding_chunk, str):
+                        try:
+                            embedding_chunk = json.loads(embedding_chunk)
+                        except json.JSONDecodeError:
+                            print(f"Erro ao decodificar embedding do chunk {chunk.get('id')}")
+                            continue
+                    
+                    # Verificar dimensões
                     if not embedding_chunk or len(embedding_chunk) != 1536:
                         continue
                     
