@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 13
+- Total de alterações: 14
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 22:18
+- Última alteração: 06/01/2025 22:40
 
 ## 🔄 Fluxo de Alterações
 
@@ -49,6 +49,8 @@ flowchart TD
     A5 --> A6[📚 Base de Conhecimento]
     A6 --> A6_1[Sistema de Processamento de Documentos]
     A6_1 --> README13[README_06_01_2218_014.md]
+    A6 --> A6_2[Integração Busca Universal]
+    A6_2 --> README14[README_06_01_2240_015.md]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
@@ -64,6 +66,7 @@ flowchart TD
     style README11 fill:#9f9,stroke:#333,stroke-width:2px
     style README12 fill:#9f9,stroke:#333,stroke-width:2px
     style README13 fill:#9f9,stroke:#333,stroke-width:2px
+    style README14 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -288,6 +291,28 @@ flowchart TD
   - Compatibilidade total com sistema existente
 - **Resultado**: ✅ IA agora tem acesso a documentos empresariais além de reuniões
 
+#### 14. Integração de Busca Universal - README_06_01_2240_015
+- **Tipo**: Feature/Enhancement
+- **Descrição**: Integração da base de conhecimento com o agente de busca
+- **Problema**: Agente buscava apenas em reuniões, ignorando documentos
+- **Solução implementada**:
+  - Refatoração do AgenteBuscaMelhorado para busca universal
+  - Novos métodos: _buscar_em_reunioes, _buscar_em_base_conhecimento
+  - Sistema de fallback para busca direta
+  - Diversificação de resultados entre fontes
+  - Identificação clara da fonte (reunião vs documento)
+- **Mudanças principais**:
+  - buscar_chunks_relevantes agora combina ambas as fontes
+  - _preparar_contexto adaptado para múltiplos tipos
+  - Prompt atualizado para refletir capacidades expandidas
+  - Headers diferenciados no contexto
+- **Arquitetura**:
+  - Busca federada mantém tabelas separadas
+  - RPC com fallback para robustez
+  - Limite de resultados por fonte para diversidade
+- **Impacto**: IA agora responde sobre "Raízes Pantaneiras" e outros conteúdos de documentos
+- **Resultado**: ✅ Sistema verdadeiramente multi-fonte funcionando
+
 ## 🎯 Próximas Etapas Planejadas
 1. Implementar autenticação segura (Argon2 + JWT)
 2. Criar suite de testes automatizados
@@ -297,9 +322,9 @@ flowchart TD
 6. Adicionar índice vetorial para busca
 
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 16 (incluindo análise profunda)
-- Novos arquivos: 22 (essenciais + documentação + scripts + base conhecimento)
-- Linhas de código: ~2250 (total de alterações)
-- Tempo total: ~205 minutos
-- Commits realizados: 9
+- Arquivos modificados: 17 (incluindo análise profunda)
+- Novos arquivos: 23 (essenciais + documentação + scripts + base conhecimento)
+- Linhas de código: ~2420 (total de alterações)
+- Tempo total: ~225 minutos
+- Commits realizados: 10
 - Análises realizadas: 4 (incluindo análise profunda multi-dimensional)

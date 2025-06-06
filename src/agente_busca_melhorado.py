@@ -1,9 +1,11 @@
 """
-Agente de IA melhorado para busca semântica em reuniões
-- Prioriza reuniões recentes
+Agente de IA universal para busca semântica em múltiplas fontes
+- Busca em reuniões e base de conhecimento
+- Prioriza informações recentes
 - Melhor precisão na busca
 - Considera contexto temporal
 - Sistema de memória contextual integrado
+- Unifica resultados de diferentes fontes
 """
 
 import os
@@ -48,7 +50,7 @@ class AgenteBuscaMelhorado:
         self.gerenciador_memoria = obter_gerenciador_memoria()
         
         # Prompt sistema aprimorado
-        self.system_prompt = """Você é um assistente especializado em reuniões corporativas. 
+        self.system_prompt = """Você é um assistente inteligente com acesso a múltiplas fontes de conhecimento corporativo.
 
 REGRAS CRÍTICAS:
 1. Seja CONCISO e DIRETO
@@ -56,12 +58,15 @@ REGRAS CRÍTICAS:
 3. Para saudações simples: responda brevemente
 4. NUNCA invente informações - use apenas o contexto fornecido
 5. Se a informação não estiver disponível, diga claramente
+6. Identifique SEMPRE a fonte da informação (reunião ou documento)
 
 Suas capacidades:
-- Buscar informações específicas de reuniões
+- Buscar informações em reuniões gravadas
+- Consultar base de conhecimento (manuais, procedimentos, estatutos)
 - Identificar a reunião mais recente
-- Responder sobre decisões, participantes, temas
-- Fornecer resumos quando solicitado"""
+- Responder sobre políticas, procedimentos e normas
+- Fornecer informações de documentos oficiais
+- Combinar conhecimento de múltiplas fontes"""
 
     def detectar_busca_temporal(self, pergunta: str) -> Dict:
         """Detecta se a pergunta busca informações temporais"""
@@ -160,34 +165,10 @@ Suas capacidades:
         
         return min(similaridade, 1.0)  # Garantir que não passe de 1.0
     
-    def gerar_embedding_pergunta(self, pergunta: str) -> List[float]:
-        """Gera embedding para a pergunta do usuário"""
+    def _buscar_em_reunioes(self, pergunta: str) -> List[Dict]:
+        """Busca chunks relevantes nas reuniões"""
         try:
-            response = self.client.embeddings.create(
-                model="text-embedding-ada-002",
-                input=pergunta
-            )
-            return response.data[0].embedding
-        except Exception as e:
-            print(f"Erro ao gerar embedding da pergunta: {e}")
-            raise
-    
-    def buscar_chunks_relevantes(self, pergunta: str, num_resultados: int = 5) -> List[Dict]:
-        """Busca chunks relevantes com melhorias"""
-        try:
-            # Detectar contexto temporal
-            contexto_temporal = self.detectar_busca_temporal(pergunta)
-            
-            # Se busca a última reunião, retornar diretamente
-            if contexto_temporal['busca_recente']:
-                reuniao_recente = self.buscar_reuniao_mais_recente()
-                if reuniao_recente:
-                    return [{
-                        **reuniao_recente,
-                        'similarity': 1.0  # Alta relevância para busca direta
-                    }]
-            
-            # Buscar todos os embeddings
+            # Buscar todos os embeddings de reuniões
             resultado = self.supabase.table('reunioes_embbed').select('*').execute()
             
             if not resultado.data:
@@ -223,17 +204,184 @@ Suas capacidades:
                     )
                     
                     chunk['similarity'] = similaridade
+                    chunk['fonte'] = 'reuniao'
                     resultados_com_score.append(chunk)
                     
                 except Exception as e:
-                    print(f"Erro ao processar chunk {chunk.get('id')}: {e}")
+                    print(f"Erro ao processar chunk de reunião {chunk.get('id')}: {e}")
                     continue
             
-            # Ordenar por similaridade
-            resultados_com_score.sort(key=lambda x: x['similarity'], reverse=True)
+            return resultados_com_score
             
-            # Retornar top N
-            return resultados_com_score[:num_resultados]
+        except Exception as e:
+            print(f"Erro ao buscar em reuniões: {e}")
+            return []
+    
+    def _buscar_em_base_conhecimento(self, pergunta: str) -> List[Dict]:
+        """Busca chunks relevantes na base de conhecimento"""
+        try:
+            # Gerar embedding da pergunta
+            embedding_pergunta = self.gerar_embedding_pergunta(pergunta)
+            
+            # Usar função RPC do Supabase para busca
+            resultado = self.supabase.rpc('buscar_conhecimento_similar', {
+                'query_embedding': embedding_pergunta,
+                'limite': 10
+            }).execute()
+            
+            if not resultado.data:
+                return []
+            
+            # Formatar resultados para compatibilidade
+            resultados_formatados = []
+            for item in resultado.data:
+                chunk_formatado = {
+                    'id': item.get('id'),
+                    'chunk_texto': item.get('conteudo'),
+                    'arquivo_origem': item.get('documento_origem'),
+                    'titulo': item.get('tipo_documento', '').title(),
+                    'responsavel': 'Sistema',
+                    'data_reuniao': 'N/A',
+                    'similarity': item.get('similaridade', 0),
+                    'fonte': 'documento',
+                    'tipo_documento': item.get('tipo_documento'),
+                    'categoria': item.get('categoria'),
+                    'tags': item.get('tags', [])
+                }
+                resultados_formatados.append(chunk_formatado)
+            
+            return resultados_formatados
+            
+        except Exception as e:
+            print(f"Erro ao buscar na base de conhecimento: {e}")
+            # Fallback: busca direta se RPC não existir
+            try:
+                return self._buscar_base_conhecimento_direto(pergunta)
+            except:
+                return []
+    
+    def _buscar_base_conhecimento_direto(self, pergunta: str) -> List[Dict]:
+        """Busca direta na base de conhecimento (fallback)"""
+        try:
+            # Buscar todos os registros
+            resultado = self.supabase.table('base_conhecimento').select('*').eq('ativo', True).execute()
+            
+            if not resultado.data:
+                return []
+            
+            # Gerar embedding da pergunta
+            embedding_pergunta = self.gerar_embedding_pergunta(pergunta)
+            
+            resultados_com_score = []
+            for doc in resultado.data:
+                try:
+                    # Obter embedding
+                    embedding_doc = doc.get('embedding', [])
+                    
+                    # Se for string JSON, converter
+                    if isinstance(embedding_doc, str):
+                        embedding_doc = json.loads(embedding_doc)
+                    
+                    # Verificar dimensões
+                    if not embedding_doc or len(embedding_doc) != 1536:
+                        continue
+                    
+                    # Calcular similaridade
+                    similaridade = self.calcular_similaridade_com_peso_temporal(
+                        embedding_pergunta,
+                        embedding_doc,
+                        doc.get('data_processamento')
+                    )
+                    
+                    # Formatar resultado
+                    chunk_formatado = {
+                        'id': doc.get('id'),
+                        'chunk_texto': doc.get('conteudo'),
+                        'arquivo_origem': doc.get('documento_origem'),
+                        'titulo': doc.get('tipo_documento', '').title(),
+                        'responsavel': 'Sistema',
+                        'data_reuniao': 'N/A',
+                        'similarity': similaridade,
+                        'fonte': 'documento',
+                        'tipo_documento': doc.get('tipo_documento'),
+                        'categoria': doc.get('categoria'),
+                        'tags': doc.get('tags', [])
+                    }
+                    resultados_com_score.append(chunk_formatado)
+                    
+                except Exception as e:
+                    print(f"Erro ao processar documento {doc.get('id')}: {e}")
+                    continue
+            
+            return resultados_com_score
+            
+        except Exception as e:
+            print(f"Erro na busca direta: {e}")
+            return []
+    
+    def _diversificar_resultados(self, resultados: List[Dict], num_resultados: int) -> List[Dict]:
+        """Diversifica resultados para incluir diferentes fontes"""
+        resultados_finais = []
+        reunioes_incluidas = 0
+        documentos_incluidos = 0
+        max_por_fonte = num_resultados // 2 + 1
+        
+        for resultado in resultados:
+            fonte = resultado.get('fonte', 'reuniao')
+            
+            # Limitar por fonte para garantir diversidade
+            if fonte == 'reuniao' and reunioes_incluidas < max_por_fonte:
+                resultados_finais.append(resultado)
+                reunioes_incluidas += 1
+            elif fonte == 'documento' and documentos_incluidos < max_por_fonte:
+                resultados_finais.append(resultado)
+                documentos_incluidos += 1
+            
+            if len(resultados_finais) >= num_resultados:
+                break
+        
+        return resultados_finais
+    
+    def gerar_embedding_pergunta(self, pergunta: str) -> List[float]:
+        """Gera embedding para a pergunta do usuário"""
+        try:
+            response = self.client.embeddings.create(
+                model="text-embedding-ada-002",
+                input=pergunta
+            )
+            return response.data[0].embedding
+        except Exception as e:
+            print(f"Erro ao gerar embedding da pergunta: {e}")
+            raise
+    
+    def buscar_chunks_relevantes(self, pergunta: str, num_resultados: int = 5) -> List[Dict]:
+        """Busca chunks relevantes em reuniões e base de conhecimento"""
+        try:
+            # Detectar contexto temporal
+            contexto_temporal = self.detectar_busca_temporal(pergunta)
+            
+            # Se busca a última reunião, retornar diretamente
+            if contexto_temporal['busca_recente'] and 'reunião' in pergunta.lower():
+                reuniao_recente = self.buscar_reuniao_mais_recente()
+                if reuniao_recente:
+                    return [{
+                        **reuniao_recente,
+                        'similarity': 1.0,  # Alta relevância para busca direta
+                        'fonte': 'reuniao'
+                    }]
+            
+            # Buscar em ambas as fontes
+            resultados_reunioes = self._buscar_em_reunioes(pergunta)
+            resultados_conhecimento = self._buscar_em_base_conhecimento(pergunta)
+            
+            # Combinar resultados
+            todos_resultados = resultados_reunioes + resultados_conhecimento
+            
+            # Ordenar todos os resultados por similaridade
+            todos_resultados.sort(key=lambda x: x['similarity'], reverse=True)
+            
+            # Retornar top N com diversidade de fontes
+            return self._diversificar_resultados(todos_resultados, num_resultados)
             
         except Exception as e:
             print(f"Erro ao buscar chunks: {e}")
@@ -257,7 +405,7 @@ Suas capacidades:
         chunks_relevantes = self.buscar_chunks_relevantes(pergunta, num_resultados=5)
         
         if not chunks_relevantes:
-            resposta = "Desculpe, não encontrei informações sobre reuniões no sistema."
+            resposta = "Desculpe, não encontrei informações relevantes no sistema."
             # Registrar na memória
             self.gerenciador_memoria.processar_interacao(pergunta, resposta)
             return resposta
@@ -287,34 +435,62 @@ Suas capacidades:
     def _preparar_contexto(self, chunks: List[Dict]) -> str:
         """Prepara o contexto dos chunks para o LLM"""
         contexto = ""
-        reunioes_vistas = set()
+        items_vistos = set()
         
         for i, chunk in enumerate(chunks):
-            # Extrair informações
-            arquivo = chunk.get('arquivo_origem', 'Arquivo desconhecido')
-            titulo = chunk.get('titulo', chunk.get('metadados', {}).get('titulo', 'Sem título'))
-            data = chunk.get('data_reuniao', 'Data não informada')
-            hora = chunk.get('hora_inicio', '')
-            responsavel = chunk.get('responsavel', '')
-            texto = chunk.get('chunk_texto', '')
-            similaridade = chunk.get('similarity', 0)
+            fonte = chunk.get('fonte', 'reuniao')
             
-            # Identificador único da reunião
-            reuniao_id = f"{arquivo}_{data}"
-            
-            # Adicionar cabeçalho da reunião se for nova
-            if reuniao_id not in reunioes_vistas:
-                contexto += f"\n\n=== REUNIÃO {i+1}: {titulo} ==="
-                contexto += f"\nData: {data}"
-                if hora:
-                    contexto += f" às {hora}"
-                if responsavel:
-                    contexto += f"\nResponsável: {responsavel}"
-                contexto += f"\nRelevância: {similaridade:.2%}\n"
-                reunioes_vistas.add(reuniao_id)
-            
-            # Adicionar texto do chunk
-            contexto += f"\n{texto}\n"
+            if fonte == 'reuniao':
+                # Extrair informações de reunião
+                arquivo = chunk.get('arquivo_origem', 'Arquivo desconhecido')
+                titulo = chunk.get('titulo', chunk.get('metadados', {}).get('titulo', 'Sem título'))
+                data = chunk.get('data_reuniao', 'Data não informada')
+                hora = chunk.get('hora_inicio', '')
+                responsavel = chunk.get('responsavel', '')
+                texto = chunk.get('chunk_texto', '')
+                similaridade = chunk.get('similarity', 0)
+                
+                # Identificador único da reunião
+                item_id = f"{arquivo}_{data}"
+                
+                # Adicionar cabeçalho da reunião se for nova
+                if item_id not in items_vistos:
+                    contexto += f"\n\n=== REUNIÃO {i+1}: {titulo} ==="
+                    contexto += f"\nData: {data}"
+                    if hora:
+                        contexto += f" às {hora}"
+                    if responsavel:
+                        contexto += f"\nResponsável: {responsavel}"
+                    contexto += f"\nRelevância: {similaridade:.2%}\n"
+                    items_vistos.add(item_id)
+                
+                # Adicionar texto do chunk
+                contexto += f"\n{texto}\n"
+                
+            else:  # fonte == 'documento'
+                # Extrair informações do documento
+                arquivo = chunk.get('arquivo_origem', 'Documento desconhecido')
+                tipo = chunk.get('tipo_documento', 'documento').upper()
+                categoria = chunk.get('categoria', '')
+                tags = chunk.get('tags', [])
+                texto = chunk.get('chunk_texto', '')
+                similaridade = chunk.get('similarity', 0)
+                
+                # Identificador único do documento
+                item_id = f"doc_{arquivo}"
+                
+                # Adicionar cabeçalho do documento se for novo
+                if item_id not in items_vistos:
+                    contexto += f"\n\n=== DOCUMENTO {i+1}: {tipo} - {arquivo} ==="
+                    if categoria:
+                        contexto += f"\nCategoria: {categoria}"
+                    if tags:
+                        contexto += f"\nTags: {', '.join(tags)}"
+                    contexto += f"\nRelevância: {similaridade:.2%}\n"
+                    items_vistos.add(item_id)
+                
+                # Adicionar texto do chunk
+                contexto += f"\n{texto}\n"
         
         return contexto
     
@@ -336,12 +512,12 @@ Suas capacidades:
         prompt = f"""Com base no contexto fornecido, responda a pergunta de forma DIRETA e CONCISA.
 {instrucoes_extras}
 
-{contexto_completo}CONTEXTO DAS REUNIÕES:
+{contexto_completo}CONTEXTO (REUNIÕES E DOCUMENTOS):
 {contexto}
 
 PERGUNTA: {pergunta}
 
-Resposta (seja direto e específico):"""
+Resposta (seja direto e específico, citando a fonte quando relevante):"""
         
         try:
             response = self.client.chat.completions.create(
