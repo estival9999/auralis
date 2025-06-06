@@ -52,33 +52,25 @@ class AgenteBuscaMelhorado:
         # Prompt sistema aprimorado
         self.system_prompt = """Você é um assistente inteligente com acesso a múltiplas fontes de conhecimento corporativo.
 
-REGRAS CRÍTICAS:
-1. Seja CONCISO mas COMPLETO - forneça contexto quando necessário
-2. Para perguntas sobre "última reunião", SEMPRE priorize a mais recente por data/hora
-3. Para saudações simples: responda brevemente e ofereça ajuda
-4. NUNCA invente informações - use apenas o contexto fornecido
-5. Se a informação não estiver disponível:
-   - Reconheça o que foi perguntado
-   - Explique que não encontrou a informação específica
-   - Se possível, ofereça informações relacionadas
-   - Peça esclarecimentos se necessário
-6. SEMPRE cite as fontes das informações:
-   - Para reuniões: mencione data, título e responsável
-   - Para documentos: mencione tipo e nome do arquivo
-7. Quando relevante:
-   - Correlacione dados de múltiplas fontes
-   - Identifique possíveis desafios ou riscos
-   - Conecte com conhecimento existente
-   - Reconheça múltiplos aspectos da questão
+REGRAS CRÍTICAS DE COMUNICAÇÃO:
+1. Para pedidos de ajuda vagos: responda com UMA pergunta curta e direta
+2. Seja CONCISO - evite antecipar soluções sem conhecer o problema
+3. Use linguagem natural e conversacional
+4. Para saudações simples: responda brevemente e ofereça ajuda
+5. NUNCA invente informações - use apenas o contexto fornecido
+6. Se a informação não estiver disponível:
+   - Para perguntas específicas: explique brevemente e sugira alternativas
+   - Para pedidos vagos: apenas pergunte qual é o problema
+7. SEMPRE cite as fontes quando fornecer informações específicas
+8. Evite respostas longas a menos que seja absolutamente necessário
+
+IMPORTANTE: Seja natural e direto. Não "fale demais" antes de entender a necessidade real do usuário.
 
 Suas capacidades:
 - Buscar informações em reuniões gravadas
-- Consultar base de conhecimento (manuais, procedimentos, estatutos)
-- Identificar a reunião mais recente
-- Responder sobre políticas, procedimentos e normas
-- Fornecer informações de documentos oficiais
-- Combinar e correlacionar conhecimento de múltiplas fontes
-- Identificar padrões e conexões entre informações"""
+- Consultar base de conhecimento
+- Responder sobre políticas e procedimentos
+- Fornecer informações de documentos oficiais"""
 
     def detectar_busca_temporal(self, pergunta: str) -> Dict:
         """Detecta se a pergunta busca informações temporais"""
@@ -491,6 +483,45 @@ O que você gostaria de saber?
 
 Especifique sua necessidade para uma resposta mais precisa."""
     
+    def _e_pedido_ajuda_vago(self, pergunta: str) -> bool:
+        """Detecta pedidos de ajuda genéricos sem especificar o problema"""
+        pergunta_lower = pergunta.lower()
+        
+        # Padrões de pedido de ajuda vago
+        padroes_vagos = [
+            r'(?:pode|poderia|consegue) me ajudar',
+            r'(?:to|tô|estou) com (?:um |)problema',
+            r'preciso de (?:ajuda|auxílio|socorro)',
+            r'(?:tem|teria) como (?:me |)ajudar',
+            r'(?:ajuda|socorro|help)(?:\s|$)',
+            r'(?:não sei|nao sei) o que fazer',
+            r'(?:tá|está) difícil'
+        ]
+        
+        # Verifica se é pedido vago (sem detalhes específicos)
+        import re
+        for padrao in padroes_vagos:
+            if re.search(padrao, pergunta_lower):
+                # Verifica se a mensagem tem menos de 10 palavras (muito curta)
+                if len(pergunta.split()) < 10:
+                    return True
+        
+        return False
+    
+    def _gerar_resposta_ajuda_concisa(self) -> str:
+        """Gera resposta concisa para pedidos de ajuda vagos"""
+        respostas_possiveis = [
+            "Claro! Qual problema você está enfrentando?",
+            "Claro! Como posso ajudar?",
+            "Sim! Me conte o que está acontecendo.",
+            "Claro! O que você precisa?",
+            "Com certeza! Qual é a dificuldade?"
+        ]
+        
+        # Escolher aleatoriamente para variar
+        import random
+        return random.choice(respostas_possiveis)
+    
     def processar_pergunta(self, pergunta: str) -> str:
         """Processa uma pergunta e retorna a resposta"""
         print(f"Processando pergunta: {pergunta}")
@@ -502,6 +533,12 @@ Especifique sua necessidade para uma resposta mais precisa."""
         if pergunta_lower in saudacoes:
             resposta = "Olá! Como posso ajudá-lo com informações sobre as reuniões?"
             # Registrar na memória
+            self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+            return resposta
+        
+        # NOVO: Verificar pedidos de ajuda vagos ANTES de outras verificações
+        if self._e_pedido_ajuda_vago(pergunta):
+            resposta = self._gerar_resposta_ajuda_concisa()
             self.gerenciador_memoria.processar_interacao(pergunta, resposta)
             return resposta
         
