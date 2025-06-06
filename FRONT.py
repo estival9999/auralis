@@ -632,7 +632,7 @@ PRÓXIMOS PASSOS:
         # Ir direto para interface de gravação
         self._criar_interface_gravacao_reuniao()
     
-    def processar_reuniao_texto(self, titulo: str, conteudo: str):
+    def processar_reuniao_texto(self, titulo: str, conteudo: str, cleanup_callback=None):
         """Processa e salva reunião de texto no banco"""
         try:
             # Mostrar loading
@@ -676,7 +676,7 @@ PRÓXIMOS PASSOS:
                     sucesso = processador.processar_arquivo(arquivo_temp, excluir_apos_processar=True)
                     
                     # Callback na thread principal
-                    self.janela.after(0, lambda: self.finalizar_processamento_texto(loading, sucesso))
+                    self.janela.after(0, lambda: self.finalizar_processamento_texto(loading, sucesso, cleanup_callback))
                     
                 except Exception as e:
                     erro_msg = str(e)
@@ -687,9 +687,16 @@ PRÓXIMOS PASSOS:
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao processar reunião: {str(e)}", parent=self.janela)
     
-    def finalizar_processamento_texto(self, loading, sucesso):
+    def finalizar_processamento_texto(self, loading, sucesso, cleanup_callback=None):
         """Finaliza processamento de texto"""
         loading.destroy()
+        
+        # Executar limpeza após processamento
+        if cleanup_callback:
+            try:
+                cleanup_callback()
+            except Exception as e:
+                print(f"Erro ao executar limpeza de arquivo de transcrição: {e}")
         
         if sucesso:
             messagebox.showinfo(
@@ -930,7 +937,8 @@ Hora: {self.data_inicio_gravacao.strftime('%H:%M')}"""
                 # Processar como texto
                 self.janela.after(0, lambda: self.processar_reuniao_texto(
                     self.titulo_reuniao_audio, 
-                    conteudo_completo
+                    conteudo_completo,
+                    cleanup_callback=lambda: self.audio_recorder.cleanup_transcription_file()
                 ))
             else:
                 self.janela.after(0, lambda: messagebox.showerror(

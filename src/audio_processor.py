@@ -47,6 +47,9 @@ class AudioProcessor:
         # Limite de tamanho (25MB em bytes)
         self.max_size_bytes = 25 * 1024 * 1024
         
+        # Armazenar último arquivo de transcrição para limpeza
+        self.last_transcription_file = None
+        
     def start_recording(self, callback: Optional[Callable[[float], None]] = None):
         """
         Inicia a gravação de áudio
@@ -235,6 +238,9 @@ class AudioProcessor:
         
         print(f"✅ Transcrição completa salva em: {text_file}")
         
+        # Armazenar o caminho do arquivo para limpeza posterior
+        self.last_transcription_file = text_file
+        
         # Limpar arquivos de áudio temporários após transcrição
         for audio_file in audio_files:
             try:
@@ -268,6 +274,7 @@ class AudioRecorder:
         self.is_recording = False
         self.audio_level = 0.0
         self.base_path = ""
+        self.transcription_file_path = None  # Armazenar caminho do arquivo de transcrição
         
     def toggle_recording(self) -> bool:
         """Alterna entre gravar/parar"""
@@ -290,7 +297,11 @@ class AudioRecorder:
             return None
             
         try:
-            return self.processor.transcribe_audio_files(self.base_path)
+            transcription = self.processor.transcribe_audio_files(self.base_path)
+            # Armazenar caminho do arquivo de transcrição se existir
+            if hasattr(self.processor, 'last_transcription_file'):
+                self.transcription_file_path = self.processor.last_transcription_file
+            return transcription
         except Exception as e:
             print(f"Erro na transcrição: {e}")
             return None
@@ -298,6 +309,16 @@ class AudioRecorder:
     def get_audio_level(self) -> float:
         """Retorna nível atual do áudio (0-1)"""
         return self.audio_level
+    
+    def cleanup_transcription_file(self):
+        """Remove o arquivo de transcrição após processamento"""
+        if self.transcription_file_path and self.transcription_file_path.exists():
+            try:
+                self.transcription_file_path.unlink()
+                print(f"🗑️  Arquivo de transcrição removido: {self.transcription_file_path.name}")
+                self.transcription_file_path = None
+            except Exception as e:
+                print(f"⚠️  Não foi possível remover arquivo de transcrição: {e}")
 
 
 # Funções auxiliares para teste
