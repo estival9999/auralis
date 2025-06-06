@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 10
+- Total de alterações: 11
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 17:12
+- Última alteração: 06/01/2025 21:51
 
 ## 🔄 Fluxo de Alterações
 
@@ -39,6 +39,8 @@ flowchart TD
     A4_4 --> README9[README_06_01_1703_009.md]
     A4 --> A4_5[Simplificação para Áudio Único]
     A4_5 --> README10[README_06_01_1712_010.md]
+    A4 --> A4_6[Correção Sistema de Busca]
+    A4_6 --> README11[README_06_01_2151_011.md]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
@@ -51,6 +53,7 @@ flowchart TD
     style README8 fill:#9f9,stroke:#333,stroke-width:2px
     style README9 fill:#9f9,stroke:#333,stroke-width:2px
     style README10 fill:#9f9,stroke:#333,stroke-width:2px
+    style README11 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -197,19 +200,34 @@ flowchart TD
   - Foco no que importa: gravação por áudio
 - **Resultado**: ✅ Sistema drasticamente simplificado
 
+#### 11. Correção do Sistema de Busca - README_06_01_2151_011
+- **Tipo**: Bug Fix/Feature/Refactoring
+- **Descrição**: Correção completa do sistema de busca semântica
+- **Problemas identificados**:
+  - Embeddings com 19k+ dimensões (correto: 1536)
+  - IA respondia incorretamente sobre última reunião
+  - Falta de priorização temporal nas buscas
+  - Embeddings salvos como JSON string
+- **Soluções implementadas**:
+  - Agente de busca melhorado com detecção temporal
+  - Busca direta para "última reunião"
+  - Peso temporal na similaridade
+  - Correção do formato de salvamento
+  - Remoção completa de entrada por texto
+- **Resultado**: ✅ Sistema responde corretamente sobre reuniões recentes
+
 ## 🎯 Próximas Etapas Planejadas
-1. Implementar gravação de áudio real com Whisper
-2. Criar módulo audio_processor.py
-3. Adicionar seleção de modo áudio/texto
-4. Implementar memória de conversa
-5. Adicionar mais conteúdo de reuniões
-6. Criar função RPC no Supabase
-7. Melhorar interface visual
+1. Regenerar todos os embeddings existentes
+2. Implementar re-chunking para textos grandes
+3. Criar view otimizada no Supabase
+4. Adicionar cache de embeddings
+5. Implementar gravação real com Whisper
+6. Melhorar feedback visual durante gravação
 
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 11 (incluindo ajustes UX)
-- Novos arquivos: 11 (essenciais + documentação)
-- Linhas de código: ~900 (total de alterações)
-- Tempo total: ~85 minutos
-- Commits realizados: 7
-- Análises realizadas: 2
+- Arquivos modificados: 15 (incluindo ajustes UX e IA)
+- Novos arquivos: 16 (essenciais + documentação + scripts)
+- Linhas de código: ~1400 (total de alterações)
+- Tempo total: ~130 minutos
+- Commits realizados: 8
+- Análises realizadas: 3

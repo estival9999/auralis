@@ -14,7 +14,12 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 
 # Importar os novos módulos
-from src.agente_busca_reunioes import IntegracaoAssistenteReunioes
+try:
+    from src.agente_busca_melhorado import AgenteBuscaMelhorado
+    AGENTE_MELHORADO = True
+except ImportError:
+    from src.agente_busca_reunioes import IntegracaoAssistenteReunioes
+    AGENTE_MELHORADO = False
 from src.embeddings_processor import ProcessadorEmbeddings
 
 load_dotenv()
@@ -36,7 +41,10 @@ class AURALISBackend:
         self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
         
         # Integração com assistente de reuniões
-        self.assistente_reunioes = IntegracaoAssistenteReunioes()
+        if AGENTE_MELHORADO:
+            self.assistente_reunioes = AgenteBuscaMelhorado()
+        else:
+            self.assistente_reunioes = IntegracaoAssistenteReunioes()
         
         # Processador de embeddings
         self.processador_embeddings = ProcessadorEmbeddings()
@@ -126,7 +134,10 @@ class AURALISBackend:
         """
         Busca informação nas reuniões usando IA
         """
-        return self.assistente_reunioes.processar_mensagem_usuario(pergunta)
+        if AGENTE_MELHORADO:
+            return self.assistente_reunioes.processar_pergunta(pergunta)
+        else:
+            return self.assistente_reunioes.processar_mensagem_usuario(pergunta)
 
 def process_message_async(backend: AURALISBackend, message: str, 
                          callback: Callable[[str], None], 

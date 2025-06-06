@@ -216,16 +216,12 @@ class ProcessadorEmbeddings:
                 if 'data_reuniao' in metadados_json:
                     metadados_json['data_reuniao'] = str(metadados_json['data_reuniao'])
                 
-                # Converter embedding para JSONB
-                import json
-                embedding_jsonb = json.dumps(embedding)
-                
+                # Não converter embedding para string
                 dados = {
                     'arquivo_origem': nome_arquivo,
                     'chunk_numero': chunk['numero'],
                     'chunk_texto': chunk['texto'],
-                    'embedding': embedding,  # Mantém para compatibilidade
-                    'embedding_jsonb': embedding_jsonb,  # Nova coluna JSONB
+                    'embedding': embedding,  # Array direto
                     'metadados': metadados_json,
                     'titulo': titulo,
                     'responsavel': responsavel,

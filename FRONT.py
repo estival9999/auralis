@@ -523,13 +523,6 @@ PRÓXIMOS PASSOS:
         frame_form = ctk.CTkFrame(self.frame_conteudo_tab, fg_color=self.cores["superficie"])
         frame_form.pack(fill="both", expand=True)
         
-        # Título informativo
-        ctk.CTkLabel(
-            frame_form,
-            text="📌 Gravação de Reunião por Áudio",
-            font=ctk.CTkFont(size=14, weight="bold"),
-            text_color=self.cores["texto"]
-        ).pack(pady=(15, 10))
         
         # Título
         ctk.CTkLabel(
@@ -592,74 +585,6 @@ PRÓXIMOS PASSOS:
         
         self.entry_titulo_audio.focus_set()
         
-        ctk.CTkLabel(
-            frame_form, 
-            text="Título da Reunião", 
-            font=ctk.CTkFont(size=11),
-            text_color=self.cores["texto_secundario"]
-        ).pack(pady=(8, 2))
-        
-        self.entry_titulo_audio = ctk.CTkEntry(
-            frame_form, 
-            width=270,
-            height=30,
-            fg_color=self.cores["fundo"],
-            border_color=self.cores["primaria"],
-            placeholder_text="Ex: Reunião de Planejamento"
-        )
-        self.entry_titulo_audio.pack(pady=(0, 8))
-        
-        ctk.CTkLabel(
-            frame_form, 
-            text="Observações (opcional)", 
-            font=ctk.CTkFont(size=11),
-            text_color=self.cores["texto_secundario"]
-        ).pack(pady=(0, 2))
-        
-        self.text_obs_audio = ctk.CTkTextbox(
-            frame_form, 
-            width=270,
-            height=40,
-            font=ctk.CTkFont(size=10),
-            fg_color=self.cores["fundo"]
-        )
-        self.text_obs_audio.pack(pady=(0, 10))
-        
-        # Botão para ir para gravação
-        ctk.CTkButton(
-            frame_form,
-            text="🎤 Iniciar Gravação",
-            width=200,
-            height=50,
-            font=ctk.CTkFont(size=16, weight="bold"),
-            fg_color=self.cores["perigo"],
-            hover_color="#C62828",
-            command=self.iniciar_gravacao_audio
-        ).pack(pady=20)
-        
-        # Info
-        ctk.CTkLabel(
-            frame_form,
-            text="Preencha os campos e clique para gravar",
-            font=ctk.CTkFont(size=11),
-            text_color=self.cores["texto_secundario"]
-        ).pack()
-        
-        # Botões
-        frame_btns = ctk.CTkFrame(frame_form, fg_color="transparent")
-        frame_btns.pack(pady=(15, 10))
-        
-        ctk.CTkButton(
-            frame_btns,
-            text="Cancelar",
-            width=120,
-            height=30,
-            fg_color=self.cores["secundaria"],
-            font=ctk.CTkFont(size=12),
-            command=lambda: self.transicao_rapida(self.mostrar_menu_principal)
-        ).pack(side="left", padx=5)
-        
-        self.entry_titulo_audio.focus_set()
     
     def prosseguir_para_gravacao(self):
         """Valida campos e prossegue para interface de gravação"""
