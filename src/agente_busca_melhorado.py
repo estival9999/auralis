@@ -53,12 +53,23 @@ class AgenteBuscaMelhorado:
         self.system_prompt = """Você é um assistente inteligente com acesso a múltiplas fontes de conhecimento corporativo.
 
 REGRAS CRÍTICAS:
-1. Seja CONCISO e DIRETO
+1. Seja CONCISO mas COMPLETO - forneça contexto quando necessário
 2. Para perguntas sobre "última reunião", SEMPRE priorize a mais recente por data/hora
-3. Para saudações simples: responda brevemente
+3. Para saudações simples: responda brevemente e ofereça ajuda
 4. NUNCA invente informações - use apenas o contexto fornecido
-5. Se a informação não estiver disponível, diga claramente
-6. Identifique SEMPRE a fonte da informação (reunião ou documento)
+5. Se a informação não estiver disponível:
+   - Reconheça o que foi perguntado
+   - Explique que não encontrou a informação específica
+   - Se possível, ofereça informações relacionadas
+   - Peça esclarecimentos se necessário
+6. SEMPRE cite as fontes das informações:
+   - Para reuniões: mencione data, título e responsável
+   - Para documentos: mencione tipo e nome do arquivo
+7. Quando relevante:
+   - Correlacione dados de múltiplas fontes
+   - Identifique possíveis desafios ou riscos
+   - Conecte com conhecimento existente
+   - Reconheça múltiplos aspectos da questão
 
 Suas capacidades:
 - Buscar informações em reuniões gravadas
@@ -66,7 +77,8 @@ Suas capacidades:
 - Identificar a reunião mais recente
 - Responder sobre políticas, procedimentos e normas
 - Fornecer informações de documentos oficiais
-- Combinar conhecimento de múltiplas fontes"""
+- Combinar e correlacionar conhecimento de múltiplas fontes
+- Identificar padrões e conexões entre informações"""
 
     def detectar_busca_temporal(self, pergunta: str) -> Dict:
         """Detecta se a pergunta busca informações temporais"""
@@ -220,13 +232,16 @@ Suas capacidades:
     def _buscar_em_base_conhecimento(self, pergunta: str) -> List[Dict]:
         """Busca chunks relevantes na base de conhecimento"""
         try:
+            # Normalizar pergunta para melhor busca
+            pergunta_normalizada = pergunta.replace('"', '').replace("'", "")
+            
             # Gerar embedding da pergunta
-            embedding_pergunta = self.gerar_embedding_pergunta(pergunta)
+            embedding_pergunta = self.gerar_embedding_pergunta(pergunta_normalizada)
             
             # Usar função RPC do Supabase para busca
             resultado = self.supabase.rpc('buscar_conhecimento_similar', {
                 'query_embedding': embedding_pergunta,
-                'limite': 10
+                'limite': 15  # Aumentar limite para capturar mais resultados
             }).execute()
             
             if not resultado.data:
@@ -345,9 +360,12 @@ Suas capacidades:
     def gerar_embedding_pergunta(self, pergunta: str) -> List[float]:
         """Gera embedding para a pergunta do usuário"""
         try:
+            # Normalizar pergunta removendo aspas e variações
+            pergunta_normalizada = pergunta.replace('"', '').replace("'", "")
+            
             response = self.client.embeddings.create(
                 model="text-embedding-ada-002",
-                input=pergunta
+                input=pergunta_normalizada
             )
             return response.data[0].embedding
         except Exception as e:
@@ -377,6 +395,24 @@ Suas capacidades:
             # Combinar resultados
             todos_resultados = resultados_reunioes + resultados_conhecimento
             
+            # Se não encontrou resultados muito relevantes, tentar busca com termos individuais
+            if not todos_resultados or (todos_resultados and max(r['similarity'] for r in todos_resultados) < 0.7):
+                # Quebrar pergunta em termos
+                termos = pergunta.replace('"', '').replace("'", "").split()
+                for termo in termos:
+                    if len(termo) > 3:  # Ignorar termos muito curtos
+                        mais_resultados = self._buscar_em_base_conhecimento(termo)
+                        todos_resultados.extend(mais_resultados)
+            
+            # Remover duplicatas mantendo maior similaridade
+            resultados_unicos = {}
+            for r in todos_resultados:
+                chave = r.get('id', r.get('arquivo_origem', ''))
+                if chave not in resultados_unicos or r['similarity'] > resultados_unicos[chave]['similarity']:
+                    resultados_unicos[chave] = r
+            
+            todos_resultados = list(resultados_unicos.values())
+            
             # Ordenar todos os resultados por similaridade
             todos_resultados.sort(key=lambda x: x['similarity'], reverse=True)
             
@@ -405,7 +441,10 @@ Suas capacidades:
         chunks_relevantes = self.buscar_chunks_relevantes(pergunta, num_resultados=5)
         
         if not chunks_relevantes:
-            resposta = "Desculpe, não encontrei informações relevantes no sistema."
+            # Tentar entender o que foi perguntado e sugerir alternativas
+            resposta = f"Não encontrei informações específicas sobre '{pergunta}' nas reuniões gravadas ou documentos disponíveis. "
+            resposta += "Posso ajudá-lo com outras informações sobre reuniões, procedimentos operacionais, políticas da cooperativa ou linhas de crédito. "
+            resposta += "Você poderia reformular sua pergunta ou especificar melhor o que procura?"
             # Registrar na memória
             self.gerenciador_memoria.processar_interacao(pergunta, resposta)
             return resposta
@@ -509,7 +548,14 @@ Suas capacidades:
         if contexto_memoria:
             contexto_completo = f"{contexto_memoria}\n\n"
         
-        prompt = f"""Com base no contexto fornecido, responda a pergunta de forma DIRETA e CONCISA.
+        prompt = f"""Com base no contexto fornecido, responda a pergunta seguindo estas diretrizes:
+
+DIRETRIZES IMPORTANTES:
+1. Se encontrar a informação: forneça uma resposta completa citando SEMPRE a fonte (documento/reunião, data)
+2. Se NÃO encontrar: reconheça o que foi perguntado, explique que não encontrou e sugira informações relacionadas se houver
+3. Correlacione dados de múltiplas fontes quando relevante
+4. Identifique possíveis desafios, riscos ou considerações importantes
+5. Se não tiver certeza da intenção, peça esclarecimentos educadamente
 {instrucoes_extras}
 
 {contexto_completo}CONTEXTO (REUNIÕES E DOCUMENTOS):
@@ -517,7 +563,7 @@ Suas capacidades:
 
 PERGUNTA: {pergunta}
 
-Resposta (seja direto e específico, citando a fonte quando relevante):"""
+Resposta (incluindo fonte, correlações e considerações relevantes):"""
         
         try:
             response = self.client.chat.completions.create(
@@ -526,8 +572,8 @@ Resposta (seja direto e específico, citando a fonte quando relevante):"""
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,
-                max_tokens=200
+                temperature=0.4,  # Aumentar ligeiramente para respostas mais naturais
+                max_tokens=300  # Mais espaço para correlações e citações
             )
             
             return response.choices[0].message.content

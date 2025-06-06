@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 14
+- Total de alterações: 15
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 22:40
+- Última alteração: 06/01/2025 23:02
 
 ## 🔄 Fluxo de Alterações
 
@@ -51,6 +51,8 @@ flowchart TD
     A6_1 --> README13[README_06_01_2218_014.md]
     A6 --> A6_2[Integração Busca Universal]
     A6_2 --> README14[README_06_01_2240_015.md]
+    A6 --> A6_3[Melhorias de Inteligência e Busca]
+    A6_3 --> README15[README_06_01_2302_016.md]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
@@ -67,6 +69,7 @@ flowchart TD
     style README12 fill:#9f9,stroke:#333,stroke-width:2px
     style README13 fill:#9f9,stroke:#333,stroke-width:2px
     style README14 fill:#9f9,stroke:#333,stroke-width:2px
+    style README15 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -313,6 +316,28 @@ flowchart TD
 - **Impacto**: IA agora responde sobre "Raízes Pantaneiras" e outros conteúdos de documentos
 - **Resultado**: ✅ Sistema verdadeiramente multi-fonte funcionando
 
+#### 15. Melhorias de Inteligência e Busca - README_06_01_2302_016
+- **Tipo**: Enhancement/Bug Fix
+- **Descrição**: Correção da busca e implementação de IA mais inteligente
+- **Branch**: add_bas_conhecimento (push realizado)
+- **Problema**: "Turismo de Raiz" não era encontrado devido às aspas
+- **Melhorias implementadas**:
+  - Normalização de termos (remove aspas/apóstrofos)
+  - Busca em dois passos com fallback
+  - Prompt sistema muito mais detalhado
+  - Respostas contextuais com citação de fontes
+  - Correlação de dados entre fontes
+  - Identificação de riscos e desafios
+  - Pedido de esclarecimentos quando apropriado
+  - Mensagens úteis quando não encontra informação
+- **Mudanças técnicas**:
+  - gerar_embedding_pergunta normaliza entrada
+  - buscar_chunks_relevantes com busca secundária
+  - Novo template de prompt com diretrizes
+  - Aumento de temperatura (0.4) e tokens (300)
+- **Impacto**: IA agora é muito mais útil, contextual e inteligente
+- **Resultado**: ✅ Sistema com busca robusta e respostas de alta qualidade
+
 ## 🎯 Próximas Etapas Planejadas
 1. Implementar autenticação segura (Argon2 + JWT)
 2. Criar suite de testes automatizados
@@ -322,9 +347,9 @@ flowchart TD
 6. Adicionar índice vetorial para busca
 
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 17 (incluindo análise profunda)
-- Novos arquivos: 23 (essenciais + documentação + scripts + base conhecimento)
-- Linhas de código: ~2420 (total de alterações)
-- Tempo total: ~225 minutos
-- Commits realizados: 10
+- Arquivos modificados: 18 (incluindo análise profunda)
+- Novos arquivos: 24 (essenciais + documentação + scripts + base conhecimento)
+- Linhas de código: ~2540 (total de alterações)
+- Tempo total: ~250 minutos
+- Commits realizados: 11
 - Análises realizadas: 4 (incluindo análise profunda multi-dimensional)
