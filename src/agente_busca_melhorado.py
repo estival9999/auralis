@@ -50,28 +50,52 @@ class AgenteBuscaMelhorado:
         self.gerenciador_memoria = obter_gerenciador_memoria()
         
         # Prompt sistema aprimorado
-        self.system_prompt = """Você é um assistente inteligente com acesso a múltiplas fontes de conhecimento corporativo.
+        self.system_prompt = """Você é um assistente de conhecimento corporativo.
 
-REGRAS CRÍTICAS DE COMUNICAÇÃO:
-1. Para pedidos de ajuda vagos: responda com UMA pergunta curta e direta
-2. Seja CONCISO - evite antecipar soluções sem conhecer o problema
-3. Use linguagem natural e conversacional
-4. Para saudações simples: responda brevemente e ofereça ajuda
-5. NUNCA invente informações - use apenas o contexto fornecido
-6. Se a informação não estiver disponível:
-   - Para perguntas específicas: explique brevemente e sugira alternativas
-   - Para pedidos vagos: apenas pergunte qual é o problema
-7. SEMPRE cite as fontes quando fornecer informações específicas
-8. Evite respostas longas a menos que seja absolutamente necessário
+REGRAS DE CONCISÃO:
+1. RESPONDA DIRETAMENTE - sem repetir a pergunta ou fazer introduções
+2. Para perguntas simples: 1-2 frases no máximo
+3. Para perguntas complexas: resposta progressiva (resumo primeiro, detalhes se solicitado)
+4. NUNCA ofereça ajuda adicional não solicitada ("posso ajudar com mais algo?")
+5. Se não encontrar informação: diga brevemente e pare
+6. Cite fontes apenas quando essencial (reunião/data)
+7. Evite considerações, impactos ou análises não solicitadas
 
-IMPORTANTE: Seja natural e direto. Não "fale demais" antes de entender a necessidade real do usuário.
+PRINCÍPIO: Menos é mais. Responda exatamente o que foi perguntado."""
 
-Suas capacidades:
-- Buscar informações em reuniões gravadas
-- Consultar base de conhecimento
-- Responder sobre políticas e procedimentos
-- Fornecer informações de documentos oficiais"""
-
+    def _detectar_pergunta_simples(self, pergunta: str) -> bool:
+        """Detecta se é uma pergunta simples que requer resposta direta"""
+        pergunta_lower = pergunta.lower().strip()
+        
+        # Perguntas diretas e objetivas
+        padroes_simples = [
+            r'^o que é\s+\w+',  # "O que é X?"
+            r'^quem é\s+\w+',   # "Quem é X?"
+            r'^quando\s+',      # "Quando...?"
+            r'^onde\s+',        # "Onde...?"
+            r'^qual\s+',        # "Qual...?"
+            r'^quantos?\s+',    # "Quanto/Quantos...?"
+        ]
+        
+        # Verificar se a pergunta tem menos de 10 palavras (geralmente simples)
+        if len(pergunta.split()) < 10:
+            import re
+            for padrao in padroes_simples:
+                if re.match(padrao, pergunta_lower):
+                    return True
+        
+        # Perguntas sobre informações específicas
+        termos_especificos = ['data', 'horário', 'nome', 'valor', 'número', 'telefone', 
+                              'email', 'endereço', 'cpf', 'cnpj', 'código']
+        if any(termo in pergunta_lower for termo in termos_especificos):
+            return True
+        
+        # Perguntas sim/não
+        if pergunta_lower.startswith(('é possível', 'posso', 'tem como', 'existe', 'há')):
+            return True
+            
+        return False
+    
     def detectar_busca_temporal(self, pergunta: str) -> Dict:
         """Detecta se a pergunta busca informações temporais"""
         pergunta_lower = pergunta.lower()
@@ -531,7 +555,7 @@ Especifique sua necessidade para uma resposta mais precisa."""
         pergunta_lower = pergunta.lower().strip()
         
         if pergunta_lower in saudacoes:
-            resposta = "Olá! Como posso ajudá-lo com informações sobre as reuniões?"
+            resposta = "Olá! Como posso ajudar?"
             # Registrar na memória
             self.gerenciador_memoria.processar_interacao(pergunta, resposta)
             return resposta
@@ -577,10 +601,8 @@ Especifique sua necessidade para uma resposta mais precisa."""
             chunks_relevantes = self.buscar_chunks_relevantes(pergunta, num_resultados=5)
         
         if not chunks_relevantes:
-            # Tentar entender o que foi perguntado e sugerir alternativas
-            resposta = f"Não encontrei informações específicas sobre '{pergunta}' nas reuniões gravadas ou documentos disponíveis. "
-            resposta += "Posso ajudá-lo com outras informações sobre reuniões, procedimentos operacionais, políticas da cooperativa ou linhas de crédito. "
-            resposta += "Você poderia reformular sua pergunta ou especificar melhor o que procura?"
+            # Resposta concisa quando não há informação
+            resposta = "Não encontrei informações sobre isso nos registros disponíveis."
             # Registrar na memória
             self.gerenciador_memoria.processar_interacao(pergunta, resposta)
             return resposta
@@ -608,118 +630,85 @@ Especifique sua necessidade para uma resposta mais precisa."""
         return resposta
     
     def _preparar_contexto(self, chunks: List[Dict]) -> str:
-        """Prepara o contexto dos chunks para o LLM"""
+        """Prepara o contexto dos chunks para o LLM de forma concisa"""
         contexto = ""
         items_vistos = set()
         
-        for i, chunk in enumerate(chunks):
+        # Para preparar contexto, usar apenas os chunks sem verificar pergunta
+        chunks_limitados = chunks[:3]  # Limitar para manter concisão
+        
+        for i, chunk in enumerate(chunks_limitados):
             fonte = chunk.get('fonte', 'reuniao')
             
             if fonte == 'reuniao':
-                # Extrair informações de reunião
-                arquivo = chunk.get('arquivo_origem', 'Arquivo desconhecido')
-                titulo = chunk.get('titulo', chunk.get('metadados', {}).get('titulo', 'Sem título'))
-                data = chunk.get('data_reuniao', 'Data não informada')
-                hora = chunk.get('hora_inicio', '')
-                responsavel = chunk.get('responsavel', '')
+                # Extrair informações essenciais
+                titulo = chunk.get('titulo', '')
+                data = chunk.get('data_reuniao', '')
                 texto = chunk.get('chunk_texto', '')
-                similaridade = chunk.get('similarity', 0)
                 
-                # Identificador único da reunião
-                item_id = f"{arquivo}_{data}"
+                # Identificador único
+                item_id = f"{titulo}_{data}"
                 
-                # Adicionar cabeçalho da reunião se for nova
+                # Cabeçalho simplificado
                 if item_id not in items_vistos:
-                    contexto += f"\n\n=== REUNIÃO {i+1}: {titulo} ==="
-                    contexto += f"\nData: {data}"
-                    if hora:
-                        contexto += f" às {hora}"
-                    if responsavel:
-                        contexto += f"\nResponsável: {responsavel}"
-                    contexto += f"\nRelevância: {similaridade:.2%}\n"
+                    if titulo and data:
+                        contexto += f"\n[Reunião: {titulo} - {data}]\n"
                     items_vistos.add(item_id)
                 
-                # Adicionar texto do chunk
-                contexto += f"\n{texto}\n"
+                # Texto do chunk
+                contexto += f"{texto}\n"
                 
             else:  # fonte == 'documento'
-                # Extrair informações do documento
-                arquivo = chunk.get('arquivo_origem', 'Documento desconhecido')
-                tipo = chunk.get('tipo_documento', 'documento').upper()
-                categoria = chunk.get('categoria', '')
-                tags = chunk.get('tags', [])
+                # Informações essenciais do documento
+                tipo = chunk.get('tipo_documento', 'documento')
                 texto = chunk.get('chunk_texto', '')
-                similaridade = chunk.get('similarity', 0)
                 
-                # Identificador único do documento
-                item_id = f"doc_{arquivo}"
+                # Identificador único
+                item_id = f"doc_{tipo}"
                 
-                # Adicionar cabeçalho do documento se for novo
+                # Cabeçalho mínimo
                 if item_id not in items_vistos:
-                    contexto += f"\n\n=== DOCUMENTO {i+1}: {tipo} - {arquivo} ==="
-                    if categoria:
-                        contexto += f"\nCategoria: {categoria}"
-                    if tags:
-                        contexto += f"\nTags: {', '.join(tags)}"
-                    contexto += f"\nRelevância: {similaridade:.2%}\n"
+                    contexto += f"\n[{tipo.title()}]\n"
                     items_vistos.add(item_id)
                 
-                # Adicionar texto do chunk
-                contexto += f"\n{texto}\n"
+                # Texto do chunk
+                contexto += f"{texto}\n"
         
-        return contexto
+        return contexto.strip()
     
     def _gerar_resposta(self, pergunta: str, contexto: str, contexto_memoria: str = "") -> str:
         """Gera resposta usando o contexto encontrado e histórico da conversa"""
         
-        # Detectar se é pergunta sobre última reunião
+        # Detectar tipo de pergunta
+        e_simples = self._detectar_pergunta_simples(pergunta)
+        e_generica = self._e_pergunta_generica(pergunta)
         contexto_temporal = self.detectar_busca_temporal(pergunta)
         
-        instrucoes_extras = ""
-        if contexto_temporal['busca_recente']:
-            instrucoes_extras = "\nIMPORTANTE: A primeira reunião no contexto é a MAIS RECENTE. Responda baseando-se nela."
+        # Ajustar max_tokens baseado no tipo de pergunta
+        max_tokens = 150 if e_simples else 400
         
-        # Incluir contexto da memória se disponível
-        contexto_completo = ""
-        if contexto_memoria:
-            contexto_completo = f"{contexto_memoria}\n\n"
-        
-        # Detectar se é pergunta genérica para ajustar o prompt
-        e_generica = self._e_pergunta_generica(pergunta)
-        
+        # Prompt simplificado e direto
         if e_generica:
-            prompt = f"""Responda a pergunta seguindo estas diretrizes:
+            prompt = f"""{contexto_memoria}
 
-DIRETRIZES IMPORTANTES:
-1. PRIMEIRO avalie se a pergunta é genérica/conceitual ou específica sobre dados
-2. Para perguntas GENÉRICAS: forneça orientações gerais úteis, mencionando dados específicos APENAS se forem muito relevantes
-3. Para perguntas ESPECÍFICAS: use o contexto fornecido e cite as fontes
-4. Seja natural - nem toda resposta precisa forçar uma conexão com os dados disponíveis
-{instrucoes_extras}
-
-{contexto_completo}CONTEXTO DISPONÍVEL (use apenas se relevante):
+CONTEXTO DISPONÍVEL:
 {contexto}
 
-PERGUNTA: {pergunta}
-
-Resposta:"""
+{pergunta}"""
         else:
-            prompt = f"""Com base no contexto fornecido, responda a pergunta seguindo estas diretrizes:
+            # Para perguntas específicas, prompt mais focado
+            instrucao_temporal = ""
+            if contexto_temporal['busca_recente']:
+                instrucao_temporal = "Use a primeira reunião (mais recente). "
+            
+            prompt = f"""{instrucao_temporal}Responda diretamente baseado no contexto.
 
-DIRETRIZES IMPORTANTES:
-1. Se encontrar a informação: forneça uma resposta completa citando SEMPRE a fonte (documento/reunião, data)
-2. Se NÃO encontrar: reconheça o que foi perguntado, explique que não encontrou e sugira informações relacionadas se houver
-3. Correlacione dados de múltiplas fontes quando relevante
-4. Identifique possíveis desafios, riscos ou considerações importantes
-5. Se não tiver certeza da intenção, peça esclarecimentos educadamente
-{instrucoes_extras}
+{contexto_memoria}
 
-{contexto_completo}CONTEXTO (REUNIÕES E DOCUMENTOS):
+CONTEXTO:
 {contexto}
 
-PERGUNTA: {pergunta}
-
-Resposta (incluindo fonte, correlações e considerações relevantes):"""
+{pergunta}"""
         
         try:
             response = self.client.chat.completions.create(
@@ -728,15 +717,50 @@ Resposta (incluindo fonte, correlações e considerações relevantes):"""
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.4,  # Aumentar ligeiramente para respostas mais naturais
-                max_tokens=800  # Aumentado para evitar truncamento de respostas
+                temperature=0.3,  # Reduzir para respostas mais focadas
+                max_tokens=max_tokens
             )
             
             resposta = response.choices[0].message.content
             
-            # Verificar se a resposta parece truncada
-            if resposta and resposta[-1] not in '.!?"':
-                resposta += "..."
+            # Limpar resposta de frases desnecessárias
+            frases_remover = [
+                "Com base no contexto fornecido,",
+                "De acordo com as informações disponíveis,",
+                "Posso ajudar com mais alguma coisa?",
+                "Se precisar de mais informações,",
+                "Espero ter ajudado",
+                "Fico à disposição",
+                "Baseado no contexto,",
+                "Conforme o contexto,",
+                "Segundo as informações,",
+                "Como posso ajudar mais?",
+                "Algo mais que",
+                "Mais alguma coisa?",
+                "Há algo mais",
+                "Você perguntou sobre",
+                "Você questionou",
+                "Sua pergunta foi sobre",
+                "Em relação à sua pergunta",
+                "Sobre sua dúvida",
+                "Se desejar,",
+                "Se quiser,",
+                "Quer que eu",
+                "Gostaria que eu",
+                "Considerações importantes:",
+                "Consideração importante:",
+                "Pontos a considerar:",
+                "Vale destacar que",
+                "Vale lembrar que",
+                "Vale ressaltar que",
+                "É importante notar que"
+            ]
+            
+            for frase in frases_remover:
+                resposta = resposta.replace(frase, "").strip()
+            
+            # Remover linhas vazias extras
+            resposta = "\n".join(line for line in resposta.split("\n") if line.strip())
             
             return resposta
         except Exception as e:
