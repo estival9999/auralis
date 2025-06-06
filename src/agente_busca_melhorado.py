@@ -3,6 +3,7 @@ Agente de IA melhorado para busca semântica em reuniões
 - Prioriza reuniões recentes
 - Melhor precisão na busca
 - Considera contexto temporal
+- Sistema de memória contextual integrado
 """
 
 import os
@@ -15,6 +16,12 @@ from openai import OpenAI
 from supabase import create_client, Client
 import numpy as np
 from dotenv import load_dotenv
+
+# Importar sistema de memória
+try:
+    from .memoria_contextual import obter_gerenciador_memoria
+except ImportError:
+    from memoria_contextual import obter_gerenciador_memoria
 
 load_dotenv()
 
@@ -36,6 +43,9 @@ class AgenteBuscaMelhorado:
         
         # Cache para embeddings
         self._cache_embeddings = {}
+        
+        # Sistema de memória contextual
+        self.gerenciador_memoria = obter_gerenciador_memoria()
         
         # Prompt sistema aprimorado
         self.system_prompt = """Você é um assistente especializado em reuniões corporativas. 
@@ -238,19 +248,39 @@ Suas capacidades:
         pergunta_lower = pergunta.lower().strip()
         
         if pergunta_lower in saudacoes:
-            return "Olá! Como posso ajudá-lo com informações sobre as reuniões?"
+            resposta = "Olá! Como posso ajudá-lo com informações sobre as reuniões?"
+            # Registrar na memória
+            self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+            return resposta
         
         # Buscar chunks relevantes
         chunks_relevantes = self.buscar_chunks_relevantes(pergunta, num_resultados=5)
         
         if not chunks_relevantes:
-            return "Desculpe, não encontrei informações sobre reuniões no sistema."
+            resposta = "Desculpe, não encontrei informações sobre reuniões no sistema."
+            # Registrar na memória
+            self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+            return resposta
         
         # Preparar contexto
         contexto = self._preparar_contexto(chunks_relevantes)
         
-        # Gerar resposta
-        resposta = self._gerar_resposta(pergunta, contexto)
+        # Obter contexto da memória
+        contexto_memoria = self.gerenciador_memoria.obter_contexto()
+        
+        # Gerar resposta com contexto completo
+        resposta = self._gerar_resposta(pergunta, contexto, contexto_memoria)
+        
+        # Extrair reuniões mencionadas
+        reunioes_mencionadas = list(set([chunk.get('arquivo_origem', '') for chunk in chunks_relevantes[:3]]))
+        
+        # Registrar na memória
+        self.gerenciador_memoria.processar_interacao(
+            pergunta, 
+            resposta,
+            reunioes_encontradas=reunioes_mencionadas,
+            confidence_score=chunks_relevantes[0].get('similarity', 0) if chunks_relevantes else 0
+        )
         
         return resposta
     
@@ -288,8 +318,8 @@ Suas capacidades:
         
         return contexto
     
-    def _gerar_resposta(self, pergunta: str, contexto: str) -> str:
-        """Gera resposta usando o contexto encontrado"""
+    def _gerar_resposta(self, pergunta: str, contexto: str, contexto_memoria: str = "") -> str:
+        """Gera resposta usando o contexto encontrado e histórico da conversa"""
         
         # Detectar se é pergunta sobre última reunião
         contexto_temporal = self.detectar_busca_temporal(pergunta)
@@ -298,10 +328,15 @@ Suas capacidades:
         if contexto_temporal['busca_recente']:
             instrucoes_extras = "\nIMPORTANTE: A primeira reunião no contexto é a MAIS RECENTE. Responda baseando-se nela."
         
+        # Incluir contexto da memória se disponível
+        contexto_completo = ""
+        if contexto_memoria:
+            contexto_completo = f"{contexto_memoria}\n\n"
+        
         prompt = f"""Com base no contexto fornecido, responda a pergunta de forma DIRETA e CONCISA.
 {instrucoes_extras}
 
-CONTEXTO DAS REUNIÕES:
+{contexto_completo}CONTEXTO DAS REUNIÕES:
 {contexto}
 
 PERGUNTA: {pergunta}

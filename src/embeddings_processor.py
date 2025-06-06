@@ -166,10 +166,14 @@ class ProcessadorEmbeddings:
             print(f"Erro ao gerar embedding: {e}")
             raise
     
-    def processar_arquivo(self, caminho_arquivo: str) -> bool:
+    def processar_arquivo(self, caminho_arquivo: str, excluir_apos_processar: bool = False) -> bool:
         """
         Processa um arquivo de reunião completo
         
+        Args:
+            caminho_arquivo: Caminho do arquivo a processar
+            excluir_apos_processar: Se True, exclui o arquivo após processar com sucesso
+            
         Returns:
             bool: True se processado com sucesso
         """
@@ -242,8 +246,17 @@ class ProcessadorEmbeddings:
             except Exception as e:
                 print(f"Erro ao processar chunk {chunk['numero']}: {e}")
         
-        # Retornar True se pelo menos um chunk foi processado
-        return chunks_processados > 0
+        # Se processado com sucesso e deve excluir
+        sucesso = chunks_processados > 0
+        
+        if sucesso and excluir_apos_processar:
+            try:
+                os.remove(caminho_arquivo)
+                print(f"🗑️  Arquivo removido após processamento: {nome_arquivo}")
+            except Exception as e:
+                print(f"⚠️  Não foi possível remover arquivo: {e}")
+        
+        return sucesso
     
     def processar_pasta(self, caminho_pasta: str):
         """

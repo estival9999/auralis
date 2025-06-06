@@ -659,11 +659,8 @@ PRÓXIMOS PASSOS:
                     processador = ProcessadorEmbeddings()
                     
                     # O processador extrai metadados automaticamente do arquivo
-                    sucesso = processador.processar_arquivo(arquivo_temp)
-                    
-                    # Remover arquivo temporário
-                    import os
-                    os.remove(arquivo_temp)
+                    # Usar parâmetro para excluir arquivo após processar
+                    sucesso = processador.processar_arquivo(arquivo_temp, excluir_apos_processar=True)
                     
                     # Callback na thread principal
                     self.janela.after(0, lambda: self.finalizar_processamento_texto(loading, sucesso))
@@ -1544,6 +1541,19 @@ Hora: {self.data_inicio_gravacao.strftime('%H:%M')}"""
         frame_header.pack(fill="x")
         frame_header.pack_propagate(False)
         
+        # Função customizada para voltar do assistente com limpeza de memória
+        def voltar_com_limpeza():
+            # Se estiver saindo do assistente, limpar memória
+            if titulo == "🤖 Assistente IA":
+                try:
+                    # Limpar memória do agente se estiver ativo
+                    if hasattr(self.backend, 'assistente_reunioes') and hasattr(self.backend.assistente_reunioes, 'gerenciador_memoria'):
+                        self.backend.assistente_reunioes.gerenciador_memoria.fechar_sessao()
+                except Exception as e:
+                    print(f"Erro ao limpar memória: {e}")
+            
+            self.transicao_rapida(self.mostrar_menu_principal)
+        
         ctk.CTkButton(
             frame_header,
             text="◄",
@@ -1553,7 +1563,7 @@ Hora: {self.data_inicio_gravacao.strftime('%H:%M')}"""
             fg_color="transparent",
             text_color=self.cores["texto"],
             hover_color=self.cores["secundaria"],
-            command=lambda: self.transicao_rapida(self.mostrar_menu_principal)
+            command=voltar_com_limpeza
         ).pack(side="left", padx=5, pady=5)
         
         ctk.CTkLabel(

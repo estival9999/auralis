@@ -235,9 +235,13 @@ class AudioProcessor:
         
         print(f"✅ Transcrição completa salva em: {text_file}")
         
-        # Limpar arquivos de áudio temporários (opcional)
-        # for audio_file in audio_files:
-        #     audio_file.unlink()
+        # Limpar arquivos de áudio temporários após transcrição
+        for audio_file in audio_files:
+            try:
+                audio_file.unlink()
+                print(f"   🗑️  Arquivo removido: {audio_file.name}")
+            except Exception as e:
+                print(f"   ⚠️  Não foi possível remover {audio_file.name}: {e}")
         
         return full_text
         
