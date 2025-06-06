@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 16
+- Total de alterações: 18
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 23:16
+- Última alteração: 06/06/2025 18:00
 
 ## 🔄 Fluxo de Alterações
 
@@ -57,6 +57,12 @@ flowchart TD
     A6 --> A7[🧹 Limpeza e Organização]
     A7 --> A7_1[Remoção de Arquivos Desnecessários]
     A7_1 --> README16[README_06_01_2316_017.md]
+    
+    A7 --> A8[🎯 Melhorias de Resposta]
+    A8 --> A8_1[Detecção de Perguntas sobre Reuniões]
+    A8_1 --> MELHORIA2[MELHORIA-2.MD]
+    A8 --> A8_2[Respostas Concisas]
+    A8_2 --> MELHORIA3[MELHORIA-3.MD]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
@@ -373,11 +379,36 @@ flowchart TD
 5. Implementar processamento assíncrono
 6. Adicionar índice vetorial para busca
 
+### 🎯 Melhorias de Resposta (06/06/2025)
+
+#### 17. Detecção de Perguntas sobre Reuniões - MELHORIA-2
+- **Tipo**: Enhancement/UX
+- **Descrição**: Sistema detecta perguntas genéricas sobre reuniões específicas
+- **Problema**: Usuário perguntava "me fale sobre a reunião X" e recebia todo conteúdo
+- **Solução implementada**:
+  - Função _e_pergunta_sobre_reuniao_especifica() detecta padrões
+  - Menu de opções contextuais para escolher o que deseja saber
+  - Respostas mais focadas e úteis
+- **Impacto**: Redução de tokens e melhor experiência do usuário
+- **Resultado**: ✅ Sistema solicita contexto antes de despejar informações
+
+#### 18. Respostas Concisas para Pedidos Vagos - MELHORIA-3
+- **Tipo**: Enhancement/UX
+- **Descrição**: Respostas naturais e diretas para pedidos de ajuda vagos
+- **Problema**: Sistema respondia com parágrafos longos para "pode me ajudar?"
+- **Solução implementada**:
+  - Função _e_pedido_ajuda_vago() detecta pedidos genéricos
+  - Respostas de 5 palavras em vez de 200
+  - Prompt ajustado para comunicação natural
+  - Variação aleatória nas respostas
+- **Exemplo**: "pode me ajudar?" → "Claro! Qual problema você está enfrentando?"
+- **Resultado**: ✅ Conversação natural e eficiente
+
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 19 (incluindo análise profunda)
-- Novos arquivos: 25 (essenciais + documentação + scripts + base conhecimento)
-- Arquivos removidos: 3 (testes e agente antigo)
-- Linhas de código: ~2540 (total de alterações) - 500 (removidas)
-- Tempo total: ~260 minutos
-- Commits realizados: 12
-- Análises realizadas: 4 (incluindo análise profunda multi-dimensional)
+- Arquivos modificados: 21 (incluindo análise profunda)
+- Novos arquivos: 28 (essenciais + documentação + scripts + melhorias)
+- Arquivos removidos: 4 (testes e arquivos antigos)
+- Linhas de código: ~2800 (total de alterações) - 600 (removidas)
+- Tempo total: ~300 minutos
+- Commits realizados: 14
+- Análises realizadas: 5 (incluindo análise profunda + melhorias)
