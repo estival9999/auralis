@@ -1,0 +1,253 @@
+MANUAL DE PROCEDIMENTOS OPERACIONAIS - AURALIS CORPORATION
+
+1. INTRODUÇÃO
+
+Este manual estabelece os procedimentos operacionais padrão para utilização do sistema AURALIS de gestão de reuniões corporativas com inteligência artificial. O objetivo é garantir a padronização, eficiência e qualidade no registro e análise de reuniões empresariais.
+
+2. PROCEDIMENTOS DE GRAVAÇÃO DE REUNIÕES
+
+2.1 Preparação Prévia
+- Verificar funcionamento do equipamento de áudio
+- Confirmar conectividade com internet
+- Validar credenciais de acesso ao sistema
+- Informar participantes sobre a gravação
+
+2.2 Durante a Reunião
+- Iniciar gravação no início da reunião
+- Monitorar indicadores de qualidade do áudio
+- Manter registro de participantes presentes
+- Anotar pontos principais para validação posterior
+
+2.3 Pós-Reunião
+- Finalizar gravação adequadamente
+- Aguardar processamento automático
+- Revisar transcrição gerada
+- Validar pontos de ação identificados
+
+3. GESTÃO DA BASE DE CONHECIMENTO
+
+3.1 Inserção de Documentos
+A base de conhecimento deve ser alimentada com documentos relevantes para a organização, incluindo:
+- Manuais técnicos e operacionais
+- Políticas e procedimentos internos
+- Estatutos e regulamentos
+- Diretrizes de qualidade e segurança
+
+3.2 Manutenção e Atualização
+- Revisar documentos trimestralmente
+- Atualizar versões obsoletas
+- Remover conteúdo desatualizado
+- Manter histórico de versões
+
+4. SEGURANÇA E COMPLIANCE
+
+4.1 Proteção de Dados
+Todos os dados processados pelo sistema AURALIS devem seguir rigorosos padrões de segurança:
+- Criptografia em trânsito e em repouso
+- Controle de acesso baseado em funções
+- Auditoria de acessos e modificações
+- Backup regular dos dados
+
+4.2 Conformidade Legal
+O sistema está em conformidade com:
+- Lei Geral de Proteção de Dados (LGPD)
+- Normas de governança corporativa
+- Regulamentos setoriais aplicáveis
+
+5. SUPORTE E MANUTENÇÃO
+
+5.1 Canais de Suporte
+- Email: suporte@auralis.com.br
+- Telefone: 0800-AURALIS
+- Portal de autoatendimento
+
+5.2 Manutenção Preventiva
+- Atualizações mensais do sistema
+- Verificação de integridade dos dados
+- Otimização de performance
+- Treinamento contínuo de usuários
+
+6. INDICADORES DE QUALIDADE
+
+O sistema AURALIS monitora constantemente:
+- Taxa de precisão das transcrições
+- Tempo de processamento
+- Satisfação dos usuários
+- Disponibilidade do sistema
+
+Este manual deve ser consultado regularmente e mantido atualizado conforme evolução do sistema e necessidades organizacionais.
+
+Manual Operacional e de Conduta da Cooperativa de Crédito Pantaneta
+
+"Semeando a cooperação, colhendo o futuro no coração do Pantanal."
+
+Sumário Executivo
+
+O presente manual constitui o documento norteador de todas as atividades da Cooperativa de Crédito Pantaneta. Nele, estão contidos os princípios, as políticas, os procedimentos e as diretrizes que regem nossa atuação, refletindo nosso compromisso com a transparência, a ética, a segurança e o desenvolvimento sustentável de nossos cooperados e da comunidade pantaneira. Este documento é de leitura e observância obrigatória por todos os conselheiros, diretores, colaboradores e cooperados, servindo como um guia para a excelência em nossas operações e para a perpetuação de nossos valores.
+Capítulo 1: Manifesto Pantaneta - Nossa Identidade
+1.1. Boas-Vindas à Família Pantaneta
+
+Seja muito bem-vindo à Cooperativa de Crédito Pantaneta. Mais do que uma instituição financeira, somos uma comunidade de pessoas unidas por um objetivo comum: o progresso mútuo e o fortalecimento da nossa gente e da nossa terra, o Pantanal. Ao se tornar um cooperado, você não é apenas um cliente, mas um dono, com voz ativa e participação nos resultados. Juntos, somos a força que impulsiona os sonhos e os projetos que florescem neste bioma único.
+1.2. Nossa História: Raízes na Resiliência Pantaneira
+
+A Pantaneta nasceu em 2005, em Maracaju, Mato Grosso do Sul, do sonho de 25 produtores rurais, pecuaristas e empreendedores locais. Em meio aos desafios econômicos da época e à dificuldade de acesso a crédito justo, eles vislumbraram na união a solução. Inspirados pela força e pela interconexão do ecossistema pantaneiro, onde cada ser desempenha um papel vital para o equilíbrio do todo, fundaram uma cooperativa que fosse um reflexo desses princípios. O nome "Pantaneta" é uma homenagem a essa resiliência e a essa interdependência.
+
+Nossos fundadores, liderados pelo visionário pecuarista Sr. Almiro Sater da Conceição e pela dedicada professora Dona Eucalipta das Águas, estabeleceram as bases de uma instituição que valoriza o conhecimento tradicional, o respeito ao ciclo das águas e o fomento de práticas sustentáveis. As primeiras reuniões aconteceram sob a sombra de um frondoso ingazeiro, símbolo da fartura e da união que almejávamos.
+1.3. Missão, Visão e Valores
+
+    Missão: Prover soluções financeiras sustentáveis e inovadoras, com atendimento humanizado e taxas justas, promovendo o desenvolvimento econômico e social dos nossos cooperados e da comunidade pantaneira, em harmonia com o meio ambiente.
+
+    Visão: Ser a principal instituição financeira cooperativa do Pantanal, reconhecida pela excelência em seus serviços, pelo compromisso com a sustentabilidade e por ser um agente transformador na vida de seus cooperados.
+
+    Valores:
+        Cooperativismo na Essência: Acreditamos na força da união, na ajuda mútua e na participação democrática.
+        Integridade e Transparência: Nossas ações são pautadas pela ética, honestidade e clareza em todas as relações.
+        Sustentabilidade Pantaneira: Comprometemo-nos com o desenvolvimento de práticas que preservem a riqueza natural e cultural do Pantanal para as futuras gerações.
+        Inovação com Propósito: Buscamos constantemente novas soluções que atendam às necessidades de nossos cooperados, sem abrir mão de nossas raízes.
+        Valorização das Pessoas: Nossos cooperados e colaboradores são nosso maior patrimônio. Promovemos um ambiente de respeito, desenvolvimento e bem-estar.
+        Compromisso com a Comunidade: Somos parte ativa da comunidade, apoiando iniciativas que promovam a educação, a cultura e a qualidade de vida.
+
+Capítulo 2: Governança Cooperativa - A Força da Coletividade
+
+A estrutura de governança da Pantaneta é desenhada para assegurar a participação democrática, a transparência nas decisões e a sustentabilidade da cooperativa a longo prazo.
+2.1. A Assembleia Geral: O Poder do Cooperado
+
+A Assembleia Geral é o órgão soberano da Pantaneta, onde cada cooperado tem direito a um voto, independentemente do seu capital social. É na Assembleia que são tomadas as decisões mais importantes para o futuro da cooperativa, como:
+
+    Eleição dos membros dos Conselhos de Administração e Fiscal.
+    Aprovação das contas do exercício.
+    Destinação das sobras ou o rateio das perdas.
+    Alterações no Estatuto Social.
+    Fusão, incorporação ou desmembramento da cooperativa.
+
+2.2. Conselho de Administração: A Visão Estratégica
+
+Composto por 7 (sete) membros eleitos pela Assembleia Geral, com mandato de 4 (quatro) anos, o Conselho de Administração é responsável por zelar pela visão estratégica da Pantaneta. Seus membros, em sua maioria cooperados com vasta experiência nos setores-chave da economia pantaneira, têm as seguintes atribuições:
+
+    Definir as políticas gerais e as estratégias de negócio.
+    Eleger e destituir os membros da Diretoria Executiva.
+    Supervisionar a gestão da Diretoria Executiva.
+    Aprovar o orçamento anual e o plano de investimentos.
+
+Membros Fictícios do Conselho de Administração (Gestão 2024-2028):
+
+    Presidente: Arnaldo Pereira Rios, pecuarista focado em bem-estar animal.
+    Vice-Presidente: Mariana Guimarães, empreendedora no setor de ecoturismo.
+    Conselheiros: Carlos Eduardo Flores (agricultor familiar), Beatriz Oliveira (médica veterinária), Ricardo de Almeida (comerciante), Lúcia Helena Souza (artesã) e Roberto Martins (especialista em logística).
+
+2.3. Diretoria Executiva: A Gestão do Dia a Dia
+
+A Diretoria Executiva é composta por profissionais contratados no mercado, com comprovada capacidade técnica e alinhamento com os valores da Pantaneta. É responsável pela administração cotidiana da cooperativa, implementando as estratégias definidas pelo Conselho de Administração.
+
+Diretoria Executiva Fictícia:
+
+    Diretor-Presidente (CEO): Fernando Sampaio, administrador com especialização em finanças cooperativas.
+    Diretora de Operações e Crédito (COO): Ana Carolina Esteves, economista com vasta experiência em análise de risco.
+    Diretor Financeiro (CFO): João Gabriel Nogueira, contador com MBA em finanças.
+
+2.4. Conselho Fiscal: O Guardião da Transparência
+
+Composto por 3 (três) membros efetivos e 3 (três) suplentes, eleitos anualmente pela Assembleia Geral, o Conselho Fiscal é o órgão fiscalizador da Pantaneta. Sua principal função é examinar as contas, os balanços e as operações da cooperativa, garantindo que a gestão esteja atuando de forma proba e em conformidade com as normas legais e estatutárias.
+Capítulo 3: Produtos e Serviços - Soluções para a Vida Pantaneira
+
+A Pantaneta oferece um portfólio completo de produtos e serviços financeiros, pensados para atender às especificidades da nossa região.
+3.1. Contas Correntes e de Investimento
+
+    Conta Cooperado Pantaneiro: Conta corrente com isenção de tarifas para movimentações essenciais, acesso a canais digitais e cartão de débito com a estampa do Tuiuiú, a ave-símbolo do Pantanal.
+    Conta Jovem Desbravador: Voltada para jovens de 16 a 25 anos, com foco em educação financeira e incentivo à poupança.
+    Poupança Pantaneta: Remuneração competitiva e a segurança do Fundo Garantidor do Cooperativismo de Crédito (FGCoop).
+    RDC Pantanal Sustentável: Recibo de Depósito Cooperativo com taxas atrativas, cujos recursos são prioritariamente destinados a financiar projetos de sustentabilidade na região.
+
+3.2. Linhas de Crédito
+
+    Crédito Pessoal Pantaneiro: Para as necessidades do dia a dia, com taxas reduzidas para cooperados com bom histórico.
+    Crédito Rural "Ciclo das Águas": Financiamento para custeio e investimento em atividades agropecuárias, com prazos e carências adaptados ao ciclo de cheias e secas do Pantanal.
+    Pronaf Pantaneiro: Repasse dos recursos do Programa Nacional de Fortalecimento da Agricultura Familiar, com assessoria técnica da Pantaneta para elaboração dos projetos.
+    Giro Sustentável: Capital de giro para empresas que comprovem a adoção de práticas de sustentabilidade, como gestão de resíduos, uso de energia renovável e turismo de base comunitária.
+    Financiamento de Veículos e Máquinas "Estradeiro": Condições especiais para aquisição de caminhonetes, tratores e outros equipamentos essenciais para a lida no campo.
+    Crédito "Turismo de Raiz": Linha específica para pousadas, guias e operadores de turismo que valorizam a cultura e a natureza local.
+
+3.3. Seguros e Consórcios
+
+    Seguro Agrícola "Guardião da Terra": Proteção para a lavoura e o rebanho contra intempéries climáticas e outros imprevistos.
+    Seguro de Vida "Família Protegida": Tranquilidade para o cooperado e seus entes queridos.
+    Consórcio Pantaneta: A forma mais planejada e econômica de adquirir bens como imóveis, veículos e até mesmo painéis de energia solar.
+
+Capítulo 4: Procedimentos Operacionais Padrão (POP)
+
+A padronização dos nossos procedimentos garante a segurança, a eficiência e a conformidade de nossas operações.
+4.1. POP 001 - Abertura de Conta de Cooperado
+
+    Recepção e Apresentação: O futuro cooperado será recebido por um de nossos colaboradores, que apresentará os princípios do cooperativismo e os benefícios de fazer parte da Pantaneta.
+    Documentação Necessária:
+        Pessoa Física: Documento de identificação com foto (RG, CNH), CPF, comprovante de residência recente e comprovante de renda.
+        Pessoa Jurídica: Contrato Social e alterações, CNPJ, documentos dos sócios administradores.
+    Análise Cadastral e de Compliance: Realização de consulta aos órgãos de proteção ao crédito e verificação em listas de restrição (PLD-FTP).
+    Integralização de Capital: O novo cooperado deverá integralizar a cota-parte mínima, conforme definido no Estatuto Social. Este valor não é uma taxa, mas a sua participação como dono da cooperativa.
+    Assinatura dos Documentos: Assinatura da Ficha Cadastral, do Termo de Adesão e do Contrato de Abertura de Conta.
+    Boas-vindas e Entrega do Kit Cooperado: Entrega do cartão provisório, do Estatuto Social e de um guia rápido sobre a Pantaneta.
+
+4.2. POP 002 - Análise e Concessão de Crédito
+
+    Solicitação: O cooperado pode solicitar o crédito presencialmente em uma de nossas agências ou através dos canais digitais.
+    Análise dos "5 Cs do Crédito Pantaneiro":
+        Caráter: Histórico de relacionamento do cooperado com a Pantaneta e no mercado.
+        Capacidade: Análise da capacidade de pagamento, com base na renda e no endividamento do cooperado.
+        Capital: Avaliação do patrimônio e da cota-parte do cooperado na cooperativa.
+        Condições: Análise da finalidade do crédito e das condições econômicas do setor.
+        Colateral (Garantias): Definição das garantias necessárias para a operação, que podem ser reais (imóveis, veículos) ou fidejussórias (avalistas).
+    Comitê de Crédito: Operações acima de determinado valor (definido em política interna) são submetidas à aprovação de um comitê multidisciplinar.
+    Formalização: Emissão do Contrato de Empréstimo, com todas as condições (taxa de juros, prazo, CET) apresentadas de forma clara e transparente.
+    Liberação dos Recursos: Após a assinatura e o registro das garantias, os recursos são liberados na conta do cooperado.
+
+4.3. POP 003 - Prevenção à Lavagem de Dinheiro e ao Financiamento do Terrorismo (PLD-FTP)
+
+    Política "Conheça seu Cooperado" (KYC): Manter o cadastro dos cooperados sempre atualizado e compatível com suas atividades econômicas.
+    Monitoramento de Operações: Sistema de monitoramento automático de transações, com alertas para operações atípicas ou suspeitas.
+    Comunicação ao COAF: Qualquer operação ou proposta de operação suspeita será analisada pelo Comitê de Compliance e, se necessário, comunicada ao Conselho de Controle de Atividades Financeiras (COAF), na forma da lei.
+    Treinamento Contínuo: Todos os colaboradores e diretores passam por treinamentos anuais sobre PLD-FTP, para se manterem atualizados sobre as melhores práticas e a legislação vigente.
+
+Capítulo 5: Código de Conduta e Ética Pantaneta
+
+Este código estabelece os padrões de comportamento esperados de todos que representam a Cooperativa Pantaneta.
+5.1. Relação com os Cooperados
+
+    Atender a todos com respeito, cordialidade e imparcialidade.
+    Manter sigilo absoluto sobre as informações financeiras e pessoais dos cooperados.
+    Oferecer produtos e serviços que sejam adequados ao perfil e às necessidades de cada cooperado, evitando o superendividamento.
+
+5.2. Relação no Ambiente de Trabalho
+
+    Promover um ambiente de trabalho colaborativo, respeitoso e livre de qualquer forma de assédio ou discriminação.
+    Valorizar a diversidade e a inclusão.
+    Comunicar-se de forma clara, honesta e construtiva.
+
+5.3. Conflito de Interesses
+
+    É vedado aos colaboradores, diretores e conselheiros utilizar seu cargo para obter vantagens pessoais ou para terceiros.
+    Qualquer situação que possa configurar conflito de interesses deve ser imediatamente comunicada ao Comitê de Ética.
+
+5.4. Relação com a Comunidade e o Meio Ambiente
+
+    Atuar como um cidadão corporativo responsável, apoiando o desenvolvimento local.
+    Incentivar e adotar práticas que minimizem nosso impacto ambiental, como a redução do consumo de papel e energia.
+    Não financiar atividades que comprovadamente causem danos ilegais ao meio ambiente ou que utilizem mão de obra em condições análogas à escravidão.
+
+Capítulo 6: Desenvolvimento e Treinamento Contínuo
+
+Acreditamos que o conhecimento é a semente do crescimento. Por isso, investimos no desenvolvimento constante de nossos colaboradores e cooperados.
+6.1. Programa de Integração "Raízes Pantaneiras"
+
+Todo novo colaborador participa de um programa de integração imersivo, onde conhece a história, a cultura e todos os departamentos da cooperativa.
+6.2. Universidade Pantaneta
+
+Plataforma online com cursos e treinamentos sobre produtos financeiros, atendimento ao cliente, liderança, sustentabilidade e cooperativismo.
+6.3. Programa de Educação Financeira "Ciclo Virtuoso"
+
+Oficinas, palestras e consultorias gratuitas para os cooperados sobre planejamento financeiro, investimentos e empreendedorismo, ajudando-os a tomar as melhores decisões para suas vidas e seus negócios.
+
+Disposições Finais
+
+Este manual é um documento vivo e será revisado e atualizado periodicamente para refletir as mudanças no mercado, na legislação e nas necessidades de nossos cooperados. O compromisso de cada um com os princípios aqui estabelecidos é o que garante a força, a solidez e o futuro próspero da nossa Cooperativa de Crédito Pantaneta.
+
+Maracaju, 07 de junho de 2025.

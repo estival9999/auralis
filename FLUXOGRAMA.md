@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 12
+- Total de alterações: 13
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 22:04
+- Última alteração: 06/01/2025 22:18
 
 ## 🔄 Fluxo de Alterações
 
@@ -46,6 +46,10 @@ flowchart TD
     A5 --> A5_1[Análise Multi-dimensional]
     A5_1 --> README12[README_06_01_2204_012.md]
     
+    A5 --> A6[📚 Base de Conhecimento]
+    A6 --> A6_1[Sistema de Processamento de Documentos]
+    A6_1 --> README13[README_06_01_2218_014.md]
+    
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
     style README2 fill:#9f9,stroke:#333,stroke-width:2px
@@ -59,6 +63,7 @@ flowchart TD
     style README10 fill:#9f9,stroke:#333,stroke-width:2px
     style README11 fill:#9f9,stroke:#333,stroke-width:2px
     style README12 fill:#9f9,stroke:#333,stroke-width:2px
+    style README13 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -251,6 +256,38 @@ flowchart TD
   - Enterprise: Multi-tenant, SSO, API marketplace
 - **Resultado**: ✅ Plano completo de transformação em sistema enterprise-grade
 
+### 📚 Base de Conhecimento (06/01/2025)
+
+#### 13. Sistema de Processamento de Documentos - README_06_01_2218_014
+- **Tipo**: Feature/Enhancement
+- **Descrição**: Criação de sistema completo para processar base de conhecimento empresarial
+- **Branch**: add_bas_conhecimento
+- **Componentes criados**:
+  - base_conhecimento_schema.sql: Estrutura SQL otimizada
+  - src/base_conhecimento_processor.py: Processador com chunking e embeddings
+  - processar_base_conhecimento.py: Script executável com múltiplas interfaces
+  - base_conhecimento.txt: Documento exemplo para testes
+  - README_BASE_CONHECIMENTO.md: Documentação completa
+- **Funcionalidades principais**:
+  - Processamento de documentos TXT (manuais, estatutos, procedimentos)
+  - Chunking inteligente por sentenças com overlap
+  - Geração de embeddings compatível com sistema de reuniões
+  - Detecção automática de tipo de documento
+  - Extração automática de tags
+  - Busca semântica com filtros avançados
+  - Interface CLI interativa ou por argumentos
+- **Estrutura de dados**:
+  - Tabela base_conhecimento com vector(1536)
+  - Índices otimizados (IVFFlat)
+  - Funções SQL para busca e contexto
+  - Sistema de versionamento de documentos
+- **Decisões arquiteturais**:
+  - Separação de tabelas (reuniões vs documentos)
+  - Chunks de 1500 caracteres com 200 de overlap
+  - Metadados ricos em JSONB
+  - Compatibilidade total com sistema existente
+- **Resultado**: ✅ IA agora tem acesso a documentos empresariais além de reuniões
+
 ## 🎯 Próximas Etapas Planejadas
 1. Implementar autenticação segura (Argon2 + JWT)
 2. Criar suite de testes automatizados
@@ -261,8 +298,8 @@ flowchart TD
 
 ## 📈 Métricas do Projeto
 - Arquivos modificados: 16 (incluindo análise profunda)
-- Novos arquivos: 17 (essenciais + documentação + scripts)
-- Linhas de código: ~1400 (total de alterações)
-- Tempo total: ~175 minutos
+- Novos arquivos: 22 (essenciais + documentação + scripts + base conhecimento)
+- Linhas de código: ~2250 (total de alterações)
+- Tempo total: ~205 minutos
 - Commits realizados: 9
 - Análises realizadas: 4 (incluindo análise profunda multi-dimensional)
