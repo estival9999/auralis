@@ -742,19 +742,9 @@ PRÓXIMOS PASSOS:
     def processar_reuniao_texto(self, titulo: str, conteudo: str, cleanup_callback=None):
         """Processa e salva reunião de texto no banco"""
         try:
-            # Mostrar loading
-            loading = ctk.CTkToplevel(self.janela)
-            loading.title("Processando...")
-            loading.geometry("200x100")
-            loading.resizable(False, False)
-            
-            ctk.CTkLabel(
-                loading,
-                text="Processando reunião...\nAguarde...",
-                font=ctk.CTkFont(size=12)
-            ).pack(expand=True)
-            
-            loading.update()
+            # Se não tem tela de processamento, criar uma
+            if not hasattr(self, 'frame_processamento'):
+                self._criar_tela_processamento_audio()
             
             # Processar em thread separada
             def processar():
@@ -783,20 +773,19 @@ PRÓXIMOS PASSOS:
                     sucesso = processador.processar_arquivo(arquivo_temp, excluir_apos_processar=True)
                     
                     # Callback na thread principal
-                    self.janela.after(0, lambda: self.finalizar_processamento_texto(loading, sucesso, cleanup_callback))
+                    self.janela.after(0, lambda: self.finalizar_processamento_texto(sucesso, cleanup_callback))
                     
                 except Exception as e:
                     erro_msg = str(e)
-                    self.janela.after(0, lambda: self.erro_processamento_texto(loading, erro_msg))
+                    self.janela.after(0, lambda: self.finalizar_processamento_audio(sucesso=False))
             
             threading.Thread(target=processar, daemon=True).start()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao processar reunião: {str(e)}", parent=self.janela)
+            self.finalizar_processamento_audio(sucesso=False)
     
-    def finalizar_processamento_texto(self, loading, sucesso, cleanup_callback=None):
+    def finalizar_processamento_texto(self, sucesso, cleanup_callback=None):
         """Finaliza processamento de texto"""
-        loading.destroy()
         
         # Executar limpeza após processamento
         if cleanup_callback:
@@ -805,24 +794,9 @@ PRÓXIMOS PASSOS:
             except Exception as e:
                 print(f"Erro ao executar limpeza de arquivo de transcrição: {e}")
         
-        if sucesso:
-            messagebox.showinfo(
-                "Sucesso",
-                "Reunião salva com sucesso!",
-                parent=self.janela
-            )
-            self.transicao_rapida(self.mostrar_menu_principal)
-        else:
-            messagebox.showerror(
-                "Erro",
-                "Erro ao salvar reunião no banco de dados.",
-                parent=self.janela
-            )
+        # Finalizar animação com resultado
+        self.finalizar_processamento_audio(sucesso=sucesso)
     
-    def erro_processamento_texto(self, loading, erro):
-        """Trata erro no processamento"""
-        loading.destroy()
-        messagebox.showerror("Erro", f"Erro ao processar: {erro}", parent=self.janela)
     
     
     def _criar_interface_gravacao_reuniao(self):
@@ -932,6 +906,100 @@ PRÓXIMOS PASSOS:
         # Voltar para formulário anterior
         self.transicao_rapida(self._criar_pre_gravacao)
     
+    def _criar_tela_processamento_audio(self):
+        """Cria tela de processamento com animação interativa"""
+        # Parar animação anterior
+        self.animacao_ativa_reuniao = False
+        
+        # Criar nova tela sobre a atual
+        self.frame_processamento = ctk.CTkFrame(
+            self.container_principal,
+            fg_color=self.cores["fundo"]
+        )
+        self.frame_processamento.place(x=0, y=0, relwidth=1, relheight=1)
+        
+        # Canvas para animações
+        self.canvas_processamento = Canvas(
+            self.frame_processamento,
+            width=320,
+            height=240,
+            bg=self.cores["fundo"],
+            highlightthickness=0
+        )
+        self.canvas_processamento.pack(fill="both", expand=True)
+        
+        # Área central para mensagens
+        area_central = ctk.CTkFrame(
+            self.frame_processamento,
+            fg_color="transparent"
+        )
+        area_central.place(relx=0.5, rely=0.5, anchor="center")
+        
+        # Ícone animado
+        self.label_icone_processamento = ctk.CTkLabel(
+            area_central,
+            text="🎙️",
+            font=ctk.CTkFont(size=48)
+        )
+        self.label_icone_processamento.pack(pady=(0, 20))
+        
+        # Mensagem principal
+        self.label_status_processamento = ctk.CTkLabel(
+            area_central,
+            text="Processando gravação...",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color=self.cores["texto"]
+        )
+        self.label_status_processamento.pack(pady=(0, 10))
+        
+        # Submensagem
+        self.label_detalhe_processamento = ctk.CTkLabel(
+            area_central,
+            text="Transcrevendo áudio",
+            font=ctk.CTkFont(size=12),
+            text_color=self.cores["texto_secundario"]
+        )
+        self.label_detalhe_processamento.pack(pady=(0, 20))
+        
+        # Barra de progresso visual
+        self.progress_frame = ctk.CTkFrame(
+            area_central,
+            height=4,
+            width=200,
+            fg_color=self.cores["superficie"]
+        )
+        self.progress_frame.pack(pady=(0, 10))
+        
+        self.progress_bar = ctk.CTkFrame(
+            self.progress_frame,
+            height=4,
+            width=0,
+            fg_color=self.cores["primaria"]
+        )
+        self.progress_bar.place(x=0, y=0)
+        
+        # Tempo estimado
+        self.label_tempo = ctk.CTkLabel(
+            area_central,
+            text="Aguarde alguns instantes...",
+            font=ctk.CTkFont(size=10),
+            text_color=self.cores["texto_secundario"]
+        )
+        self.label_tempo.pack()
+        
+        # Iniciar animações
+        self.processamento_ativo = True
+        self.particulas_processamento = []
+        self.progresso_atual = 0
+        self.etapa_processamento = 0
+        self.tempo_inicio_processamento = time.time()
+        
+        # Animações
+        self.animar_icone_processamento()
+        self.animar_particulas_processamento()
+        self.animar_progresso()
+        self.atualizar_mensagens_processamento()
+    
     def alternar_gravacao_reuniao(self):
         """Alterna entre gravar e parar na interface de reunião"""
         if not self.gravando_reuniao:
@@ -954,19 +1022,13 @@ PRÓXIMOS PASSOS:
                 self.gravando_reuniao = False
                 
         else:
-            # Parar gravação
+            # Parar gravação e mostrar tela de processamento
             self.gravando_reuniao = False
-            self.btn_gravar_reuniao.configure(
-                text="⏳",
-                fg_color=self.cores["audio_processando"],
-                state="disabled"
-            )
-            self.label_instrucao_reuniao.configure(
-                text="Processando transcrição..."
-            )
             
             try:
                 self.audio_recorder.toggle_recording()
+                # Criar tela de processamento com animação
+                self._criar_tela_processamento_audio()
                 # Processar em thread separada
                 threading.Thread(target=self.processar_gravacao_reuniao, daemon=True).start()
             except Exception as e:
@@ -1022,6 +1084,177 @@ PRÓXIMOS PASSOS:
             )
             self.janela.after(1000, self.atualizar_tempo_gravacao)
     
+    def animar_icone_processamento(self):
+        """Anima o ícone de processamento"""
+        if not hasattr(self, 'processamento_ativo') or not self.processamento_ativo:
+            return
+            
+        # Alternar entre diferentes ícones
+        icones = ["🎙️", "🎵", "📝", "⚡"]
+        indice = int(time.time() * 2) % len(icones)
+        self.label_icone_processamento.configure(text=icones[indice])
+        
+        # Continuar animação
+        self.janela.after(500, self.animar_icone_processamento)
+    
+    def animar_particulas_processamento(self):
+        """Anima partículas durante processamento"""
+        if not hasattr(self, 'processamento_ativo') or not self.processamento_ativo:
+            return
+            
+        self.canvas_processamento.delete("all")
+        
+        # Adicionar novas partículas circulares
+        if random.random() > 0.3:
+            centro_x = 160
+            centro_y = 120
+            angulo = random.uniform(0, 2 * math.pi)
+            raio = random.uniform(50, 80)
+            
+            self.particulas_processamento.append({
+                'x': centro_x + math.cos(angulo) * raio,
+                'y': centro_y + math.sin(angulo) * raio,
+                'vx': -math.cos(angulo) * 1.5,
+                'vy': -math.sin(angulo) * 1.5,
+                'size': random.uniform(3, 6),
+                'life': 1.0,
+                'color': random.choice([self.cores["primaria"], self.cores["audio_processando"], self.cores["glow"]])
+            })
+        
+        # Atualizar e desenhar partículas
+        particulas_vivas = []
+        for p in self.particulas_processamento:
+            p['x'] += p['vx']
+            p['y'] += p['vy']
+            p['life'] -= 0.015
+            
+            if p['life'] > 0:
+                # Aplicar transparência
+                cor_alpha = self._ajustar_cor_alpha(p['color'], p['life'] * 0.7)
+                size = p['size'] * p['life']
+                
+                # Desenhar com efeito glow
+                for i in range(3):
+                    glow_size = size + i * 2
+                    glow_alpha = p['life'] * 0.1 * (1 - i * 0.3)
+                    glow_cor = self._ajustar_cor_alpha(p['color'], glow_alpha)
+                    self.canvas_processamento.create_oval(
+                        p['x'] - glow_size, p['y'] - glow_size,
+                        p['x'] + glow_size, p['y'] + glow_size,
+                        fill=glow_cor, outline=""
+                    )
+                
+                # Partícula principal
+                self.canvas_processamento.create_oval(
+                    p['x'] - size, p['y'] - size,
+                    p['x'] + size, p['y'] + size,
+                    fill=cor_alpha, outline=""
+                )
+                
+                particulas_vivas.append(p)
+        
+        self.particulas_processamento = particulas_vivas
+        
+        # Adicionar ondas circulares no centro
+        centro_x, centro_y = 160, 120
+        for i in range(3):
+            fase = (time.time() * 2 + i * 0.5) % 3
+            if fase < 1:
+                raio = 30 + fase * 50
+                alpha = 0.3 * (1 - fase)
+                cor_onda = self._ajustar_cor_alpha(self.cores["audio_processando"], alpha)
+                self.canvas_processamento.create_oval(
+                    centro_x - raio, centro_y - raio,
+                    centro_x + raio, centro_y + raio,
+                    outline=cor_onda, width=2
+                )
+        
+        # Continuar animação
+        self.janela.after(30, self.animar_particulas_processamento)
+    
+    def animar_progresso(self):
+        """Anima a barra de progresso"""
+        if not hasattr(self, 'processamento_ativo') or not self.processamento_ativo:
+            return
+            
+        # Simular progresso suave
+        if self.progresso_atual < 95:
+            incremento = random.uniform(0.5, 2.5)
+            self.progresso_atual = min(95, self.progresso_atual + incremento)
+            
+        # Atualizar barra
+        largura_barra = int((self.progresso_atual / 100) * 200)
+        self.progress_bar.configure(width=largura_barra)
+        
+        # Continuar animação
+        self.janela.after(100, self.animar_progresso)
+    
+    def atualizar_mensagens_processamento(self):
+        """Atualiza mensagens durante processamento"""
+        if not hasattr(self, 'processamento_ativo') or not self.processamento_ativo:
+            return
+            
+        # Mensagens por etapa
+        mensagens = [
+            ("Transcrevendo áudio", "Convertendo fala em texto..."),
+            ("Processando transcrição", "Analisando conteúdo..."),
+            ("Salvando no banco", "Armazenando dados..."),
+            ("Finalizando", "Quase pronto...")
+        ]
+        
+        # Atualizar etapa baseado no tempo
+        tempo_decorrido = time.time() - self.tempo_inicio_processamento
+        self.etapa_processamento = min(int(tempo_decorrido / 3), len(mensagens) - 1)
+        
+        titulo, detalhe = mensagens[self.etapa_processamento]
+        self.label_detalhe_processamento.configure(text=titulo)
+        
+        # Atualizar tempo
+        tempo_str = f"Processando há {int(tempo_decorrido)}s..."
+        self.label_tempo.configure(text=tempo_str)
+        
+        # Continuar atualizando
+        self.janela.after(1000, self.atualizar_mensagens_processamento)
+    
+    def finalizar_processamento_audio(self, sucesso=True):
+        """Finaliza a tela de processamento"""
+        self.processamento_ativo = False
+        
+        if sucesso:
+            # Completar barra de progresso
+            self.progress_bar.configure(width=200)
+            self.label_icone_processamento.configure(text="✅")
+            self.label_status_processamento.configure(text="Processamento concluído!")
+            self.label_detalhe_processamento.configure(text="Reunião salva com sucesso")
+            self.label_tempo.configure(text="Redirecionando...")
+            
+            # Aguardar um pouco antes de fechar
+            self.janela.after(1500, self._fechar_processamento_e_voltar)
+        else:
+            # Mostrar erro
+            self.label_icone_processamento.configure(text="❌")
+            self.label_status_processamento.configure(text="Erro no processamento")
+            self.label_detalhe_processamento.configure(text="Não foi possível processar o áudio")
+            self.label_tempo.configure(text="")
+            
+            # Adicionar botão para voltar
+            btn_voltar = ctk.CTkButton(
+                self.frame_processamento,
+                text="Voltar",
+                width=100,
+                height=30,
+                command=self._fechar_processamento_e_voltar
+            )
+            btn_voltar.place(relx=0.5, rely=0.8, anchor="center")
+    
+    def _fechar_processamento_e_voltar(self):
+        """Fecha tela de processamento e volta ao menu"""
+        if hasattr(self, 'frame_processamento'):
+            self.frame_processamento.destroy()
+        if hasattr(self, 'frame_gravacao_audio'):
+            self.frame_gravacao_audio.destroy()
+        self.transicao_rapida(self.mostrar_menu_principal)
+    
     def processar_gravacao_reuniao(self):
         """Processa gravação da reunião"""
         try:
@@ -1048,21 +1281,13 @@ Hora: {self.data_inicio_gravacao.strftime('%H:%M')}"""
                     cleanup_callback=lambda: self.audio_recorder.cleanup_transcription_file()
                 ))
             else:
-                self.janela.after(0, lambda: messagebox.showerror(
-                    "Erro", 
-                    "Não foi possível transcrever o áudio.", 
-                    parent=self.janela
-                ))
+                # Erro na transcrição
+                self.janela.after(0, lambda: self.finalizar_processamento_audio(sucesso=False))
                 
         except Exception as e:
-            self.janela.after(0, lambda: messagebox.showerror(
-                "Erro", 
-                f"Erro ao processar áudio: {str(e)}", 
-                parent=self.janela
-            ))
-        finally:
-            # Fechar interface de gravação
-            self.janela.after(0, lambda: self.fechar_interface_gravacao())
+            print(f"Erro ao processar áudio: {str(e)}")
+            # Erro no processamento
+            self.janela.after(0, lambda: self.finalizar_processamento_audio(sucesso=False))
     
     def fechar_interface_gravacao(self):
         """Fecha interface de gravação após processamento"""
