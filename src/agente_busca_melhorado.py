@@ -432,8 +432,15 @@ PRINCÍPIO: Menos é mais. Responda exatamente o que foi perguntado."""
             # Ordenar todos os resultados por similaridade
             todos_resultados.sort(key=lambda x: x['similarity'], reverse=True)
             
+            # Filtrar resultados com similaridade muito baixa
+            resultados_relevantes = [r for r in todos_resultados if r.get('similarity', 0) > 0.3]
+            
+            # Se não há resultados relevantes o suficiente, retornar lista vazia
+            if not resultados_relevantes:
+                return []
+            
             # Retornar top N com diversidade de fontes
-            return self._diversificar_resultados(todos_resultados, num_resultados)
+            return self._diversificar_resultados(resultados_relevantes, num_resultados)
             
         except Exception as e:
             print(f"Erro ao buscar chunks: {e}")
@@ -551,14 +558,38 @@ Especifique sua necessidade para uma resposta mais precisa."""
         print(f"Processando pergunta: {pergunta}")
         
         # Detectar saudações simples
-        saudacoes = ['olá', 'ola', 'oi', 'bom dia', 'boa tarde', 'boa noite']
+        saudacoes = ['olá', 'ola', 'oi', 'bom dia', 'boa tarde', 'boa noite', 'iae', 'eae', 'e aí']
         pergunta_lower = pergunta.lower().strip()
+        
+        # Verificar se é saudação informal
+        saudacoes_informais = ['iae', 'eae', 'e aí', 'blz', 'beleza', 'suave', 'fala']
+        for saudacao in saudacoes_informais:
+            if saudacao in pergunta_lower:
+                resposta = "Olá! Como posso ajudar?"
+                self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+                return resposta
         
         if pergunta_lower in saudacoes:
             resposta = "Olá! Como posso ajudar?"
             # Registrar na memória
             self.gerenciador_memoria.processar_interacao(pergunta, resposta)
             return resposta
+        
+        # Verificar se é pergunta muito curta sem contexto (1-2 caracteres)
+        if len(pergunta.strip()) <= 2 and pergunta.strip() not in ['ok', 'tá']:
+            resposta = "Não entendi. Pode elaborar sua pergunta?"
+            self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+            return resposta
+        
+        # Verificar expressões de confusão ou reação (apenas se for muito curta)
+        if len(pergunta.split()) <= 3:
+            expressoes_confusao = ['wtf', 'ue', 'uai', 'ué', 'mas eu nem', 
+                                  'não perguntei', 'nao perguntei', 'como assim']
+            for expr in expressoes_confusao:
+                if expr in pergunta_lower:
+                    resposta = "Desculpe se houve alguma confusão. Como posso ajudar?"
+                    self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+                    return resposta
         
         # NOVO: Verificar pedidos de ajuda vagos ANTES de outras verificações
         if self._e_pedido_ajuda_vago(pergunta):
@@ -607,8 +638,20 @@ Especifique sua necessidade para uma resposta mais precisa."""
             self.gerenciador_memoria.processar_interacao(pergunta, resposta)
             return resposta
         
+        # Verificar se realmente há contexto relevante
+        if not chunks_relevantes or all(chunk.get('similarity', 0) < 0.4 for chunk in chunks_relevantes):
+            resposta = "Não encontrei informações sobre isso nos registros disponíveis."
+            self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+            return resposta
+        
         # Preparar contexto
         contexto = self._preparar_contexto(chunks_relevantes)
+        
+        # Se o contexto estiver vazio mesmo com chunks, evitar resposta
+        if not contexto.strip():
+            resposta = "Não encontrei informações relevantes sobre isso."
+            self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+            return resposta
         
         # Obter contexto da memória
         contexto_memoria = self.gerenciador_memoria.obter_contexto()
