@@ -423,6 +423,74 @@ Suas capacidades:
             print(f"Erro ao buscar chunks: {e}")
             return []
     
+    def _e_pergunta_ambigua(self, pergunta: str) -> bool:
+        """Detecta perguntas muito vagas ou ambíguas"""
+        termos_ambiguos = [
+            'isso', 'aquilo', 'ele', 'ela', 'eles',
+            'o que aconteceu', 'me explique', 'como assim',
+            'o que foi', 'qual foi', 'me fale sobre'
+        ]
+        
+        pergunta_limpa = pergunta.lower().strip()
+        
+        # Se muito curta E contém termo ambíguo
+        if len(pergunta_limpa.split()) <= 4:
+            for termo in termos_ambiguos:
+                if termo in pergunta_limpa:
+                    return True
+        return False
+    
+    def _e_pergunta_generica(self, pergunta: str) -> bool:
+        """Detecta perguntas conceituais/genéricas"""
+        termos_genericos = [
+            'como melhorar', 'o que é', 'qual a importância',
+            'melhores práticas', 'dicas para', 'estratégias de',
+            'o que você acha', 'sua opinião sobre'
+        ]
+        
+        pergunta_lower = pergunta.lower()
+        for termo in termos_genericos:
+            if termo in pergunta_lower:
+                return True
+        return False
+    
+    def _e_pergunta_sobre_reuniao_especifica(self, pergunta: str) -> tuple[bool, str]:
+        """Detecta perguntas genéricas sobre reuniões específicas"""
+        import re
+        
+        pergunta_lower = pergunta.lower()
+        
+        # Padrões comuns
+        padroes_reuniao = [
+            r'me (?:fale|conte|diga) sobre a reuni[ãa]o (?:de |do |da )?(.+)',
+            r'o que (?:teve|houve|aconteceu) na reuni[ãa]o (?:de |do |da )?(.+)',
+            r'(?:sobre|qual foi) a reuni[ãa]o (?:de |do |da )?(.+)',
+        ]
+        
+        # Se já pede algo específico, não precisa contexto
+        if any(termo in pergunta_lower for termo in ['resumo', 'decisões', 'participantes']):
+            return False, ""
+        
+        for padrao in padroes_reuniao:
+            match = re.search(padrao, pergunta_lower)
+            if match and match.groups():
+                return True, match.group(1).strip()
+        
+        return False, ""
+    
+    def _gerar_opcoes_contexto_reuniao(self, nome_reuniao: str = "") -> str:
+        """Gera menu de opções para reunião"""
+        return f"""Certo, sobre a reunião{f' "{nome_reuniao}"' if nome_reuniao else ''}. 
+O que você gostaria de saber?
+
+• **Resumo geral** - Principais pontos em formato executivo
+• **Discussões detalhadas** - Todos os tópicos abordados
+• **Decisões e ações** - O que foi definido
+• **Participantes** - Quem estava presente
+• **Próximos passos** - Tarefas e responsáveis
+
+Especifique sua necessidade para uma resposta mais precisa."""
+    
     def processar_pergunta(self, pergunta: str) -> str:
         """Processa uma pergunta e retorna a resposta"""
         print(f"Processando pergunta: {pergunta}")
@@ -437,8 +505,39 @@ Suas capacidades:
             self.gerenciador_memoria.processar_interacao(pergunta, resposta)
             return resposta
         
-        # Buscar chunks relevantes
-        chunks_relevantes = self.buscar_chunks_relevantes(pergunta, num_resultados=5)
+        # NOVO: Verificar ambiguidade primeiro
+        if self._e_pergunta_ambigua(pergunta):
+            # Verificar se há contexto anterior na memória
+            contexto_anterior = self.gerenciador_memoria.obter_contexto()
+            
+            if not contexto_anterior or len(contexto_anterior) < 50:
+                resposta = "Sua pergunta está um pouco vaga. Você poderia fornecer mais detalhes? Por exemplo:\n"
+                resposta += "- Sobre qual reunião específica você quer saber?\n"
+                resposta += "- Qual assunto ou tema você está procurando?\n"
+                resposta += "- Em que período isso ocorreu?"
+                
+                self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+                return resposta
+        
+        # NOVO: Verificar se é pergunta sobre reunião específica mas genérica
+        e_sobre_reuniao, nome_reuniao = self._e_pergunta_sobre_reuniao_especifica(pergunta)
+        if e_sobre_reuniao:
+            # Fazer busca rápida para confirmar que a reunião existe
+            chunks_teste = self.buscar_chunks_relevantes(pergunta, num_resultados=1)
+            
+            if chunks_teste:
+                # Reunião encontrada - solicitar contexto
+                resposta = self._gerar_opcoes_contexto_reuniao(nome_reuniao)
+                self.gerenciador_memoria.processar_interacao(pergunta, resposta)
+                return resposta
+        
+        # Verificar se é pergunta genérica e ajustar número de chunks
+        if self._e_pergunta_generica(pergunta):
+            # Buscar apenas 2-3 chunks para contexto opcional
+            chunks_relevantes = self.buscar_chunks_relevantes(pergunta, num_resultados=2)
+        else:
+            # Busca normal com 5 chunks
+            chunks_relevantes = self.buscar_chunks_relevantes(pergunta, num_resultados=5)
         
         if not chunks_relevantes:
             # Tentar entender o que foi perguntado e sugerir alternativas
@@ -548,7 +647,27 @@ Suas capacidades:
         if contexto_memoria:
             contexto_completo = f"{contexto_memoria}\n\n"
         
-        prompt = f"""Com base no contexto fornecido, responda a pergunta seguindo estas diretrizes:
+        # Detectar se é pergunta genérica para ajustar o prompt
+        e_generica = self._e_pergunta_generica(pergunta)
+        
+        if e_generica:
+            prompt = f"""Responda a pergunta seguindo estas diretrizes:
+
+DIRETRIZES IMPORTANTES:
+1. PRIMEIRO avalie se a pergunta é genérica/conceitual ou específica sobre dados
+2. Para perguntas GENÉRICAS: forneça orientações gerais úteis, mencionando dados específicos APENAS se forem muito relevantes
+3. Para perguntas ESPECÍFICAS: use o contexto fornecido e cite as fontes
+4. Seja natural - nem toda resposta precisa forçar uma conexão com os dados disponíveis
+{instrucoes_extras}
+
+{contexto_completo}CONTEXTO DISPONÍVEL (use apenas se relevante):
+{contexto}
+
+PERGUNTA: {pergunta}
+
+Resposta:"""
+        else:
+            prompt = f"""Com base no contexto fornecido, responda a pergunta seguindo estas diretrizes:
 
 DIRETRIZES IMPORTANTES:
 1. Se encontrar a informação: forneça uma resposta completa citando SEMPRE a fonte (documento/reunião, data)
@@ -567,15 +686,21 @@ Resposta (incluindo fonte, correlações e considerações relevantes):"""
         
         try:
             response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4.1-mini-2025-04-14",
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.4,  # Aumentar ligeiramente para respostas mais naturais
-                max_tokens=300  # Mais espaço para correlações e citações
+                max_tokens=800  # Aumentado para evitar truncamento de respostas
             )
             
-            return response.choices[0].message.content
+            resposta = response.choices[0].message.content
+            
+            # Verificar se a resposta parece truncada
+            if resposta and resposta[-1] not in '.!?"':
+                resposta += "..."
+            
+            return resposta
         except Exception as e:
             return f"Erro ao processar resposta: {str(e)}"

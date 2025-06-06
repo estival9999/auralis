@@ -1,8 +1,16 @@
 """
-Sistema de Reuniões AURALIS - Versão Linux Corrigida
+Sistema de Reuniões AURALIS - VERSÃO AGENTE 1: MINIMALISTA VERTICAL
 Resolução fixa: 320x240 pixels
 Interface otimizada para Linux com entrada de texto funcionando
 Interface gráfica principal do sistema com integração completa ao backend de IA
+
+MODIFICAÇÕES DO AGENTE 1:
+- Foco em economia máxima de espaço vertical
+- Remoção de todos os títulos e labels desnecessários
+- Uso de placeholders claros nos campos
+- Campos com altura reduzida
+- Botão integrado ao fluxo visual
+- Cada pixel aproveitado
 """
 
 import sys
@@ -331,112 +339,14 @@ class SistemaTFT:
         )
         frame_lista.pack(fill="both", expand=True, padx=0, pady=0)
         
-        # Loading
-        loading_label = ctk.CTkLabel(
-            frame_lista,
-            text="Carregando reuniões...",
-            font=ctk.CTkFont(size=12),
-            text_color=self.cores["texto_secundario"]
-        )
-        loading_label.pack(pady=50)
+        reunioes = [
+            ("Planejamento Q1", "15/01 14:00", "45 min"),
+            ("Daily Standup", "14/01 10:00", "15 min"),
+            ("Revisão Sprint", "12/01 15:30", "1h 20min"),
+            ("Kickoff Projeto", "10/01 09:00", "2h"),
+        ]
         
-        # Buscar reuniões do Supabase em thread separada
-        def buscar_reunioes():
-            reunioes = self._buscar_reunioes_supabase()
-            self.janela.after(0, lambda: self._exibir_reunioes(frame_lista, loading_label, reunioes))
-        
-        threading.Thread(target=buscar_reunioes, daemon=True).start()
-    
-    def _buscar_reunioes_supabase(self):
-        """Busca reuniões únicas do Supabase"""
-        try:
-            # Buscar todas as reuniões agrupando por arquivo_origem
-            resultado = self.backend.supabase.table('reunioes_embbed').select(
-                'arquivo_origem, titulo, responsavel, data_reuniao, hora_inicio, created_at, metadados'
-            ).order('created_at', desc=True).execute()
-            
-            if not resultado.data:
-                return []
-            
-            # Agrupar por arquivo_origem para pegar reuniões únicas
-            reunioes_dict = {}
-            for registro in resultado.data:
-                arquivo = registro['arquivo_origem']
-                if arquivo not in reunioes_dict:
-                    reunioes_dict[arquivo] = registro
-            
-            # Converter para lista e retornar
-            reunioes = list(reunioes_dict.values())
-            return reunioes[:20]  # Limitar a 20 reuniões mais recentes
-            
-        except Exception as e:
-            print(f"Erro ao buscar reuniões: {e}")
-            return []
-    
-    def _exibir_reunioes(self, frame_lista, loading_label, reunioes):
-        """Exibe as reuniões na lista"""
-        loading_label.destroy()
-        
-        if not reunioes:
-            ctk.CTkLabel(
-                frame_lista,
-                text="Nenhuma reunião encontrada",
-                font=ctk.CTkFont(size=12),
-                text_color=self.cores["texto_secundario"]
-            ).pack(pady=50)
-            return
-        
-        # Processar dados das reuniões
-        for i, reuniao in enumerate(reunioes):
-            # Extrair informações
-            titulo = reuniao.get('titulo', 'Sem título')
-            arquivo = reuniao.get('arquivo_origem', '')
-            
-            # Formatar data e hora
-            data_reuniao = reuniao.get('data_reuniao', '')
-            hora_inicio = reuniao.get('hora_inicio', '')
-            
-            if data_reuniao:
-                try:
-                    # Se for string no formato ISO
-                    if 'T' in str(data_reuniao):
-                        from datetime import datetime as dt
-                        data_obj = dt.fromisoformat(str(data_reuniao).replace('Z', '+00:00'))
-                        data_formatada = data_obj.strftime('%d/%m %H:%M')
-                    else:
-                        # Se for apenas data
-                        data_formatada = str(data_reuniao)
-                        if hora_inicio:
-                            data_formatada = f"{data_formatada} {hora_inicio}"
-                except:
-                    data_formatada = "Data não disponível"
-            else:
-                data_formatada = "Data não disponível"
-            
-            # Calcular duração usando metadados ou estimativa
-            duracao = "N/A"
-            metadados = reuniao.get('metadados', {})
-            if isinstance(metadados, dict):
-                if 'duracao' in metadados:
-                    duracao = metadados['duracao']
-                elif 'duracao_segundos' in metadados:
-                    # Converter segundos para formato legível
-                    segundos = int(metadados['duracao_segundos'])
-                    if segundos < 60:
-                        duracao = f"{segundos}s"
-                    elif segundos < 3600:
-                        minutos = segundos // 60
-                        seg = segundos % 60
-                        duracao = f"{minutos}min {seg}s" if seg > 0 else f"{minutos}min"
-                    else:
-                        horas = segundos // 3600
-                        minutos = (segundos % 3600) // 60
-                        if minutos > 0:
-                            duracao = f"{horas}h {minutos}min"
-                        else:
-                            duracao = f"{horas}h"
-            
-            # Criar item da lista
+        for i, (titulo, data, duracao) in enumerate(reunioes):
             frame_item = ctk.CTkFrame(
                 frame_lista, 
                 height=55,
@@ -448,26 +358,22 @@ class SistemaTFT:
             frame_info = ctk.CTkFrame(frame_item, fg_color="transparent")
             frame_info.pack(side="left", fill="both", expand=True, padx=(12, 0))
             
-            # Título
-            titulo_truncado = titulo[:30] + "..." if len(titulo) > 30 else titulo
             ctk.CTkLabel(
                 frame_info,
-                text=titulo_truncado,
+                text=titulo,
                 font=ctk.CTkFont(size=11, weight="bold"),
                 text_color=self.cores["texto"],
                 anchor="w"
             ).place(x=0, y=8)
             
-            # Data e duração
             ctk.CTkLabel(
                 frame_info,
-                text=f"{data_formatada} • {duracao}",
+                text=f"{data} • {duracao}",
                 font=ctk.CTkFont(size=9),
                 text_color=self.cores["texto_secundario"],
                 anchor="w"
             ).place(x=0, y=28)
             
-            # Botão Ver
             btn_ver = ctk.CTkButton(
                 frame_item,
                 text="Ver",
@@ -475,11 +381,10 @@ class SistemaTFT:
                 height=30,
                 font=ctk.CTkFont(size=11),
                 fg_color=self.cores["primaria"],
-                command=lambda a=arquivo: self.mostrar_detalhes_reuniao_supabase(a)
+                command=lambda t=titulo, d=data, dur=duracao: self.mostrar_detalhes_reuniao(t, d, dur)
             )
             btn_ver.place(relx=0.85, rely=0.5, anchor="center")
             
-            # Separador
             if i < len(reunioes) - 1:
                 separator = ctk.CTkFrame(
                     frame_lista, 
@@ -490,10 +395,6 @@ class SistemaTFT:
     
     def mostrar_detalhes_reuniao(self, titulo, data, duracao):
         self.transicao_rapida(lambda: self._criar_detalhes_reuniao(titulo, data, duracao))
-    
-    def mostrar_detalhes_reuniao_supabase(self, arquivo_origem):
-        """Mostra detalhes de uma reunião buscando do Supabase"""
-        self.transicao_rapida(lambda: self._criar_detalhes_reuniao_supabase(arquivo_origem))
     
     def _criar_detalhes_reuniao(self, titulo, data, duracao):
         self.frame_atual = ctk.CTkFrame(self.container_principal, fg_color=self.cores["fundo"])
@@ -728,23 +629,28 @@ PRÓXIMOS PASSOS:
         
         # Salvar dados e prosseguir
         self.titulo_reuniao_audio = titulo
-        # Verificar se o campo de observações tem o placeholder
-        obs_text = self.text_obs_audio.get("1.0", "end-1c").strip()
-        if obs_text == "Observações (opcional)":
-            self.observacoes_reuniao_audio = ""
-        else:
-            self.observacoes_reuniao_audio = obs_text
+        self.observacoes_reuniao_audio = self.text_obs_audio.get("1.0", "end-1c").strip()
         self.data_inicio_gravacao = datetime.now()
         
         # Ir direto para interface de gravação
         self._criar_interface_gravacao_reuniao()
     
-    def processar_reuniao_texto(self, titulo: str, conteudo: str, cleanup_callback=None):
+    def processar_reuniao_texto(self, titulo: str, conteudo: str):
         """Processa e salva reunião de texto no banco"""
         try:
-            # Se não tem tela de processamento, criar uma
-            if not hasattr(self, 'frame_processamento'):
-                self._criar_tela_processamento_audio()
+            # Mostrar loading
+            loading = ctk.CTkToplevel(self.janela)
+            loading.title("Processando...")
+            loading.geometry("200x100")
+            loading.resizable(False, False)
+            
+            ctk.CTkLabel(
+                loading,
+                text="Processando reunião...\nAguarde...",
+                font=ctk.CTkFont(size=12)
+            ).pack(expand=True)
+            
+            loading.update()
             
             # Processar em thread separada
             def processar():
@@ -769,34 +675,46 @@ PRÓXIMOS PASSOS:
                     processador = ProcessadorEmbeddings()
                     
                     # O processador extrai metadados automaticamente do arquivo
-                    # Usar parâmetro para excluir arquivo após processar
-                    sucesso = processador.processar_arquivo(arquivo_temp, excluir_apos_processar=True)
+                    sucesso = processador.processar_arquivo(arquivo_temp)
+                    
+                    # Remover arquivo temporário
+                    import os
+                    os.remove(arquivo_temp)
                     
                     # Callback na thread principal
-                    self.janela.after(0, lambda: self.finalizar_processamento_texto(sucesso, cleanup_callback))
+                    self.janela.after(0, lambda: self.finalizar_processamento_texto(loading, sucesso))
                     
                 except Exception as e:
                     erro_msg = str(e)
-                    self.janela.after(0, lambda: self.finalizar_processamento_audio(sucesso=False))
+                    self.janela.after(0, lambda: self.erro_processamento_texto(loading, erro_msg))
             
             threading.Thread(target=processar, daemon=True).start()
             
         except Exception as e:
-            self.finalizar_processamento_audio(sucesso=False)
+            messagebox.showerror("Erro", f"Erro ao processar reunião: {str(e)}", parent=self.janela)
     
-    def finalizar_processamento_texto(self, sucesso, cleanup_callback=None):
+    def finalizar_processamento_texto(self, loading, sucesso):
         """Finaliza processamento de texto"""
+        loading.destroy()
         
-        # Executar limpeza após processamento
-        if cleanup_callback:
-            try:
-                cleanup_callback()
-            except Exception as e:
-                print(f"Erro ao executar limpeza de arquivo de transcrição: {e}")
-        
-        # Finalizar animação com resultado
-        self.finalizar_processamento_audio(sucesso=sucesso)
+        if sucesso:
+            messagebox.showinfo(
+                "Sucesso",
+                "Reunião salva com sucesso!",
+                parent=self.janela
+            )
+            self.transicao_rapida(self.mostrar_menu_principal)
+        else:
+            messagebox.showerror(
+                "Erro",
+                "Erro ao salvar reunião no banco de dados.",
+                parent=self.janela
+            )
     
+    def erro_processamento_texto(self, loading, erro):
+        """Trata erro no processamento"""
+        loading.destroy()
+        messagebox.showerror("Erro", f"Erro ao processar: {erro}", parent=self.janela)
     
     
     def _criar_interface_gravacao_reuniao(self):
@@ -906,100 +824,6 @@ PRÓXIMOS PASSOS:
         # Voltar para formulário anterior
         self.transicao_rapida(self._criar_pre_gravacao)
     
-    def _criar_tela_processamento_audio(self):
-        """Cria tela de processamento com animação interativa"""
-        # Parar animação anterior
-        self.animacao_ativa_reuniao = False
-        
-        # Criar nova tela sobre a atual
-        self.frame_processamento = ctk.CTkFrame(
-            self.container_principal,
-            fg_color=self.cores["fundo"]
-        )
-        self.frame_processamento.place(x=0, y=0, relwidth=1, relheight=1)
-        
-        # Canvas para animações
-        self.canvas_processamento = Canvas(
-            self.frame_processamento,
-            width=320,
-            height=240,
-            bg=self.cores["fundo"],
-            highlightthickness=0
-        )
-        self.canvas_processamento.pack(fill="both", expand=True)
-        
-        # Área central para mensagens
-        area_central = ctk.CTkFrame(
-            self.frame_processamento,
-            fg_color="transparent"
-        )
-        area_central.place(relx=0.5, rely=0.5, anchor="center")
-        
-        # Ícone animado
-        self.label_icone_processamento = ctk.CTkLabel(
-            area_central,
-            text="🎙️",
-            font=ctk.CTkFont(size=48)
-        )
-        self.label_icone_processamento.pack(pady=(0, 20))
-        
-        # Mensagem principal
-        self.label_status_processamento = ctk.CTkLabel(
-            area_central,
-            text="Processando gravação...",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color=self.cores["texto"]
-        )
-        self.label_status_processamento.pack(pady=(0, 10))
-        
-        # Submensagem
-        self.label_detalhe_processamento = ctk.CTkLabel(
-            area_central,
-            text="Transcrevendo áudio",
-            font=ctk.CTkFont(size=12),
-            text_color=self.cores["texto_secundario"]
-        )
-        self.label_detalhe_processamento.pack(pady=(0, 20))
-        
-        # Barra de progresso visual
-        self.progress_frame = ctk.CTkFrame(
-            area_central,
-            height=4,
-            width=200,
-            fg_color=self.cores["superficie"]
-        )
-        self.progress_frame.pack(pady=(0, 10))
-        
-        self.progress_bar = ctk.CTkFrame(
-            self.progress_frame,
-            height=4,
-            width=0,
-            fg_color=self.cores["primaria"]
-        )
-        self.progress_bar.place(x=0, y=0)
-        
-        # Tempo estimado
-        self.label_tempo = ctk.CTkLabel(
-            area_central,
-            text="Aguarde alguns instantes...",
-            font=ctk.CTkFont(size=10),
-            text_color=self.cores["texto_secundario"]
-        )
-        self.label_tempo.pack()
-        
-        # Iniciar animações
-        self.processamento_ativo = True
-        self.particulas_processamento = []
-        self.progresso_atual = 0
-        self.etapa_processamento = 0
-        self.tempo_inicio_processamento = time.time()
-        
-        # Animações
-        self.animar_icone_processamento()
-        self.animar_particulas_processamento()
-        self.animar_progresso()
-        self.atualizar_mensagens_processamento()
-    
     def alternar_gravacao_reuniao(self):
         """Alterna entre gravar e parar na interface de reunião"""
         if not self.gravando_reuniao:
@@ -1022,13 +846,19 @@ PRÓXIMOS PASSOS:
                 self.gravando_reuniao = False
                 
         else:
-            # Parar gravação e mostrar tela de processamento
+            # Parar gravação
             self.gravando_reuniao = False
+            self.btn_gravar_reuniao.configure(
+                text="⏳",
+                fg_color=self.cores["audio_processando"],
+                state="disabled"
+            )
+            self.label_instrucao_reuniao.configure(
+                text="Processando transcrição..."
+            )
             
             try:
                 self.audio_recorder.toggle_recording()
-                # Criar tela de processamento com animação
-                self._criar_tela_processamento_audio()
                 # Processar em thread separada
                 threading.Thread(target=self.processar_gravacao_reuniao, daemon=True).start()
             except Exception as e:
@@ -1084,177 +914,6 @@ PRÓXIMOS PASSOS:
             )
             self.janela.after(1000, self.atualizar_tempo_gravacao)
     
-    def animar_icone_processamento(self):
-        """Anima o ícone de processamento"""
-        if not hasattr(self, 'processamento_ativo') or not self.processamento_ativo:
-            return
-            
-        # Alternar entre diferentes ícones
-        icones = ["🎙️", "🎵", "📝", "⚡"]
-        indice = int(time.time() * 2) % len(icones)
-        self.label_icone_processamento.configure(text=icones[indice])
-        
-        # Continuar animação
-        self.janela.after(500, self.animar_icone_processamento)
-    
-    def animar_particulas_processamento(self):
-        """Anima partículas durante processamento"""
-        if not hasattr(self, 'processamento_ativo') or not self.processamento_ativo:
-            return
-            
-        self.canvas_processamento.delete("all")
-        
-        # Adicionar novas partículas circulares
-        if random.random() > 0.3:
-            centro_x = 160
-            centro_y = 120
-            angulo = random.uniform(0, 2 * math.pi)
-            raio = random.uniform(50, 80)
-            
-            self.particulas_processamento.append({
-                'x': centro_x + math.cos(angulo) * raio,
-                'y': centro_y + math.sin(angulo) * raio,
-                'vx': -math.cos(angulo) * 1.5,
-                'vy': -math.sin(angulo) * 1.5,
-                'size': random.uniform(3, 6),
-                'life': 1.0,
-                'color': random.choice([self.cores["primaria"], self.cores["audio_processando"], self.cores["glow"]])
-            })
-        
-        # Atualizar e desenhar partículas
-        particulas_vivas = []
-        for p in self.particulas_processamento:
-            p['x'] += p['vx']
-            p['y'] += p['vy']
-            p['life'] -= 0.015
-            
-            if p['life'] > 0:
-                # Aplicar transparência
-                cor_alpha = self._ajustar_cor_alpha(p['color'], p['life'] * 0.7)
-                size = p['size'] * p['life']
-                
-                # Desenhar com efeito glow
-                for i in range(3):
-                    glow_size = size + i * 2
-                    glow_alpha = p['life'] * 0.1 * (1 - i * 0.3)
-                    glow_cor = self._ajustar_cor_alpha(p['color'], glow_alpha)
-                    self.canvas_processamento.create_oval(
-                        p['x'] - glow_size, p['y'] - glow_size,
-                        p['x'] + glow_size, p['y'] + glow_size,
-                        fill=glow_cor, outline=""
-                    )
-                
-                # Partícula principal
-                self.canvas_processamento.create_oval(
-                    p['x'] - size, p['y'] - size,
-                    p['x'] + size, p['y'] + size,
-                    fill=cor_alpha, outline=""
-                )
-                
-                particulas_vivas.append(p)
-        
-        self.particulas_processamento = particulas_vivas
-        
-        # Adicionar ondas circulares no centro
-        centro_x, centro_y = 160, 120
-        for i in range(3):
-            fase = (time.time() * 2 + i * 0.5) % 3
-            if fase < 1:
-                raio = 30 + fase * 50
-                alpha = 0.3 * (1 - fase)
-                cor_onda = self._ajustar_cor_alpha(self.cores["audio_processando"], alpha)
-                self.canvas_processamento.create_oval(
-                    centro_x - raio, centro_y - raio,
-                    centro_x + raio, centro_y + raio,
-                    outline=cor_onda, width=2
-                )
-        
-        # Continuar animação
-        self.janela.after(30, self.animar_particulas_processamento)
-    
-    def animar_progresso(self):
-        """Anima a barra de progresso"""
-        if not hasattr(self, 'processamento_ativo') or not self.processamento_ativo:
-            return
-            
-        # Simular progresso suave
-        if self.progresso_atual < 95:
-            incremento = random.uniform(0.5, 2.5)
-            self.progresso_atual = min(95, self.progresso_atual + incremento)
-            
-        # Atualizar barra
-        largura_barra = int((self.progresso_atual / 100) * 200)
-        self.progress_bar.configure(width=largura_barra)
-        
-        # Continuar animação
-        self.janela.after(100, self.animar_progresso)
-    
-    def atualizar_mensagens_processamento(self):
-        """Atualiza mensagens durante processamento"""
-        if not hasattr(self, 'processamento_ativo') or not self.processamento_ativo:
-            return
-            
-        # Mensagens por etapa
-        mensagens = [
-            ("Transcrevendo áudio", "Convertendo fala em texto..."),
-            ("Processando transcrição", "Analisando conteúdo..."),
-            ("Salvando no banco", "Armazenando dados..."),
-            ("Finalizando", "Quase pronto...")
-        ]
-        
-        # Atualizar etapa baseado no tempo
-        tempo_decorrido = time.time() - self.tempo_inicio_processamento
-        self.etapa_processamento = min(int(tempo_decorrido / 3), len(mensagens) - 1)
-        
-        titulo, detalhe = mensagens[self.etapa_processamento]
-        self.label_detalhe_processamento.configure(text=titulo)
-        
-        # Atualizar tempo
-        tempo_str = f"Processando há {int(tempo_decorrido)}s..."
-        self.label_tempo.configure(text=tempo_str)
-        
-        # Continuar atualizando
-        self.janela.after(1000, self.atualizar_mensagens_processamento)
-    
-    def finalizar_processamento_audio(self, sucesso=True):
-        """Finaliza a tela de processamento"""
-        self.processamento_ativo = False
-        
-        if sucesso:
-            # Completar barra de progresso
-            self.progress_bar.configure(width=200)
-            self.label_icone_processamento.configure(text="✅")
-            self.label_status_processamento.configure(text="Processamento concluído!")
-            self.label_detalhe_processamento.configure(text="Reunião salva com sucesso")
-            self.label_tempo.configure(text="Redirecionando...")
-            
-            # Aguardar um pouco antes de fechar
-            self.janela.after(1500, self._fechar_processamento_e_voltar)
-        else:
-            # Mostrar erro
-            self.label_icone_processamento.configure(text="❌")
-            self.label_status_processamento.configure(text="Erro no processamento")
-            self.label_detalhe_processamento.configure(text="Não foi possível processar o áudio")
-            self.label_tempo.configure(text="")
-            
-            # Adicionar botão para voltar
-            btn_voltar = ctk.CTkButton(
-                self.frame_processamento,
-                text="Voltar",
-                width=100,
-                height=30,
-                command=self._fechar_processamento_e_voltar
-            )
-            btn_voltar.place(relx=0.5, rely=0.8, anchor="center")
-    
-    def _fechar_processamento_e_voltar(self):
-        """Fecha tela de processamento e volta ao menu"""
-        if hasattr(self, 'frame_processamento'):
-            self.frame_processamento.destroy()
-        if hasattr(self, 'frame_gravacao_audio'):
-            self.frame_gravacao_audio.destroy()
-        self.transicao_rapida(self.mostrar_menu_principal)
-    
     def processar_gravacao_reuniao(self):
         """Processa gravação da reunião"""
         try:
@@ -1277,17 +936,24 @@ Hora: {self.data_inicio_gravacao.strftime('%H:%M')}"""
                 # Processar como texto
                 self.janela.after(0, lambda: self.processar_reuniao_texto(
                     self.titulo_reuniao_audio, 
-                    conteudo_completo,
-                    cleanup_callback=lambda: self.audio_recorder.cleanup_transcription_file()
+                    conteudo_completo
                 ))
             else:
-                # Erro na transcrição
-                self.janela.after(0, lambda: self.finalizar_processamento_audio(sucesso=False))
+                self.janela.after(0, lambda: messagebox.showerror(
+                    "Erro", 
+                    "Não foi possível transcrever o áudio.", 
+                    parent=self.janela
+                ))
                 
         except Exception as e:
-            print(f"Erro ao processar áudio: {str(e)}")
-            # Erro no processamento
-            self.janela.after(0, lambda: self.finalizar_processamento_audio(sucesso=False))
+            self.janela.after(0, lambda: messagebox.showerror(
+                "Erro", 
+                f"Erro ao processar áudio: {str(e)}", 
+                parent=self.janela
+            ))
+        finally:
+            # Fechar interface de gravação
+            self.janela.after(0, lambda: self.fechar_interface_gravacao())
     
     def fechar_interface_gravacao(self):
         """Fecha interface de gravação após processamento"""
@@ -1445,294 +1111,6 @@ Hora: {self.data_inicio_gravacao.strftime('%H:%M')}"""
             self.gravando = False
             self.timer_ativo = False
             self.transicao_rapida(self.mostrar_menu_principal)
-    
-    def _criar_detalhes_reuniao_supabase(self, arquivo_origem):
-        """Cria tela de detalhes buscando dados do Supabase"""
-        self.frame_atual = ctk.CTkFrame(self.container_principal, fg_color=self.cores["fundo"])
-        self.frame_atual.pack(fill="both", expand=True)
-        
-        # Cabeçalho
-        frame_header = ctk.CTkFrame(self.frame_atual, height=35, fg_color=self.cores["superficie"])
-        frame_header.pack(fill="x")
-        frame_header.pack_propagate(False)
-        
-        ctk.CTkButton(
-            frame_header,
-            text="◄",
-            width=30,
-            height=25,
-            font=ctk.CTkFont(size=14),
-            fg_color="transparent",
-            text_color=self.cores["texto"],
-            hover_color=self.cores["secundaria"],
-            command=lambda: self.transicao_rapida(self._criar_historico)
-        ).pack(side="left", padx=5, pady=5)
-        
-        ctk.CTkLabel(
-            frame_header,
-            text="📄 Detalhes da Reunião",
-            font=ctk.CTkFont(size=13, weight="bold"),
-            text_color=self.cores["texto"]
-        ).pack(side="left", padx=10, pady=8)
-        
-        # Container para conteúdo
-        container_conteudo = ctk.CTkFrame(self.frame_atual, fg_color=self.cores["fundo"])
-        container_conteudo.pack(fill="both", expand=True, padx=5, pady=5)
-        
-        # Loading
-        loading_label = ctk.CTkLabel(
-            container_conteudo,
-            text="Carregando detalhes da reunião...",
-            font=ctk.CTkFont(size=12),
-            text_color=self.cores["texto_secundario"]
-        )
-        loading_label.pack(pady=50)
-        
-        # Buscar e processar em thread separada
-        def processar_reuniao():
-            try:
-                # Buscar informações básicas da reunião
-                info_resultado = self.backend.supabase.table('reunioes_embbed').select(
-                    'titulo, responsavel, data_reuniao, hora_inicio, observacoes, metadados'
-                ).eq('arquivo_origem', arquivo_origem).limit(1).execute()
-                
-                if not info_resultado.data:
-                    self.janela.after(0, lambda: self._exibir_erro_reuniao(container_conteudo, loading_label))
-                    return
-                
-                info_reuniao = info_resultado.data[0]
-                
-                # Reconstruir texto completo usando o reuniao_reconstructor
-                from src.reuniao_reconstructor import ReconstructorReunioes
-                reconstructor = ReconstructorReunioes(self.backend.supabase)
-                reuniao_dict = reconstructor.reconstruir_reuniao(arquivo_origem)
-                
-                if not reuniao_dict or 'conteudo_completo' not in reuniao_dict:
-                    self.janela.after(0, lambda: self._exibir_erro_reuniao(container_conteudo, loading_label))
-                    return
-                    
-                texto_completo = reuniao_dict['conteudo_completo']
-                
-                if not texto_completo:
-                    self.janela.after(0, lambda: self._exibir_erro_reuniao(container_conteudo, loading_label))
-                    return
-                
-                # Analisar com OpenAI
-                analise = self._analisar_reuniao_com_ia(texto_completo, info_reuniao)
-                
-                # Exibir resultado
-                self.janela.after(0, lambda: self._exibir_detalhes_completos(
-                    container_conteudo, loading_label, info_reuniao, texto_completo, analise
-                ))
-                
-            except Exception as e:
-                print(f"Erro ao processar reunião: {e}")
-                self.janela.after(0, lambda: self._exibir_erro_reuniao(container_conteudo, loading_label))
-        
-        threading.Thread(target=processar_reuniao, daemon=True).start()
-    
-    def _analisar_reuniao_com_ia(self, texto_completo, info_reuniao):
-        """Analisa a reunião com OpenAI para extrair informações estruturadas"""
-        try:
-            # Extrair participantes do texto (procurando por padrão "Responsável: nome")
-            participantes = []
-            responsavel = info_reuniao.get('responsavel', '')
-            if responsavel:
-                participantes.append(responsavel)
-            
-            prompt = f"""Analise a transcrição da reunião abaixo e extraia as seguintes informações em formato JSON:
-
-1. participantes: Lista de pessoas que participaram da reunião (identificar nomes mencionados no texto)
-2. pauta: Lista dos principais tópicos/assuntos discutidos (máximo 5 itens)
-3. pontos_discutidos: Principais pontos debatidos durante a reunião (máximo 5 itens)
-4. decisoes_tomadas: Decisões importantes tomadas (máximo 5 itens)
-5. acoes_pendentes: Ações que ficaram pendentes com responsáveis quando identificados (máximo 5 itens)
-6. tarefas_atribuidas: Tarefas específicas atribuídas a pessoas (máximo 5 itens)
-7. proximos_passos: Próximas etapas ou ações futuras (máximo 3 itens)
-
-IMPORTANTE: 
-- Seja conciso e objetivo
-- Se não encontrar informação para algum campo, retorne lista vazia
-- Para participantes, procure por nomes mencionados como "Responsável: [nome]" ou pessoas citadas no texto
-- Retorne APENAS o JSON, sem explicações adicionais
-
-Transcrição:
-{texto_completo[:3000]}...
-
-Formato esperado:
-{{
-  "participantes": ["nome1", "nome2"],
-  "pauta": ["item1", "item2"],
-  "pontos_discutidos": ["ponto1", "ponto2"],
-  "decisoes_tomadas": ["decisao1", "decisao2"],
-  "acoes_pendentes": ["acao1 - responsável", "acao2"],
-  "tarefas_atribuidas": ["pessoa: tarefa", "pessoa2: tarefa2"],
-  "proximos_passos": ["passo1", "passo2"]
-}}"""
-
-            response = self.backend.assistente_reunioes.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "Você é um assistente especializado em analisar transcrições de reuniões e extrair informações estruturadas. Sempre retorne JSON válido."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.3,
-                max_tokens=800
-            )
-            
-            import json
-            resultado_texto = response.choices[0].message.content
-            # Tentar extrair JSON mesmo se vier com texto extra
-            inicio = resultado_texto.find('{')
-            fim = resultado_texto.rfind('}') + 1
-            if inicio >= 0 and fim > inicio:
-                resultado_json = resultado_texto[inicio:fim]
-                analise = json.loads(resultado_json)
-                
-                # Garantir que o responsável está na lista de participantes
-                if responsavel and 'participantes' in analise:
-                    if responsavel not in analise['participantes']:
-                        analise['participantes'].insert(0, responsavel)
-                elif responsavel:
-                    analise['participantes'] = [responsavel]
-                    
-                return analise
-            else:
-                return {'participantes': participantes if participantes else []}
-                
-        except Exception as e:
-            print(f"Erro ao analisar reunião com IA: {e}")
-            return {'participantes': participantes if participantes else []}
-    
-    def _exibir_erro_reuniao(self, container, loading_label):
-        """Exibe erro ao carregar reunião"""
-        loading_label.destroy()
-        ctk.CTkLabel(
-            container,
-            text="❌ Erro ao carregar detalhes da reunião",
-            font=ctk.CTkFont(size=12),
-            text_color=self.cores["perigo"]
-        ).pack(pady=50)
-    
-    def _exibir_detalhes_completos(self, container, loading_label, info_reuniao, texto_completo, analise):
-        """Exibe os detalhes completos da reunião com análise"""
-        loading_label.destroy()
-        
-        # Scrollable frame para todo o conteúdo
-        scroll_frame = ctk.CTkScrollableFrame(
-            container,
-            fg_color=self.cores["fundo"]
-        )
-        scroll_frame.pack(fill="both", expand=True)
-        
-        # Informações básicas
-        info_frame = ctk.CTkFrame(scroll_frame, fg_color=self.cores["superficie"])
-        info_frame.pack(fill="x", padx=5, pady=5)
-        
-        # Título
-        ctk.CTkLabel(
-            info_frame,
-            text=info_reuniao.get('titulo', 'Sem título'),
-            font=ctk.CTkFont(size=14, weight="bold"),
-            text_color=self.cores["texto"]
-        ).pack(pady=(10, 5))
-        
-        # Data e hora
-        data_str = info_reuniao.get('data_reuniao', '')
-        hora_str = info_reuniao.get('hora_inicio', '')
-        if data_str or hora_str:
-            ctk.CTkLabel(
-                info_frame,
-                text=f"📅 {data_str} às {hora_str}",
-                font=ctk.CTkFont(size=10),
-                text_color=self.cores["texto_secundario"]
-            ).pack(pady=(0, 5))
-        
-        # Responsável
-        responsavel = info_reuniao.get('responsavel', '')
-        if responsavel:
-            ctk.CTkLabel(
-                info_frame,
-                text=f"👤 Responsável: {responsavel}",
-                font=ctk.CTkFont(size=10),
-                text_color=self.cores["texto_secundario"]
-            ).pack(pady=(0, 10))
-        
-        # Seções da análise
-        if analise:
-            # Participantes extraídos pela IA
-            self._adicionar_secao_analise(scroll_frame, "👥 PARTICIPANTES", analise.get('participantes', [responsavel] if responsavel else []), is_list=True)
-            self._adicionar_secao_analise(scroll_frame, "📋 PAUTA", analise.get('pauta', []), is_list=True)
-            self._adicionar_secao_analise(scroll_frame, "💬 PONTOS DISCUTIDOS", analise.get('pontos_discutidos', []), is_list=True)
-            self._adicionar_secao_analise(scroll_frame, "✅ DECISÕES TOMADAS", analise.get('decisoes_tomadas', []), is_list=True)
-            self._adicionar_secao_analise(scroll_frame, "⏳ AÇÕES PENDENTES", analise.get('acoes_pendentes', []), is_list=True)
-            self._adicionar_secao_analise(scroll_frame, "📌 TAREFAS ATRIBUÍDAS", analise.get('tarefas_atribuidas', []), is_list=True)
-            self._adicionar_secao_analise(scroll_frame, "🚀 PRÓXIMOS PASSOS", analise.get('proximos_passos', []), is_list=True)
-        else:
-            # Se não houver análise, mostrar apenas o responsável
-            self._adicionar_secao_analise(scroll_frame, "👥 PARTICIPANTES", [responsavel] if responsavel else [], is_list=True)
-        
-        # Transcrição completa
-        trans_label = ctk.CTkLabel(
-            scroll_frame,
-            text="📝 TRANSCRIÇÃO COMPLETA",
-            font=ctk.CTkFont(size=11, weight="bold"),
-            text_color=self.cores["primaria"]
-        )
-        trans_label.pack(anchor="w", padx=10, pady=(15, 5))
-        
-        # Textbox para transcrição
-        text_transcricao = ctk.CTkTextbox(
-            scroll_frame,
-            height=200,
-            font=ctk.CTkFont(size=10),
-            fg_color=self.cores["superficie"],
-            wrap="word"
-        )
-        text_transcricao.pack(fill="both", expand=True, padx=10, pady=(0, 10))
-        text_transcricao.insert("1.0", texto_completo)
-        text_transcricao.configure(state="disabled")
-    
-    def _adicionar_secao_analise(self, parent, titulo, conteudo, is_list=False):
-        """Adiciona uma seção de análise"""
-        if not conteudo:
-            return
-            
-        # Frame da seção
-        secao_frame = ctk.CTkFrame(parent, fg_color=self.cores["superficie"])
-        secao_frame.pack(fill="x", padx=5, pady=5)
-        
-        # Título da seção
-        ctk.CTkLabel(
-            secao_frame,
-            text=titulo,
-            font=ctk.CTkFont(size=11, weight="bold"),
-            text_color=self.cores["primaria"]
-        ).pack(anchor="w", padx=10, pady=(10, 5))
-        
-        # Conteúdo
-        if is_list and isinstance(conteudo, list):
-            for item in conteudo:
-                if item:
-                    ctk.CTkLabel(
-                        secao_frame,
-                        text=f"• {item}",
-                        font=ctk.CTkFont(size=10),
-                        text_color=self.cores["texto"],
-                        wraplength=280,
-                        anchor="w",
-                        justify="left"
-                    ).pack(anchor="w", padx=(20, 10), pady=2)
-        else:
-            ctk.CTkLabel(
-                secao_frame,
-                text=str(conteudo),
-                font=ctk.CTkFont(size=10),
-                text_color=self.cores["texto"],
-                wraplength=280,
-                anchor="w",
-                justify="left"
-            ).pack(anchor="w", padx=20, pady=(0, 10))
     
     # ==================== ASSISTENTE IA ====================
     def mostrar_assistente(self):
@@ -2182,19 +1560,6 @@ Formato esperado:
         frame_header.pack(fill="x")
         frame_header.pack_propagate(False)
         
-        # Função customizada para voltar do assistente com limpeza de memória
-        def voltar_com_limpeza():
-            # Se estiver saindo do assistente, limpar memória
-            if titulo == "🤖 Assistente IA":
-                try:
-                    # Limpar memória do agente se estiver ativo
-                    if hasattr(self.backend, 'assistente_reunioes') and hasattr(self.backend.assistente_reunioes, 'gerenciador_memoria'):
-                        self.backend.assistente_reunioes.gerenciador_memoria.fechar_sessao()
-                except Exception as e:
-                    print(f"Erro ao limpar memória: {e}")
-            
-            self.transicao_rapida(self.mostrar_menu_principal)
-        
         ctk.CTkButton(
             frame_header,
             text="◄",
@@ -2204,7 +1569,7 @@ Formato esperado:
             fg_color="transparent",
             text_color=self.cores["texto"],
             hover_color=self.cores["secundaria"],
-            command=voltar_com_limpeza
+            command=lambda: self.transicao_rapida(self.mostrar_menu_principal)
         ).pack(side="left", padx=5, pady=5)
         
         ctk.CTkLabel(
