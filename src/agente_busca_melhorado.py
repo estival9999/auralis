@@ -22,8 +22,10 @@ from dotenv import load_dotenv
 # Importar sistema de memória
 try:
     from .memoria_contextual import obter_gerenciador_memoria
+    from .clarificador_intencao import ClarificadorIntencao
 except ImportError:
     from memoria_contextual import obter_gerenciador_memoria
+    from clarificador_intencao import ClarificadorIntencao
 
 load_dotenv()
 
@@ -48,6 +50,9 @@ class AgenteBuscaMelhorado:
         
         # Sistema de memória contextual
         self.gerenciador_memoria = obter_gerenciador_memoria()
+        
+        # Sistema de clarificação de intenção
+        self.clarificador = ClarificadorIntencao()
         
         # Prompt sistema aprimorado
         self.system_prompt = """Você é um assistente de conhecimento corporativo.
@@ -557,23 +562,13 @@ Especifique sua necessidade para uma resposta mais precisa."""
         """Processa uma pergunta e retorna a resposta"""
         print(f"Processando pergunta: {pergunta}")
         
-        # Detectar saudações simples
-        saudacoes = ['olá', 'ola', 'oi', 'bom dia', 'boa tarde', 'boa noite', 'iae', 'eae', 'e aí']
-        pergunta_lower = pergunta.lower().strip()
+        # Primeiro, verificar se a pergunta precisa clarificação
+        precisa_clarificacao, mensagem_clarificacao = self.clarificador.processar_pergunta(pergunta)
         
-        # Verificar se é saudação informal
-        saudacoes_informais = ['iae', 'eae', 'e aí', 'blz', 'beleza', 'suave', 'fala']
-        for saudacao in saudacoes_informais:
-            if saudacao in pergunta_lower:
-                resposta = "Olá! Como posso ajudar?"
-                self.gerenciador_memoria.processar_interacao(pergunta, resposta)
-                return resposta
-        
-        if pergunta_lower in saudacoes:
-            resposta = "Olá! Como posso ajudar?"
-            # Registrar na memória
-            self.gerenciador_memoria.processar_interacao(pergunta, resposta)
-            return resposta
+        if precisa_clarificacao:
+            # Registrar na memória e retornar mensagem de clarificação
+            self.gerenciador_memoria.processar_interacao(pergunta, mensagem_clarificacao)
+            return mensagem_clarificacao
         
         # Verificar se é pergunta muito curta sem contexto (1-2 caracteres)
         if len(pergunta.strip()) <= 2 and pergunta.strip() not in ['ok', 'tá']:
