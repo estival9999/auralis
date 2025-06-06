@@ -4,9 +4,9 @@
 Sistema multi-agente de IA para processamento e análise de informações de reuniões corporativas.
 
 ### Estatísticas Gerais
-- Total de alterações: 8
+- Total de alterações: 9
 - Primeira alteração: 05/01/2025 19:42
-- Última alteração: 06/01/2025 16:45
+- Última alteração: 06/01/2025 17:03
 
 ## 🔄 Fluxo de Alterações
 
@@ -35,6 +35,8 @@ flowchart TD
     A4_2 --> README7[README_06_01_1623_007.md]
     A4 --> A4_3[Metadados e Reconstrução]
     A4_3 --> README8[README_06_01_1645_008.md]
+    A4 --> A4_4[Correção Fluxo Gravação]
+    A4_4 --> README9[README_06_01_1703_009.md]
     
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style README1 fill:#9f9,stroke:#333,stroke-width:2px
@@ -45,6 +47,7 @@ flowchart TD
     style README6 fill:#9f9,stroke:#333,stroke-width:2px
     style README7 fill:#9f9,stroke:#333,stroke-width:2px
     style README8 fill:#9f9,stroke:#333,stroke-width:2px
+    style README9 fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 📝 Detalhamento das Alterações
@@ -162,7 +165,20 @@ flowchart TD
   - Funções: reconstruir_reuniao_completa, buscar_reunioes_por_responsavel
   - View: v_reunioes_unicas
 - **Resultado**: ✅ Sistema completo de metadados e reconstrução
-- **Resultado**: ✅ Arquitetura mapeada e pronta para implementação
+
+#### 9. Correção do Fluxo de Gravação - README_06_01_1703_009
+- **Tipo**: Bug/UX
+- **Descrição**: Correção do fluxo quebrado na interface de gravação de áudio
+- **Problema identificado**:
+  - Após inserir título/observações, não havia como prosseguir
+  - Usuário ficava preso no formulário
+  - Botão "Iniciar Gravação" não levava a lugar nenhum
+- **Solução implementada**:
+  - Criação de interface dedicada de gravação
+  - Fluxo: Formulário → Interface de gravação → Processamento
+  - Botão grande de microfone (80x80px) com animações
+  - Timer de gravação visível
+- **Resultado**: ✅ Fluxo completo e intuitivo funcionando
 
 ## 🎯 Próximas Etapas Planejadas
 1. Implementar gravação de áudio real com Whisper
@@ -174,9 +190,9 @@ flowchart TD
 7. Melhorar interface visual
 
 ## 📈 Métricas do Projeto
-- Arquivos modificados: 9 (incluindo ajustes UX)
-- Novos arquivos: 9 (essenciais + documentação)
-- Linhas de código: ~600 (total de alterações)
-- Tempo total: ~67 minutos
-- Commits realizados: 5
+- Arquivos modificados: 10 (incluindo ajustes UX)
+- Novos arquivos: 10 (essenciais + documentação)
+- Linhas de código: ~800 (total de alterações)
+- Tempo total: ~75 minutos
+- Commits realizados: 6
 - Análises realizadas: 1

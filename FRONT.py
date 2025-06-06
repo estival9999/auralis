@@ -649,8 +649,8 @@ PRÓXIMOS PASSOS:
         )
         self.text_obs_audio.pack(pady=(0, 10))
         
-        # Botão grande de gravação
-        self.btn_gravar_audio = ctk.CTkButton(
+        # Botão para ir para gravação
+        ctk.CTkButton(
             frame_form,
             text="🎤 Iniciar Gravação",
             width=200,
@@ -659,17 +659,15 @@ PRÓXIMOS PASSOS:
             fg_color=self.cores["perigo"],
             hover_color="#C62828",
             command=self.iniciar_gravacao_audio
-        )
-        self.btn_gravar_audio.pack(pady=20)
+        ).pack(pady=20)
         
-        # Status da gravação
-        self.label_status_audio = ctk.CTkLabel(
+        # Info
+        ctk.CTkLabel(
             frame_form,
-            text="Clique para começar a gravar",
+            text="Preencha os campos e clique para gravar",
             font=ctk.CTkFont(size=11),
             text_color=self.cores["texto_secundario"]
-        )
-        self.label_status_audio.pack()
+        ).pack()
         
         # Botões
         frame_btns = ctk.CTkFrame(frame_form, fg_color="transparent")
@@ -817,22 +815,130 @@ PRÓXIMOS PASSOS:
         self.observacoes_reuniao_audio = self.text_obs_audio.get("1.0", "end-1c").strip()
         self.data_inicio_gravacao = datetime.now()
         
-        # Alternar estado do botão
-        if not hasattr(self, 'gravando_reuniao') or not self.gravando_reuniao:
+        # Abrir interface de gravação de áudio
+        self._criar_interface_gravacao_reuniao()
+    
+    def _criar_interface_gravacao_reuniao(self):
+        """Cria interface de gravação com botão grande"""
+        # Criar frame de gravação
+        self.frame_gravacao_audio = ctk.CTkFrame(
+            self.container_principal,
+            fg_color=self.cores["fundo"]
+        )
+        self.frame_gravacao_audio.place(x=0, y=0, relwidth=1, relheight=1)
+        
+        # Header com título da reunião
+        frame_header = ctk.CTkFrame(self.frame_gravacao_audio, height=40, fg_color=self.cores["superficie"])
+        frame_header.pack(fill="x")
+        frame_header.pack_propagate(False)
+        
+        # Botão voltar
+        ctk.CTkButton(
+            frame_header,
+            text="◄",
+            width=30,
+            height=25,
+            font=ctk.CTkFont(size=14),
+            fg_color="transparent",
+            text_color=self.cores["texto"],
+            hover_color=self.cores["secundaria"],
+            command=self.voltar_para_aba_audio
+        ).pack(side="left", padx=5, pady=7)
+        
+        # Título truncado
+        titulo_curto = self.titulo_reuniao_audio[:25] + "..." if len(self.titulo_reuniao_audio) > 25 else self.titulo_reuniao_audio
+        ctk.CTkLabel(
+            frame_header,
+            text=titulo_curto,
+            font=ctk.CTkFont(size=12, weight="bold"),
+            text_color=self.cores["texto"]
+        ).pack(side="left", padx=10)
+        
+        # Canvas para animações
+        self.canvas_particulas_reuniao = Canvas(
+            self.frame_gravacao_audio,
+            width=320,
+            height=160,
+            bg=self.cores["fundo"],
+            highlightthickness=0
+        )
+        self.canvas_particulas_reuniao.pack(fill="both", expand=True)
+        
+        # Frame central para controles
+        control_frame = ctk.CTkFrame(
+            self.frame_gravacao_audio,
+            fg_color="transparent"
+        )
+        control_frame.place(relx=0.5, rely=0.5, anchor="center")
+        
+        # Timer
+        self.label_timer_reuniao = ctk.CTkLabel(
+            control_frame,
+            text="00:00",
+            font=ctk.CTkFont(size=28, weight="bold"),
+            text_color=self.cores["texto"]
+        )
+        self.label_timer_reuniao.pack(pady=(0, 10))
+        
+        # Botão de gravação grande
+        self.btn_gravar_reuniao = ctk.CTkButton(
+            control_frame,
+            text="🎤",
+            width=80,
+            height=80,
+            corner_radius=40,
+            font=ctk.CTkFont(size=32),
+            fg_color=self.cores["perigo"],
+            hover_color="#C62828",
+            command=self.alternar_gravacao_reuniao
+        )
+        self.btn_gravar_reuniao.pack()
+        
+        # Instrução
+        self.label_instrucao_reuniao = ctk.CTkLabel(
+            control_frame,
+            text="Clique para iniciar gravação",
+            font=ctk.CTkFont(size=11),
+            text_color=self.cores["texto_secundario"]
+        )
+        self.label_instrucao_reuniao.pack(pady=(10, 0))
+        
+        # Estado inicial
+        self.gravando_reuniao = False
+        self.tempo_inicio_gravacao = None
+        self.animacao_ativa_reuniao = True
+        self.particulas_reuniao = []
+        
+        # Iniciar animação
+        self.animar_particulas_reuniao()
+    
+    def voltar_para_aba_audio(self):
+        """Volta para a aba de áudio"""
+        self.animacao_ativa_reuniao = False
+        if hasattr(self, 'gravando_reuniao') and self.gravando_reuniao:
+            # Parar gravação se estiver ativa
+            try:
+                self.audio_recorder.toggle_recording()
+            except:
+                pass
+        self.frame_gravacao_audio.destroy()
+        self.tab_selecionada.set("🎤 Áudio")
+    
+    def alternar_gravacao_reuniao(self):
+        """Alterna entre gravar e parar na interface de reunião"""
+        if not self.gravando_reuniao:
             # Iniciar gravação
             self.gravando_reuniao = True
-            self.btn_gravar_audio.configure(
-                text="⏹️ Parar Gravação",
+            self.btn_gravar_reuniao.configure(
+                text="⏹️",
                 fg_color=self.cores["sucesso"]
             )
-            self.label_status_audio.configure(
-                text="🔴 Gravando...",
-                text_color=self.cores["perigo"]
+            self.label_instrucao_reuniao.configure(
+                text="Gravando... Clique para parar"
             )
             
             try:
                 self.audio_recorder.toggle_recording()
-                # Mostrar tempo de gravação
                 self.tempo_inicio_gravacao = time.time()
                 self.atualizar_tempo_gravacao()
             except Exception as e:
@@ -842,13 +948,13 @@ PRÓXIMOS PASSOS:
         else:
             # Parar gravação
             self.gravando_reuniao = False
-            self.btn_gravar_audio.configure(
-                text="⏳ Processando...",
+            self.btn_gravar_reuniao.configure(
+                text="⏳",
+                fg_color=self.cores["audio_processando"],
                 state="disabled"
             )
-            self.label_status_audio.configure(
-                text="Processando transcrição...",
-                text_color=self.cores["audio_processando"]
+            self.label_instrucao_reuniao.configure(
+                text="Processando transcrição..."
             )
             
             try:
@@ -858,14 +964,53 @@ PRÓXIMOS PASSOS:
             except Exception as e:
                 messagebox.showerror("Erro", f"Erro ao parar gravação: {str(e)}", parent=self.janela)
     
+    def animar_particulas_reuniao(self):
+        """Animação de partículas para interface de reunião"""
+        if not hasattr(self, 'animacao_ativa_reuniao') or not self.animacao_ativa_reuniao:
+            return
+        
+        self.canvas_particulas_reuniao.delete("all")
+        
+        # Adicionar novas partículas quando gravando
+        if self.gravando_reuniao and random.random() > 0.7:
+            self.particulas_reuniao.append({
+                'x': random.randint(50, 270),
+                'y': 160,
+                'vy': -random.uniform(1, 3),
+                'size': random.uniform(2, 5),
+                'life': 1.0
+            })
+        
+        # Atualizar e desenhar partículas
+        particulas_vivas = []
+        for p in self.particulas_reuniao:
+            p['y'] += p.get('vy', 0)
+            p['life'] -= 0.02
+            
+            if p['life'] > 0:
+                cor = self.cores["perigo"] if self.gravando_reuniao else self.cores["secundaria"]
+                # Desenhar partícula
+                x, y = p['x'], p['y']
+                size = p['size'] * p['life']
+                self.canvas_particulas_reuniao.create_oval(
+                    x - size, y - size, x + size, y + size,
+                    fill=cor, outline=""
+                )
+                particulas_vivas.append(p)
+        
+        self.particulas_reuniao = particulas_vivas
+        
+        # Continuar animação
+        self.janela.after(30, self.animar_particulas_reuniao)
+    
     def atualizar_tempo_gravacao(self):
         """Atualiza tempo de gravação na tela"""
         if hasattr(self, 'gravando_reuniao') and self.gravando_reuniao:
             tempo_decorrido = int(time.time() - self.tempo_inicio_gravacao)
             minutos = tempo_decorrido // 60
             segundos = tempo_decorrido % 60
-            self.label_status_audio.configure(
-                text=f"🔴 Gravando... {minutos:02d}:{segundos:02d}"
+            self.label_timer_reuniao.configure(
+                text=f"{minutos:02d}:{segundos:02d}"
             )
             self.janela.after(1000, self.atualizar_tempo_gravacao)
     
@@ -907,20 +1052,14 @@ Hora: {self.data_inicio_gravacao.strftime('%H:%M')}"""
                 parent=self.janela
             ))
         finally:
-            # Resetar interface
-            self.janela.after(0, lambda: self.resetar_interface_audio())
+            # Fechar interface de gravação
+            self.janela.after(0, lambda: self.fechar_interface_gravacao())
     
-    def resetar_interface_audio(self):
-        """Reseta interface de áudio após processamento"""
-        self.btn_gravar_audio.configure(
-            text="🎤 Iniciar Gravação",
-            fg_color=self.cores["perigo"],
-            state="normal"
-        )
-        self.label_status_audio.configure(
-            text="Clique para começar a gravar",
-            text_color=self.cores["texto_secundario"]
-        )
+    def fechar_interface_gravacao(self):
+        """Fecha interface de gravação após processamento"""
+        self.animacao_ativa_reuniao = False
+        if hasattr(self, 'frame_gravacao_audio'):
+            self.frame_gravacao_audio.destroy()
     
     def iniciar_gravacao(self):
         titulo = self.entry_titulo.get().strip()
