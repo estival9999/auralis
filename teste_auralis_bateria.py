@@ -1,287 +1,466 @@
 #!/usr/bin/env python3
 """
-Bateria de Testes para Sistema AURALIS
-Testa diferentes tipos de perguntas e analisa qualidade das respostas
+Teste massivo e estressante do sistema AURALIS
+Avalia todas as capacidades do agente em contexto corporativo/financeiro
 """
 
-import asyncio
 import json
+import time
 from datetime import datetime
-from typing import Dict, List, Tuple
-import os
+from typing import List, Dict, Tuple
 import sys
+import os
 
-# Adiciona o diretório raiz ao path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Adicionar o diretório pai ao path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.agente_busca_melhorado import AgenteBuscaMelhorado
+from main import AURALISBackend
+
+# Lista de perguntas organizadas por categoria
+PERGUNTAS_TESTE = {
+    "reunioes_especificas": [
+        "Qual foi o tema principal da última reunião?",
+        "Quem participou da reunião sobre orçamento?",
+        "Quais decisões foram tomadas na reunião de planejamento estratégico?",
+        "Quando ocorreu a reunião sobre compliance?",
+        "Quais foram os principais pontos discutidos na reunião de ontem?",
+        "Houve alguma reunião sobre riscos operacionais este mês?",
+        "Quem foi o responsável por apresentar o relatório financeiro?",
+        "Qual foi a duração da reunião sobre novos produtos?",
+        "Quais ações foram definidas na última reunião do comitê?",
+        "Teve alguma reunião cancelada esta semana?"
+    ],
+    
+    "base_conhecimento": [
+        "O que é análise de crédito?",
+        "Como funciona o processo de compliance?",
+        "Quais são os principais indicadores financeiros?",
+        "Explique o conceito de gestão de riscos",
+        "O que é KYC (Know Your Customer)?",
+        "Como calcular o ROI de um investimento?",
+        "Quais são as melhores práticas em auditoria interna?",
+        "O que significa liquidez no contexto bancário?",
+        "Como funciona a política de crédito da instituição?",
+        "Quais são os requisitos regulatórios atuais?"
+    ],
+    
+    "cruzamento_informacoes": [
+        "Compare as decisões das duas últimas reuniões de diretoria",
+        "Qual a relação entre as metas discutidas e os resultados apresentados?",
+        "Como as políticas de compliance afetam as operações discutidas?",
+        "Relacione os riscos identificados com as medidas propostas",
+        "Compare o orçamento aprovado com as despesas realizadas",
+        "Quais reuniões trataram de temas relacionados à regulamentação?",
+        "Como os indicadores apresentados se relacionam com as metas?",
+        "Identifique contradições entre diferentes reuniões sobre o mesmo tema",
+        "Correlacione as decisões de crédito com a política vigente",
+        "Analise a evolução dos temas ao longo das reuniões"
+    ],
+    
+    "perguntas_complexas": [
+        "Faça uma análise SWOT baseada nas informações das últimas reuniões",
+        "Elabore um resumo executivo das principais decisões do trimestre",
+        "Identifique tendências e padrões nas discussões sobre riscos",
+        "Proponha melhorias baseadas nos problemas recorrentes identificados",
+        "Analise o impacto das decisões tomadas nos indicadores apresentados",
+        "Sintetize as principais preocupações levantadas pelos participantes",
+        "Avalie a eficácia das medidas implementadas conforme discutido",
+        "Projete cenários futuros baseados nas tendências observadas",
+        "Identifique gaps entre o planejado e o executado",
+        "Sugira uma pauta para a próxima reunião baseada em pendências"
+    ],
+    
+    "perguntas_genericas": [
+        "Me ajude",
+        "O que você pode fazer?",
+        "Preciso de informações",
+        "Tem algo importante?",
+        "Resumo geral",
+        "O que aconteceu?",
+        "Novidades?",
+        "Status atual",
+        "Próximos passos",
+        "Alguma sugestão?"
+    ],
+    
+    "contexto_financeiro": [
+        "Qual o status da carteira de crédito?",
+        "Como está a inadimplência?",
+        "Quais produtos foram mais rentáveis?",
+        "Análise da margem financeira",
+        "Performance dos investimentos",
+        "Custos operacionais estão controlados?",
+        "Qual o nível de provisionamento?",
+        "Como está o capital regulatório?",
+        "Rentabilidade por segmento de clientes",
+        "Eficiência operacional do último período"
+    ],
+    
+    "perguntas_teste_limite": [
+        "asdfghjkl",
+        "???",
+        "",
+        "REUNIÃO REUNIÃO REUNIÃO",
+        "Explique tudo sobre tudo",
+        "Quero saber de uma reunião que não existe",
+        "Me fale sobre a reunião do dia 32 de dezembro",
+        "Qual o sentido da vida segundo as reuniões?",
+        "Compare isso com aquilo sem contexto",
+        "Faça uma análise de dados que não foram fornecidos"
+    ]
+}
+
 
 class TestadorAuralis:
     def __init__(self):
-        self.agente = AgenteBuscaMelhorado()
+        self.sistema = AURALISBackend()
         self.resultados = []
+        self.tempo_inicio = time.time()
         
-    async def executar_teste(self, pergunta: str, categoria: str, complexidade: str) -> Dict:
-        """Executa um teste individual e retorna resultado estruturado"""
-        print(f"\n{'='*80}")
-        print(f"CATEGORIA: {categoria} | COMPLEXIDADE: {complexidade}")
-        print(f"PERGUNTA: {pergunta}")
-        print(f"{'='*80}")
+    def executar_pergunta(self, pergunta: str, categoria: str) -> Dict:
+        """Executa uma pergunta e coleta a resposta"""
+        print(f"\n[{categoria}] Pergunta: {pergunta}")
         
-        inicio = datetime.now()
-        
+        inicio = time.time()
         try:
-            # Processa a pergunta
-            resposta = await self.agente.processar_pergunta(pergunta)
-            
-            fim = datetime.now()
-            tempo_resposta = (fim - inicio).total_seconds()
-            
-            # Analisa a resposta
-            analise = self._analisar_resposta(resposta, pergunta, categoria)
+            resposta = self.sistema.buscar_informacao_reuniao(pergunta)
+            tempo_resposta = time.time() - inicio
             
             resultado = {
-                "pergunta": pergunta,
                 "categoria": categoria,
-                "complexidade": complexidade,
+                "pergunta": pergunta,
                 "resposta": resposta,
                 "tempo_resposta": tempo_resposta,
-                "analise": analise,
-                "timestamp": datetime.now().isoformat()
+                "sucesso": True,
+                "erro": None
             }
             
-            print(f"\nRESPOSTA: {resposta}")
-            print(f"TEMPO: {tempo_resposta:.2f}s")
-            print(f"QUALIDADE: {analise['qualidade_geral']}/10")
-            
-            return resultado
+            print(f"Resposta ({tempo_resposta:.2f}s): {resposta[:100]}...")
             
         except Exception as e:
-            print(f"ERRO: {str(e)}")
-            return {
-                "pergunta": pergunta,
+            tempo_resposta = time.time() - inicio
+            resultado = {
                 "categoria": categoria,
-                "complexidade": complexidade,
-                "erro": str(e),
-                "timestamp": datetime.now().isoformat()
+                "pergunta": pergunta,
+                "resposta": None,
+                "tempo_resposta": tempo_resposta,
+                "sucesso": False,
+                "erro": str(e)
             }
+            print(f"ERRO ({tempo_resposta:.2f}s): {str(e)}")
+            
+        return resultado
     
-    def _analisar_resposta(self, resposta: str, pergunta: str, categoria: str) -> Dict:
-        """Analisa qualidade da resposta"""
-        analise = {
-            "tem_conteudo": len(resposta.strip()) > 0,
-            "tamanho_resposta": len(resposta),
-            "menciona_fontes": any(fonte in resposta.lower() for fonte in ["reunião", "base de conhecimento", "documento"]),
-            "responde_pergunta": self._verifica_relevancia(resposta, pergunta),
-            "clareza": self._avaliar_clareza(resposta),
-            "completude": self._avaliar_completude(resposta, categoria),
-            "qualidade_geral": 0
+    def avaliar_resposta(self, resultado: Dict) -> Dict:
+        """Avalia a qualidade da resposta"""
+        avaliacao = {
+            "relevante": False,
+            "completa": False,
+            "concisa": False,
+            "tempo_adequado": False,
+            "pontuacao": 0
         }
         
-        # Calcula qualidade geral
-        pontos = 0
-        if analise["tem_conteudo"]: pontos += 2
-        if analise["menciona_fontes"]: pontos += 2
-        if analise["responde_pergunta"]: pontos += 3
-        if analise["clareza"] >= 7: pontos += 2
-        if analise["completude"] >= 7: pontos += 1
+        if not resultado["sucesso"]:
+            return avaliacao
+            
+        resposta = resultado["resposta"]
         
-        analise["qualidade_geral"] = pontos
-        return analise
+        # Relevância - resposta não é genérica demais
+        respostas_genericas = ["não encontrei", "não há informações", "erro", "desculpe"]
+        avaliacao["relevante"] = not any(gen in resposta.lower() for gen in respostas_genericas)
+        
+        # Completude - resposta tem tamanho adequado
+        avaliacao["completa"] = 20 < len(resposta) < 500
+        
+        # Concisão - resposta é direta
+        avaliacao["concisa"] = len(resposta) < 200
+        
+        # Tempo adequado - menos de 3 segundos
+        avaliacao["tempo_adequado"] = resultado["tempo_resposta"] < 3.0
+        
+        # Pontuação
+        avaliacao["pontuacao"] = sum([
+            avaliacao["relevante"] * 40,
+            avaliacao["completa"] * 30,
+            avaliacao["concisa"] * 20,
+            avaliacao["tempo_adequado"] * 10
+        ])
+        
+        return avaliacao
     
-    def _verifica_relevancia(self, resposta: str, pergunta: str) -> bool:
-        """Verifica se a resposta é relevante para a pergunta"""
-        # Análise simplificada - pode ser melhorada
-        palavras_chave = pergunta.lower().split()
-        palavras_importantes = [p for p in palavras_chave if len(p) > 3]
+    def executar_teste_completo(self):
+        """Executa todas as perguntas do teste"""
+        print("=== INICIANDO TESTE MASSIVO DO AURALIS ===")
+        print(f"Total de perguntas: {sum(len(pergs) for pergs in PERGUNTAS_TESTE.values())}")
         
-        if not palavras_importantes:
-            return True
-        
-        resposta_lower = resposta.lower()
-        relevancia = sum(1 for palavra in palavras_importantes if palavra in resposta_lower)
-        
-        return relevancia >= len(palavras_importantes) * 0.3
-    
-    def _avaliar_clareza(self, resposta: str) -> int:
-        """Avalia clareza da resposta de 0 a 10"""
-        pontos = 10
-        
-        # Penaliza respostas muito curtas ou muito longas
-        if len(resposta) < 50: pontos -= 3
-        elif len(resposta) > 1000: pontos -= 2
-        
-        # Verifica estruturação
-        if "\n" in resposta: pontos += 1
-        if any(marcador in resposta for marcador in ["1.", "2.", "-", "•"]): pontos += 1
-        
-        # Limita entre 0 e 10
-        return max(0, min(10, pontos))
-    
-    def _avaliar_completude(self, resposta: str, categoria: str) -> int:
-        """Avalia completude da resposta de 0 a 10"""
-        pontos = 5  # Base
-        
-        # Bonus por categoria
-        if categoria == "reunioes" and "reunião" in resposta.lower():
-            pontos += 2
-        elif categoria == "base_conhecimento" and "conhecimento" in resposta.lower():
-            pontos += 2
-        elif categoria == "hibrida" and all(termo in resposta.lower() for termo in ["reunião", "conhecimento"]):
-            pontos += 3
-        
-        # Bonus por detalhamento
-        if len(resposta) > 200: pontos += 1
-        if any(exemplo in resposta.lower() for exemplo in ["por exemplo", "como", "específico"]): pontos += 1
-        
-        return max(0, min(10, pontos))
-    
-    async def executar_bateria_completa(self):
-        """Executa todos os testes da bateria"""
-        
-        # Define perguntas de teste por categoria
-        testes = [
-            # CATEGORIA: Reuniões - Fácil
-            ("Quais reuniões foram realizadas esta semana?", "reunioes", "facil"),
-            ("Quantas reuniões temos registradas?", "reunioes", "facil"),
-            ("Qual foi a última reunião gravada?", "reunioes", "facil"),
+        for categoria, perguntas in PERGUNTAS_TESTE.items():
+            print(f"\n\n{'='*60}")
+            print(f"CATEGORIA: {categoria.upper()}")
+            print(f"{'='*60}")
             
-            # CATEGORIA: Reuniões - Média
-            ("Quais foram os principais tópicos discutidos nas reuniões de janeiro?", "reunioes", "media"),
-            ("Quem participou das reuniões sobre o projeto X?", "reunioes", "media"),
-            ("Resuma as decisões tomadas na última reunião de diretoria", "reunioes", "media"),
-            
-            # CATEGORIA: Reuniões - Difícil
-            ("Compare as discussões sobre orçamento entre as reuniões de Q1 e Q2", "reunioes", "dificil"),
-            ("Identifique padrões recorrentes nas pautas das últimas 10 reuniões", "reunioes", "dificil"),
-            ("Qual foi a evolução do projeto ABC ao longo das reuniões dos últimos 3 meses?", "reunioes", "dificil"),
-            
-            # CATEGORIA: Base de Conhecimento - Fácil
-            ("O que é o sistema AURALIS?", "base_conhecimento", "facil"),
-            ("Quais são os principais componentes do sistema?", "base_conhecimento", "facil"),
-            ("Como funciona o processamento de áudio?", "base_conhecimento", "facil"),
-            
-            # CATEGORIA: Base de Conhecimento - Média
-            ("Explique a arquitetura de agentes do sistema", "base_conhecimento", "media"),
-            ("Como o sistema realiza busca semântica?", "base_conhecimento", "media"),
-            ("Quais são as melhores práticas para usar o AURALIS?", "base_conhecimento", "media"),
-            
-            # CATEGORIA: Base de Conhecimento - Difícil
-            ("Compare as vantagens e desvantagens das diferentes estratégias de embeddings usadas", "base_conhecimento", "dificil"),
-            ("Como otimizar a performance do sistema para grandes volumes de dados?", "base_conhecimento", "dificil"),
-            ("Explique o processo completo de análise contextual multi-fonte", "base_conhecimento", "dificil"),
-            
-            # CATEGORIA: Híbrida (Reuniões + Base) - Média
-            ("Como as reuniões são processadas segundo a documentação do sistema?", "hibrida", "media"),
-            ("Quais funcionalidades do AURALIS foram discutidas nas últimas reuniões?", "hibrida", "media"),
-            ("Compare o que foi planejado nas reuniões com o que está documentado no sistema", "hibrida", "media"),
-            
-            # CATEGORIA: Híbrida - Difícil
-            ("Analise se as decisões tomadas nas reuniões estão alinhadas com a arquitetura documentada", "hibrida", "dificil"),
-            ("Identifique gaps entre o que foi discutido em reuniões e o que está implementado", "hibrida", "dificil"),
-            ("Crie um roadmap baseado nas discussões de reuniões e capacidades atuais do sistema", "hibrida", "dificil"),
-            
-            # CATEGORIA: Sem Contexto - Subjetiva
-            ("O que você acha sobre o futuro da IA em ambientes corporativos?", "sem_contexto", "subjetiva"),
-            ("Como melhorar a produtividade em reuniões?", "sem_contexto", "subjetiva"),
-            ("Qual a importância de documentar conhecimento organizacional?", "sem_contexto", "subjetiva"),
-            
-            # CATEGORIA: Perguntas Ambíguas/Desafiadoras
-            ("Me fale sobre isso", "ambigua", "dificil"),
-            ("O que aconteceu?", "ambigua", "dificil"),
-            ("Explique melhor", "ambigua", "dificil"),
-            ("Como assim?", "ambigua", "dificil"),
-            
-            # CATEGORIA: Perguntas Complexas Multi-parte
-            ("Primeiro, liste todas as reuniões de 2024, depois identifique os participantes mais frequentes, e por fim sugira como melhorar o engajamento baseado nos padrões observados", "complexa", "muito_dificil"),
-            ("Analise a evolução técnica do sistema AURALIS conforme documentado, correlacione com as discussões em reuniões, e proponha melhorias arquiteturais considerando ambas as perspectivas", "complexa", "muito_dificil"),
-        ]
+            for pergunta in perguntas:
+                resultado = self.executar_pergunta(pergunta, categoria)
+                resultado["avaliacao"] = self.avaliar_resposta(resultado)
+                self.resultados.append(resultado)
+                
+                # Pequena pausa para não sobrecarregar
+                time.sleep(0.5)
         
-        print("\n" + "="*80)
-        print("INICIANDO BATERIA DE TESTES DO SISTEMA AURALIS")
-        print(f"Total de testes: {len(testes)}")
-        print("="*80)
+        tempo_total = time.time() - self.tempo_inicio
+        print(f"\n\nTESTE COMPLETO EM {tempo_total:.2f} segundos")
         
-        for pergunta, categoria, complexidade in testes:
-            resultado = await self.executar_teste(pergunta, categoria, complexidade)
-            self.resultados.append(resultado)
-            
-            # Pequena pausa entre testes para não sobrecarregar
-            await asyncio.sleep(0.5)
+    def gerar_relatorio(self) -> str:
+        """Gera relatório detalhado dos resultados"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        # Gera relatório final
-        await self._gerar_relatorio()
-    
-    async def _gerar_relatorio(self):
-        """Gera relatório com análise dos resultados"""
-        print("\n" + "="*80)
-        print("RELATÓRIO FINAL DE TESTES")
-        print("="*80)
-        
-        # Estatísticas gerais
-        total_testes = len(self.resultados)
-        testes_com_erro = sum(1 for r in self.resultados if "erro" in r)
-        tempo_medio = sum(r.get("tempo_resposta", 0) for r in self.resultados if "tempo_resposta" in r) / (total_testes - testes_com_erro)
-        
-        print(f"\nESTATÍSTICAS GERAIS:")
-        print(f"- Total de testes: {total_testes}")
-        print(f"- Testes bem-sucedidos: {total_testes - testes_com_erro}")
-        print(f"- Testes com erro: {testes_com_erro}")
-        print(f"- Tempo médio de resposta: {tempo_medio:.2f}s")
-        
-        # Análise por categoria
-        print(f"\nANÁLISE POR CATEGORIA:")
-        categorias = {}
-        for r in self.resultados:
-            if "erro" not in r:
-                cat = r["categoria"]
-                if cat not in categorias:
-                    categorias[cat] = []
-                categorias[cat].append(r["analise"]["qualidade_geral"])
-        
-        for cat, qualidades in categorias.items():
-            media = sum(qualidades) / len(qualidades) if qualidades else 0
-            print(f"- {cat}: {media:.1f}/10 (baseado em {len(qualidades)} testes)")
-        
-        # Análise por complexidade
-        print(f"\nANÁLISE POR COMPLEXIDADE:")
-        complexidades = {}
-        for r in self.resultados:
-            if "erro" not in r:
-                comp = r["complexidade"]
-                if comp not in complexidades:
-                    complexidades[comp] = []
-                complexidades[comp].append(r["analise"]["qualidade_geral"])
-        
-        for comp, qualidades in complexidades.items():
-            media = sum(qualidades) / len(qualidades) if qualidades else 0
-            print(f"- {comp}: {media:.1f}/10 (baseado em {len(qualidades)} testes)")
-        
-        # Identificar problemas
-        print(f"\nPROBLEMAS IDENTIFICADOS:")
-        problemas = []
-        
-        for r in self.resultados:
-            if "erro" in r:
-                problemas.append(f"- Erro em '{r['pergunta']}': {r['erro']}")
-            elif r.get("analise", {}).get("qualidade_geral", 0) < 5:
-                problemas.append(f"- Baixa qualidade em '{r['pergunta']}' (nota: {r['analise']['qualidade_geral']}/10)")
-        
-        if problemas:
-            for p in problemas[:10]:  # Limita a 10 problemas
-                print(p)
-        else:
-            print("- Nenhum problema crítico identificado")
-        
-        # Salvar resultados detalhados
-        with open("teste_auralis_resultados.json", "w", encoding="utf-8") as f:
+        # Salvar resultados em JSON
+        with open(f'teste_auralis_resultados_{timestamp}.json', 'w', encoding='utf-8') as f:
             json.dump(self.resultados, f, ensure_ascii=False, indent=2)
         
-        print(f"\nResultados detalhados salvos em: teste_auralis_resultados.json")
+        # Análise geral
+        total_perguntas = len(self.resultados)
+        sucessos = sum(1 for r in self.resultados if r["sucesso"])
+        tempo_medio = sum(r["tempo_resposta"] for r in self.resultados) / total_perguntas
+        
+        # Análise por categoria
+        analise_categorias = {}
+        for categoria in PERGUNTAS_TESTE.keys():
+            resultados_cat = [r for r in self.resultados if r["categoria"] == categoria]
+            if resultados_cat:
+                analise_categorias[categoria] = {
+                    "total": len(resultados_cat),
+                    "sucessos": sum(1 for r in resultados_cat if r["sucesso"]),
+                    "tempo_medio": sum(r["tempo_resposta"] for r in resultados_cat) / len(resultados_cat),
+                    "pontuacao_media": sum(r["avaliacao"]["pontuacao"] for r in resultados_cat) / len(resultados_cat)
+                }
+        
+        # Gerar relatório Markdown
+        relatorio = f"""# Relatório de Teste Massivo - Sistema AURALIS
 
-async def main():
+**Data/Hora:** {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+**Total de Perguntas:** {total_perguntas}
+**Taxa de Sucesso:** {(sucessos/total_perguntas)*100:.1f}%
+**Tempo Médio de Resposta:** {tempo_medio:.2f}s
+
+## Resumo Executivo
+
+O teste massivo do sistema AURALIS foi executado com {total_perguntas} perguntas diversificadas, 
+abrangendo diferentes categorias e níveis de complexidade. O sistema apresentou uma taxa de 
+sucesso de {(sucessos/total_perguntas)*100:.1f}%, com tempo médio de resposta de {tempo_medio:.2f} segundos.
+
+## Análise por Categoria
+
+"""
+        
+        for categoria, analise in analise_categorias.items():
+            relatorio += f"""### {categoria.replace('_', ' ').title()}
+- **Total de perguntas:** {analise['total']}
+- **Taxa de sucesso:** {(analise['sucessos']/analise['total'])*100:.1f}%
+- **Tempo médio:** {analise['tempo_medio']:.2f}s
+- **Pontuação média:** {analise['pontuacao_media']:.1f}/100
+
+"""
+
+        relatorio += """## Perguntas e Respostas Detalhadas
+
+"""
+        
+        for i, resultado in enumerate(self.resultados, 1):
+            relatorio += f"""### Pergunta {i} - {resultado['categoria']}
+
+**Pergunta:** {resultado['pergunta']}
+
+**Resposta:** {resultado['resposta'] if resultado['sucesso'] else f"ERRO: {resultado['erro']}"}
+
+**Métricas:**
+- Tempo de resposta: {resultado['tempo_resposta']:.2f}s
+- Sucesso: {'✅' if resultado['sucesso'] else '❌'}
+- Relevância: {'✅' if resultado['avaliacao']['relevante'] else '❌'}
+- Completude: {'✅' if resultado['avaliacao']['completa'] else '❌'}
+- Concisão: {'✅' if resultado['avaliacao']['concisa'] else '❌'}
+- Tempo adequado: {'✅' if resultado['avaliacao']['tempo_adequado'] else '❌'}
+- Pontuação: {resultado['avaliacao']['pontuacao']}/100
+
+---
+
+"""
+
+        # Análise de problemas e sugestões
+        problemas = [r for r in self.resultados if not r["sucesso"] or r["avaliacao"]["pontuacao"] < 50]
+        
+        relatorio += f"""## Análise de Problemas Identificados
+
+**Total de respostas problemáticas:** {len(problemas)}/{total_perguntas}
+
+### Principais Problemas:
+
+"""
+        
+        if problemas:
+            # Agrupar por tipo de problema
+            erros = {}
+            for p in problemas:
+                if not p["sucesso"]:
+                    erro = p["erro"]
+                    if erro not in erros:
+                        erros[erro] = []
+                    erros[erro].append(p["pergunta"])
+            
+            for erro, perguntas in erros.items():
+                relatorio += f"""#### Erro: {erro}
+Perguntas afetadas:
+"""
+                for perg in perguntas[:5]:  # Mostrar no máximo 5 exemplos
+                    relatorio += f"- {perg}\n"
+                if len(perguntas) > 5:
+                    relatorio += f"- ... e mais {len(perguntas)-5} perguntas\n"
+                relatorio += "\n"
+
+        # Sugestões de melhoria
+        relatorio += """## Sugestões de Melhoria
+
+Com base nos resultados do teste, seguem as principais recomendações:
+
+"""
+        
+        # Análise automática de sugestões
+        if tempo_medio > 2:
+            relatorio += """### 1. **Otimização de Performance**
+- O tempo médio de resposta está acima do ideal (>2s)
+- Considerar implementação de cache mais agressivo
+- Otimizar queries e processamento de embeddings
+- Implementar índices para buscas frequentes
+
+"""
+
+        taxa_relevancia = sum(1 for r in self.resultados if r["avaliacao"]["relevante"]) / total_perguntas
+        if taxa_relevancia < 0.8:
+            relatorio += """### 2. **Melhoria na Relevância das Respostas**
+- Muitas respostas são genéricas ou não atendem à pergunta
+- Melhorar o sistema de análise semântica
+- Implementar validação de contexto antes de responder
+- Adicionar fallbacks mais inteligentes
+
+"""
+
+        perguntas_genericas = [r for r in self.resultados if r["categoria"] == "perguntas_genericas"]
+        pontuacao_genericas = sum(r["avaliacao"]["pontuacao"] for r in perguntas_genericas) / len(perguntas_genericas) if perguntas_genericas else 0
+        
+        if pontuacao_genericas < 60:
+            relatorio += """### 3. **Tratamento de Perguntas Vagas**
+- O sistema tem dificuldade com perguntas genéricas
+- Implementar sistema de clarificação interativa
+- Criar respostas padrão mais úteis para perguntas vagas
+- Sugerir opções específicas ao usuário
+
+"""
+
+        erros_busca = sum(1 for r in self.resultados if not r["sucesso"] and "busca" in str(r.get("erro", "")).lower())
+        if erros_busca > 5:
+            relatorio += """### 4. **Robustez do Sistema de Busca**
+- Muitos erros relacionados à busca de informações
+- Implementar tratamento de exceções mais robusto
+- Adicionar validação de entrada antes da busca
+- Criar índices alternativos para fallback
+
+"""
+
+        relatorio += """### 5. **Recomendações Gerais**
+
+1. **Implementar Sistema de Feedback**
+   - Permitir que usuários avaliem as respostas
+   - Usar feedback para treinar e melhorar o sistema
+   
+2. **Adicionar Contexto de Sessão**
+   - Manter histórico da conversa
+   - Permitir perguntas de follow-up
+   
+3. **Melhorar Base de Conhecimento**
+   - Adicionar mais conteúdo específico do domínio financeiro
+   - Atualizar regularmente com novas regulamentações
+   
+4. **Implementar Métricas de Qualidade**
+   - Dashboard de monitoramento em tempo real
+   - Alertas para degradação de performance
+   
+5. **Segurança e Compliance**
+   - Adicionar logs de auditoria detalhados
+   - Implementar controle de acesso granular
+   - Garantir conformidade com LGPD/GDPR
+
+## Conclusão
+
+"""
+        
+        # Classificação geral
+        pontuacao_geral = sum(r["avaliacao"]["pontuacao"] for r in self.resultados) / total_perguntas
+        
+        if pontuacao_geral >= 80:
+            classificacao = "EXCELENTE"
+            emoji = "🌟"
+        elif pontuacao_geral >= 70:
+            classificacao = "BOM"
+            emoji = "✅"
+        elif pontuacao_geral >= 60:
+            classificacao = "REGULAR"
+            emoji = "⚠️"
+        else:
+            classificacao = "NECESSITA MELHORIAS"
+            emoji = "🔴"
+            
+        relatorio += f"""O sistema AURALIS apresentou desempenho **{classificacao}** {emoji} com pontuação geral de **{pontuacao_geral:.1f}/100**.
+
+### Pontos Fortes:
+- Arquitetura modular bem estruturada
+- Capacidade de processar diferentes tipos de perguntas
+- Sistema de busca semântica funcional
+
+### Pontos de Atenção:
+- Tempo de resposta pode ser otimizado
+- Tratamento de perguntas vagas precisa melhorar
+- Necessidade de mais conteúdo na base de conhecimento
+
+### Próximos Passos Recomendados:
+1. Implementar as otimizações de performance sugeridas
+2. Expandir a base de conhecimento com conteúdo específico
+3. Adicionar sistema de feedback e aprendizado contínuo
+4. Realizar testes de carga e stress
+5. Implementar monitoramento e observabilidade
+
+---
+*Relatório gerado automaticamente pelo Sistema de Testes AURALIS*
+"""
+        
+        return relatorio
+
+
+def main():
+    """Executa o teste completo"""
     testador = TestadorAuralis()
-    await testador.executar_bateria_completa()
+    
+    print("Iniciando teste massivo do AURALIS...")
+    print("Este teste pode levar alguns minutos para ser concluído.")
+    
+    try:
+        testador.executar_teste_completo()
+        
+        print("\nGerando relatório...")
+        relatorio = testador.gerar_relatorio()
+        
+        # Salvar relatório
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        nome_arquivo = f"RELATORIO_TESTE_AURALIS_{timestamp}.md"
+        
+        with open(nome_arquivo, 'w', encoding='utf-8') as f:
+            f.write(relatorio)
+            
+        print(f"\n✅ Teste completo! Relatório salvo em: {nome_arquivo}")
+        
+    except Exception as e:
+        print(f"\n❌ Erro durante o teste: {str(e)}")
+        raise
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

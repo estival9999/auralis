@@ -1,0 +1,1052 @@
+[
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Qual foi o tema principal da última reunião?",
+    "resposta": "O tema principal da última reunião foi \"Vocês vão tapar o nariz!\".",
+    "tempo_resposta": 1.5091147422790527,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Quem participou da reunião sobre orçamento?",
+    "resposta": "O contexto não informa quem participou da reunião sobre orçamento.",
+    "tempo_resposta": 1.8803541660308838,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Quais decisões foram tomadas na reunião de planejamento estratégico?",
+    "resposta": "O contexto não informa as decisões da reunião de planejamento estratégico.",
+    "tempo_resposta": 1.9784622192382812,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Quando ocorreu a reunião sobre compliance?",
+    "resposta": "O contexto não informa a data da reunião sobre compliance.",
+    "tempo_resposta": 3.2304494380950928,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": false,
+      "pontuacao": 90
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Quais foram os principais pontos discutidos na reunião de ontem?",
+    "resposta": "Foram definidos Rafael como responsável pela área de fraudes e Matheus como principal de controles internos.",
+    "tempo_resposta": 1.7626819610595703,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Houve alguma reunião sobre riscos operacionais este mês?",
+    "resposta": "O contexto não informa reunião sobre riscos operacionais neste mês.",
+    "tempo_resposta": 1.6102323532104492,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Quem foi o responsável por apresentar o relatório financeiro?",
+    "resposta": "O contexto não informa quem apresentou o relatório financeiro.",
+    "tempo_resposta": 1.639634132385254,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Qual foi a duração da reunião sobre novos produtos?",
+    "resposta": "O contexto não informa a duração da reunião sobre novos produtos.",
+    "tempo_resposta": 2.236043691635132,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Quais ações foram definidas na última reunião do comitê?",
+    "resposta": "O contexto não informa as ações definidas na última reunião do comitê.",
+    "tempo_resposta": 0.7595279216766357,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "reunioes_especificas",
+    "pergunta": "Teve alguma reunião cancelada esta semana?",
+    "resposta": "O contexto não informa se houve reunião cancelada esta semana.",
+    "tempo_resposta": 2.2063891887664795,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "O que é análise de crédito?",
+    "resposta": "Análise de crédito é o processo de avaliação da capacidade e da intenção de um cliente ou empresa em pagar suas dívidas, considerando histórico financeiro, renda, e outros fatores de risco.",
+    "tempo_resposta": 2.067121982574463,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "Como funciona o processo de compliance?",
+    "resposta": "Processo de compliance consiste em garantir que a empresa cumpra leis, regulamentos e normas internas, prevenindo riscos legais e éticos. Envolve políticas, treinamentos, monitoramento e auditorias.",
+    "tempo_resposta": 2.148512601852417,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "Quais são os principais indicadores financeiros?",
+    "resposta": "Principais indicadores financeiros incluem: liquidez corrente, margem de lucro, retorno sobre investimento (ROI), endividamento, e giro de ativos.",
+    "tempo_resposta": 2.0757627487182617,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "Explique o conceito de gestão de riscos",
+    "resposta": "Gestão de riscos é o processo de identificar, avaliar e mitigar potenciais ameaças que possam impactar os objetivos da empresa, garantindo segurança e continuidade dos negócios.",
+    "tempo_resposta": 2.408909559249878,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "O que é KYC (Know Your Customer)?",
+    "resposta": "KYC (Know Your Customer) é o processo de verificação da identidade dos clientes para prevenir fraudes, lavagem de dinheiro e garantir conformidade regulatória.",
+    "tempo_resposta": 2.316359758377075,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "Como calcular o ROI de um investimento?",
+    "resposta": "ROI é calculado pela fórmula: (Ganho do Investimento - Custo do Investimento) ÷ Custo do Investimento.",
+    "tempo_resposta": 2.321598768234253,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "Quais são as melhores práticas em auditoria interna?",
+    "resposta": "Planejar auditorias com base em riscos, garantir independência e objetividade, documentar evidências detalhadamente, comunicar resultados claramente e acompanhar a implementação das recomendações.",
+    "tempo_resposta": 2.170518636703491,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "O que significa liquidez no contexto bancário?",
+    "resposta": "Liquidez no contexto bancário é a capacidade do banco de converter seus ativos em dinheiro rapidamente para cumprir suas obrigações financeiras imediatas.",
+    "tempo_resposta": 2.0954513549804688,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "Como funciona a política de crédito da instituição?",
+    "resposta": "Não há informação sobre a política de crédito da instituição no contexto fornecido.",
+    "tempo_resposta": 2.235212564468384,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "base_conhecimento",
+    "pergunta": "Quais são os requisitos regulatórios atuais?",
+    "resposta": "Não há informação sobre os requisitos regulatórios atuais no contexto fornecido.",
+    "tempo_resposta": 2.041311740875244,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Compare as decisões das duas últimas reuniões de diretoria",
+    "resposta": "Não há decisões registradas na reunião mais recente (06/06/2025 19:18). Na reunião anterior (05/01/2025), as decisões foram: sistema aprovado para produção, implementar melhorias incrementais e documentar processos.",
+    "tempo_resposta": 2.2650275230407715,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Qual a relação entre as metas discutidas e os resultados apresentados?",
+    "resposta": "Não há informação sobre metas ou resultados apresentados no contexto fornecido.",
+    "tempo_resposta": 1.6957261562347412,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Como as políticas de compliance afetam as operações discutidas?",
+    "resposta": "Não há informação sobre políticas de compliance no contexto fornecido.",
+    "tempo_resposta": 2.636793851852417,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Relacione os riscos identificados com as medidas propostas",
+    "resposta": "Risco: subir a escada rapidamente durante a limpeza, podendo causar acidentes graves.  \nMedida proposta: providenciar um elevador para garantir segurança e eficiência na subida.",
+    "tempo_resposta": 2.0710179805755615,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Compare o orçamento aprovado com as despesas realizadas",
+    "resposta": "Não há informação sobre orçamento aprovado ou despesas realizadas no contexto fornecido.",
+    "tempo_resposta": 1.7848525047302246,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Quais reuniões trataram de temas relacionados à regulamentação?",
+    "resposta": "Não há informação sobre reuniões que trataram de temas relacionados à regulamentação no contexto fornecido.",
+    "tempo_resposta": 1.8377735614776611,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Como os indicadores apresentados se relacionam com as metas?",
+    "resposta": "Não há informação sobre indicadores ou metas no contexto fornecido.",
+    "tempo_resposta": 1.8364369869232178,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Identifique contradições entre diferentes reuniões sobre o mesmo tema",
+    "resposta": "Não há informações suficientes no contexto fornecido para identificar contradições entre reuniões sobre o mesmo tema.",
+    "tempo_resposta": 2.2310848236083984,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": false,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 60
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Correlacione as decisões de crédito com a política vigente",
+    "resposta": "Não há informação sobre decisões de crédito ou política vigente no contexto fornecido.",
+    "tempo_resposta": 1.8687987327575684,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "cruzamento_informacoes",
+    "pergunta": "Analise a evolução dos temas ao longo das reuniões",
+    "resposta": "Temas evoluíram de testes técnicos do sistema (janeiro) para avaliação de interface e implementação prática (junho), indicando progresso de validação técnica para usabilidade e funcionalidade.",
+    "tempo_resposta": 2.059100866317749,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Faça uma análise SWOT baseada nas informações das últimas reuniões",
+    "resposta": "Forças: sistema aprovado para produção; melhorias incrementais planejadas; foco em interface mais fluida e intuitiva.  \nFraquezas: erro na transcrição da reunião mais recente; possíveis falhas na implementação da interface.  \nOportunidades: validar se a interface atende às expectativas; aprimorar usabilidade.  \nAmeaças: falhas técnicas não detectadas; resistência dos usuários à nova interface.",
+    "tempo_resposta": 2.885012626647949,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": false,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 40
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Elabore um resumo executivo das principais decisões do trimestre",
+    "resposta": "Sistema aprovado para produção em janeiro; melhorias incrementais e documentação de processos definidas; em junho, foco na avaliação da interface mais fluida e intuitiva, com testes para validar a implementação prometida.",
+    "tempo_resposta": 2.3048999309539795,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Identifique tendências e padrões nas discussões sobre riscos",
+    "resposta": "As discussões sobre riscos mostram preocupação com segurança operacional (exemplo: alerta sobre subir escada devagar para evitar acidentes) e riscos reputacionais ligados a fraudes e manipulação (exemplo: esquema de apostas ilegais e uso de cheats no cenário competitivo).",
+    "tempo_resposta": 1.9284372329711914,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Proponha melhorias baseadas nos problemas recorrentes identificados",
+    "resposta": "Melhorias propostas: corrigir erros de transcrição para garantir registros precisos; reforçar testes de interface para assegurar fluidez e usabilidade; implementar monitoramento contínuo para identificar e corrigir falhas rapidamente; documentar processos detalhadamente para evitar ambiguidades.",
+    "tempo_resposta": 3.13354229927063,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": false,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": false,
+      "pontuacao": 30
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Analise o impacto das decisões tomadas nos indicadores apresentados",
+    "resposta": "As decisões de aprovar o sistema para produção e implementar melhorias incrementais devem aumentar a eficiência operacional e a qualidade dos processos, refletindo em indicadores de produtividade e redução de erros. A atenção à segurança na subida da escada e a instalação do elevador visam diminuir acidentes, impactando positivamente indicadores de segurança e absenteísmo. O foco na interface mais fluida e intuitiva deve melhorar a usabilidade, influenciando indicadores de satisfação do usuário e tempo de resposta.",
+    "tempo_resposta": 2.606330156326294,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": false,
+      "completa": false,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 10
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Sintetize as principais preocupações levantadas pelos participantes",
+    "resposta": "Principais preocupações: segurança operacional para evitar acidentes; riscos reputacionais por fraudes e manipulação; precisão na transcrição para registros confiáveis; fluidez e usabilidade da interface; monitoramento contínuo para identificação de erros.",
+    "tempo_resposta": 2.4099647998809814,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": false,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 40
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Avalie a eficácia das medidas implementadas conforme discutido",
+    "resposta": "As medidas implementadas, como aprovação do sistema para produção e melhorias incrementais, têm aumentado a eficiência operacional e a qualidade dos processos, conforme indicado nos indicadores analisados.",
+    "tempo_resposta": 2.313399314880371,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Projete cenários futuros baseados nas tendências observadas",
+    "resposta": "Cenários futuros: aumento da segurança operacional com uso do elevador, redução de acidentes; melhoria contínua da interface do sistema, aumentando usabilidade e eficiência; maior controle e documentação dos processos, elevando qualidade e confiabilidade.",
+    "tempo_resposta": 2.1181201934814453,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Identifique gaps entre o planejado e o executado",
+    "resposta": "Gaps identificados: interface prometida como mais fluida e intuitiva ainda está em avaliação, sem confirmação de entrega total; testes iniciais indicam aprovação do sistema, mas melhorias incrementais e documentação ainda pendentes; ausência de feedback conclusivo sobre usabilidade e desempenho pós-implementação.",
+    "tempo_resposta": 2.2219889163970947,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_complexas",
+    "pergunta": "Sugira uma pauta para a próxima reunião baseada em pendências",
+    "resposta": "Pauta sugerida:\n1. Avaliação da fluidez e intuitividade da interface após implementação\n2. Revisão das melhorias incrementais implementadas\n3. Monitoramento dos indicadores de eficiência e qualidade\n4. Planejamento de próximos ajustes e atualizações\n5. Documentação e treinamento dos usuários finais",
+    "tempo_resposta": 2.40588116645813,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "Me ajude",
+    "resposta": "Informe o que deseja que eu faça com base nas reuniões ou no contexto apresentado.",
+    "tempo_resposta": 1.785623550415039,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "O que você pode fazer?",
+    "resposta": "Posso identificar gaps, sugerir pautas para reuniões e analisar conteúdos das reuniões fornecidas.",
+    "tempo_resposta": 1.896606206893921,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "Preciso de informações",
+    "resposta": "Informe quais informações específicas você precisa.",
+    "tempo_resposta": 1.630638837814331,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "Tem algo importante?",
+    "resposta": "Sim, o novo ponto focal de controles internos será Nego Josefino, com aumento salarial de 3 mil para 10 mil reais.",
+    "tempo_resposta": 1.8395278453826904,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "Resumo geral",
+    "resposta": "A reunião abordou críticas à cegueira racional da sociedade, destacando julgamentos baseados em emoção e a dificuldade de interpretar o óbvio. Foi discutida uma sentença judicial controversa que confunde atuação artística com comportamento real, levantando preocupações sobre limites legais e morais. Também houve reflexão sobre a inversão de valores sociais, onde corrupção se normaliza e virtude vira exceção.",
+    "tempo_resposta": 8.464831829071045,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": false,
+      "pontuacao": 70
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "O que aconteceu?",
+    "resposta": "Desculpe se houve alguma confusão. Como posso ajudar?",
+    "tempo_resposta": 0.00010466575622558594,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": false,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 60
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "Novidades?",
+    "resposta": "O novo ponto focal de controles internos é Nego Josefino, com aumento salarial de 3 mil para 10 mil reais.",
+    "tempo_resposta": 2.0130178928375244,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "Status atual",
+    "resposta": "O novo ponto focal de controles internos é Nego Josefino, com salário aumentado de 3 mil para 10 mil reais.",
+    "tempo_resposta": 1.7676033973693848,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "Próximos passos",
+    "resposta": "O novo ponto focal de controles internos é Nego Josefino, com aumento salarial de 3 mil para 10 mil reais.",
+    "tempo_resposta": 1.7516603469848633,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_genericas",
+    "pergunta": "Alguma sugestão?",
+    "resposta": "Não há sugestões registradas nas reuniões para aprofundar o uso do Rapti com cloud.",
+    "tempo_resposta": 1.686330795288086,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Qual o status da carteira de crédito?",
+    "resposta": "Não há informação sobre o status da carteira de crédito no contexto fornecido.",
+    "tempo_resposta": 1.3511478900909424,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Como está a inadimplência?",
+    "resposta": "Não há informação sobre a inadimplência no contexto fornecido.",
+    "tempo_resposta": 2.7768969535827637,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Quais produtos foram mais rentáveis?",
+    "resposta": "Não há informação sobre quais produtos foram mais rentáveis no contexto fornecido.",
+    "tempo_resposta": 1.7819678783416748,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Análise da margem financeira",
+    "resposta": "Não há informação sobre análise da margem financeira no contexto fornecido.",
+    "tempo_resposta": 1.9537503719329834,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Performance dos investimentos",
+    "resposta": "Não há informação sobre performance dos investimentos no contexto fornecido.",
+    "tempo_resposta": 1.412100076675415,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Custos operacionais estão controlados?",
+    "resposta": "Não há informação sobre custos operacionais no contexto fornecido.",
+    "tempo_resposta": 1.466026782989502,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Qual o nível de provisionamento?",
+    "resposta": "Não há informação sobre o nível de provisionamento no contexto fornecido.",
+    "tempo_resposta": 2.3994083404541016,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Como está o capital regulatório?",
+    "resposta": "Não há informação sobre o capital regulatório no contexto fornecido.",
+    "tempo_resposta": 1.4029719829559326,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Rentabilidade por segmento de clientes",
+    "resposta": "Não há informação sobre custos operacionais, nível de provisionamento ou capital regulatório no contexto fornecido.",
+    "tempo_resposta": 3.907538652420044,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": false,
+      "pontuacao": 90
+    }
+  },
+  {
+    "categoria": "contexto_financeiro",
+    "pergunta": "Eficiência operacional do último período",
+    "resposta": "Não há informação sobre eficiência operacional no contexto fornecido.",
+    "tempo_resposta": 1.5822772979736328,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "asdfghjkl",
+    "resposta": "O novo ponto focal de controles internos é o Nego Josefino, com salário ajustado de 3 mil para 10 mil reais.",
+    "tempo_resposta": 2.699089765548706,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "???",
+    "resposta": "Não há informação sobre rentabilidade por segmento de clientes ou eficiência operacional no contexto fornecido. O contexto trata de um desabafo do humorista Léo Lins sobre sua condenação judicial e liberdade de expressão.",
+    "tempo_resposta": 1.875087022781372,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "",
+    "resposta": "Não entendi. Pode elaborar sua pergunta?",
+    "tempo_resposta": 0.00011706352233886719,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "REUNIÃO REUNIÃO REUNIÃO",
+    "resposta": "Não há informação relevante ou clara no contexto fornecido para responder.",
+    "tempo_resposta": 1.6966526508331299,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "Explique tudo sobre tudo",
+    "resposta": "O humorista Léo Lins foi condenado a mais de oito anos de prisão e multa de quase dois milhões, em sentença criticada por ele por falta de embasamento teórico adequado e interpretação literal de seu trabalho cômico, que envolve personagens e figuras de linguagem. Ele alerta para uma \"cegueira racional\" na sociedade, onde julgamentos emocionais e interpretações equivocadas têm graves consequências.",
+    "tempo_resposta": 2.875566244125366,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "Quero saber de uma reunião que não existe",
+    "resposta": "Não há registro de reunião inexistente no contexto fornecido.",
+    "tempo_resposta": 1.7894723415374756,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "Me fale sobre a reunião do dia 32 de dezembro",
+    "resposta": "Certo, sobre a reunião \"dia 32 de dezembro\". \nO que você gostaria de saber?\n\n• **Resumo geral** - Principais pontos em formato executivo\n• **Discussões detalhadas** - Todos os tópicos abordados\n• **Decisões e ações** - O que foi definido\n• **Participantes** - Quem estava presente\n• **Próximos passos** - Tarefas e responsáveis\n\nEspecifique sua necessidade para uma resposta mais precisa.",
+    "tempo_resposta": 1.311964750289917,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "Qual o sentido da vida segundo as reuniões?",
+    "resposta": "Não há menção ao sentido da vida nas reuniões disponíveis no contexto.",
+    "tempo_resposta": 2.2639899253845215,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "Compare isso com aquilo sem contexto",
+    "resposta": "O texto da reunião \"testando reuniao\" discute a condenação do humorista Léo Lins, abordando a diferença entre personagem cômico e pessoa real, a interpretação literal do humor, a cegueira racional da sociedade e os riscos de julgamentos baseados em emoção. Sem contexto, não há base para comparação direta.",
+    "tempo_resposta": 2.354058265686035,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": false,
+      "tempo_adequado": true,
+      "pontuacao": 80
+    }
+  },
+  {
+    "categoria": "perguntas_teste_limite",
+    "pergunta": "Faça uma análise de dados que não foram fornecidos",
+    "resposta": "Não é possível fazer análise de dados sem que eles sejam fornecidos.",
+    "tempo_resposta": 1.810774803161621,
+    "sucesso": true,
+    "erro": null,
+    "avaliacao": {
+      "relevante": true,
+      "completa": true,
+      "concisa": true,
+      "tempo_adequado": true,
+      "pontuacao": 100
+    }
+  }
+]
