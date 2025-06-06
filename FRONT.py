@@ -519,72 +519,80 @@ PRÓXIMOS PASSOS:
         self._criar_interface_audio_simplificada()
         
     def _criar_interface_audio_simplificada(self):
-        """Cria interface simplificada apenas para áudio"""
+        """
+        ABORDAGEM MINIMALISTA VERTICAL - AGENTE 1
+        Foco em economia máxima de espaço:
+        - SEM títulos desnecessários
+        - Placeholders claros
+        - Campos mais compactos
+        - Botão integrado ao fluxo
+        - Cada pixel conta!
+        """
         frame_form = ctk.CTkFrame(self.frame_conteudo_tab, fg_color=self.cores["superficie"])
         frame_form.pack(fill="both", expand=True)
         
+        # Espaçamento mínimo superior
+        ctk.CTkFrame(frame_form, height=5, fg_color=self.cores["superficie"]).pack()
         
-        # Título
-        ctk.CTkLabel(
-            frame_form, 
-            text="Título da Reunião", 
-            font=ctk.CTkFont(size=11),
-            text_color=self.cores["texto_secundario"]
-        ).pack(pady=(10, 2))
-        
+        # Campo título (compacto) - SEM LABEL
         self.entry_titulo_audio = ctk.CTkEntry(
             frame_form, 
-            width=270,
-            height=35,
+            width=280,
+            height=28,  # Reduzido
             fg_color=self.cores["fundo"],
             border_color=self.cores["primaria"],
-            placeholder_text="Ex: Reunião de Planejamento"
+            placeholder_text="Título da reunião (obrigatório)"  # Placeholder claro
         )
-        self.entry_titulo_audio.pack(pady=(0, 10))
+        self.entry_titulo_audio.pack(pady=(5, 5))
         
-        # Observações
-        ctk.CTkLabel(
-            frame_form, 
-            text="Observações (opcional)", 
-            font=ctk.CTkFont(size=11),
-            text_color=self.cores["texto_secundario"]
-        ).pack(pady=(0, 2))
-        
+        # Campo observações (compacto) - SEM LABEL
         self.text_obs_audio = ctk.CTkTextbox(
             frame_form, 
-            width=270,
-            height=50,
+            width=280,
+            height=35,  # Bem reduzido
             font=ctk.CTkFont(size=10),
             fg_color=self.cores["fundo"]
         )
-        self.text_obs_audio.pack(pady=(0, 15))
+        self.text_obs_audio.pack(pady=(0, 8))
+        # Adicionar placeholder manualmente
+        self.text_obs_audio.insert("1.0", "Observações (opcional)")
+        self.text_obs_audio.bind("<FocusIn>", lambda e: self._limpar_placeholder_obs())
         
-        # Botão grande para prosseguir
+        # Botão principal - mais integrado e compacto
         ctk.CTkButton(
             frame_form,
-            text="🎤 Prosseguir para Gravação",
-            width=250,
-            height=60,
-            font=ctk.CTkFont(size=18, weight="bold"),
+            text="🎤 Iniciar Gravação",
+            width=260,
+            height=45,  # Reduzido
+            font=ctk.CTkFont(size=15, weight="bold"),  # Fonte menor
             fg_color=self.cores["perigo"],
             hover_color="#C62828",
-            corner_radius=30,
+            corner_radius=22,  # Menos arredondado
             command=self.prosseguir_para_gravacao
-        ).pack(pady=20)
+        ).pack(pady=(10, 8))
         
-        # Botão cancelar menor
-        ctk.CTkButton(
+        # Link cancelar - minimalista
+        btn_cancelar = ctk.CTkButton(
             frame_form,
             text="Cancelar",
-            width=100,
-            height=30,
-            fg_color=self.cores["secundaria"],
-            font=ctk.CTkFont(size=12),
+            width=80,
+            height=22,  # Bem pequeno
+            fg_color="transparent",
+            text_color=self.cores["texto_secundario"],
+            hover_color=self.cores["superficie"],
+            font=ctk.CTkFont(size=11),
             command=lambda: self.transicao_rapida(self.mostrar_menu_principal)
-        ).pack(pady=(0, 10))
+        )
+        btn_cancelar.pack(pady=(0, 5))
         
+        # Focar no campo título
         self.entry_titulo_audio.focus_set()
-        
+    
+    def _limpar_placeholder_obs(self):
+        """Limpa placeholder do campo observações no primeiro clique"""
+        if self.text_obs_audio.get("1.0", "end-1c").strip() == "Observações (opcional)":
+            self.text_obs_audio.delete("1.0", "end")
+            self.text_obs_audio.unbind("<FocusIn>")  # Remove o bind após limpar
     
     def prosseguir_para_gravacao(self):
         """Valida campos e prossegue para interface de gravação"""
@@ -613,7 +621,12 @@ PRÓXIMOS PASSOS:
         
         # Salvar dados e prosseguir
         self.titulo_reuniao_audio = titulo
-        self.observacoes_reuniao_audio = self.text_obs_audio.get("1.0", "end-1c").strip()
+        # Verificar se o campo de observações tem o placeholder
+        obs_text = self.text_obs_audio.get("1.0", "end-1c").strip()
+        if obs_text == "Observações (opcional)":
+            self.observacoes_reuniao_audio = ""
+        else:
+            self.observacoes_reuniao_audio = obs_text
         self.data_inicio_gravacao = datetime.now()
         
         # Ir direto para interface de gravação
