@@ -1,0 +1,232 @@
+{
+  "timestamp": "2025-06-06T17:28:10.093027",
+  "resumo": {
+    "total_testes": 13,
+    "testes_ok": 13,
+    "testes_erro": 0,
+    "tempo_medio": 3.6112244495978723
+  },
+  "resultados_detalhados": [
+    {
+      "pergunta": "Quais reuniões foram realizadas recentemente?",
+      "categoria": "reunioes",
+      "complexidade": "facil",
+      "resposta": "As duas reuniões mais recentes foram:\n\n1. **Reunião 1: \"testando reuniao\"**\n   - Data: 05/06/2025\n   - Hora: 22:58\n   - Responsável: usuário\n   - Trecho relevante: Esta reunião foi realizada como um teste para verificar se tudo ocorria conforme o esperado, com menção a embaggings e discussões sobre a liberdade de expressão e humor.\n   - Fonte: Registro da reunião \"testando reuniao\" de 05/06/2025 às 22:58, realizada pelo usuário.\n\n2. **Reunião 2: \"dasdasdasdsa\"**\n   - Data: 05/06/2025\n   - Hora: 23:36\n   - Responsável: usuário\n   - Trecho relevante: Teste de implementação para uma interface mais fluida e intuitiva, com expectativas sobre a eficácia da mudança.\n   - Fonte: Registro da reunião \"dasdasdasdsa\" de 05/06/2025 às 23:36, realizada pelo usuário.\n\nEssas reuniões recentes abordaram testes de sistemas, implementações e discussões sobre liberdade de expressão e humor, refletindo uma variedade de temas e preocupações dentro da organização.",
+      "tempo_resposta": 4.038725137710571,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 955,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 9,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:14.182284"
+    },
+    {
+      "pergunta": "Qual foi o tema da última reunião gravada?",
+      "categoria": "reunioes",
+      "complexidade": "facil",
+      "resposta": "A última reunião gravada teve como tema \"g\", realizada em 05/06/2025 às 23:38, com o usuário como responsável. A reunião parece ter sido breve e não fornece muitos detalhes sobre o conteúdo discutido. A fonte dessa informação é a reunião gravada com o título \"g\" do dia 05/06/2025 às 23:38, liderada pelo usuário.",
+      "tempo_resposta": 1.3649365901947021,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 313,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 9,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:16.547395"
+    },
+    {
+      "pergunta": "Resuma os principais pontos discutidos nas reuniões sobre tecnologia",
+      "categoria": "reunioes",
+      "complexidade": "media",
+      "resposta": "Com base nas informações disponíveis, os principais pontos discutidos nas reuniões sobre tecnologia foram:\n\n1. **Reunião de Teste de Sistema (05/01/2025)**:\n   - Teste do sistema de memória contextual\n   - Verificação da limpeza automática de arquivos\n   - Validação do processamento de embeddings\n   - Decisões tomadas: sistema aprovado para produção, implementação de melhorias incrementais e documentação de processos\n\n2. **Reunião \"testando reuniao\" (05/06/2025)**:\n   - Teste de implementação para tornar a interface mais fluida e intuitiva\n   - Teste de embaggings (possivelmente relacionado a embeddings)\n   - Discussão sobre liberdade de expressão, humor e interpretação de textos\n   - Referência a embasamento teórico da juíza em uma sentença, incluindo a Wikipedia como fonte\n   - Abordagem sobre a importância da interpretação do cômico e do contexto humorístico\n\nEsses pontos indicam que as reuniões sobre tecnologia envolveram testes de sistemas, validações de processos e discussões sobre aspectos técnicos, além de abordagens mais amplas sobre liberdade de expressão e interpretação contextual. A correlação entre",
+      "tempo_resposta": 3.4567315578460693,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 1128,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 9,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:21.004294"
+    },
+    {
+      "pergunta": "Quem são os participantes mais frequentes nas reuniões?",
+      "categoria": "reunioes",
+      "complexidade": "media",
+      "resposta": "Com base nas informações disponíveis, os participantes mais frequentes nas reuniões são:\n\n1. **João Silva (Gerente)**: Participou da Reunião de Teste de Sistema em 05/01/2025.\n2. **Maria Santos (Analista)**: Também participou da Reunião de Teste de Sistema em 05/01/2025.\n\nEsses participantes foram identificados na Reunião de Teste de Sistema e são mencionados como parte das reuniões analisadas até o momento. É importante considerar que a frequência dos participantes pode variar dependendo do tema e do objetivo de cada reunião. Para uma análise mais abrangente, seria necessário revisar mais detalhes sobre outras reuniões e participantes envolvidos.",
+      "tempo_resposta": 2.476362466812134,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 655,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 9,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:24.480813"
+    },
+    {
+      "pergunta": "O que é o sistema AURALIS?",
+      "categoria": "base_conhecimento",
+      "complexidade": "facil",
+      "resposta": "O sistema AURALIS é um sistema de gestão de reuniões corporativas com inteligência artificial. Ele tem como objetivo garantir a padronização, eficiência e qualidade no registro e análise de reuniões empresariais. O sistema AURALIS envolve procedimentos de gravação de reuniões, como preparação prévia, início e finalização da gravação, monitoramento da qualidade do áudio, registro de participantes e revisão da transcrição gerada. Além disso, a base de conhecimento do sistema deve ser alimentada com documentos relevantes, como manuais técnicos, políticas internas, estatutos e regulamentos, seguindo diretrizes de manutenção e atualização periódica.\n\nFonte: MANUAL DE PROCEDIMENTOS OPERACIONAIS - AURALIS CORPORATION - base_conhecimento.txt",
+      "tempo_resposta": 2.9630274772644043,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 743,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 9,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:28.444121"
+    },
+    {
+      "pergunta": "Como funciona o processamento de reuniões?",
+      "categoria": "base_conhecimento",
+      "complexidade": "facil",
+      "resposta": "O processamento de reuniões envolve várias etapas para garantir a eficácia e qualidade no registro e análise das informações discutidas. Com base no Manual de Procedimentos Operacionais da AURALIS CORPORATION, as etapas são as seguintes:\n\n1. **Preparação Prévia**:\n   - Verificação do funcionamento do equipamento de áudio.\n   - Confirmação da conectividade com a internet.\n   - Validação das credenciais de acesso ao sistema.\n   - Informação aos participantes sobre a gravação.\n\n2. **Durante a Reunião**:\n   - Início da gravação no início da reunião.\n   - Monitoramento dos indicadores de qualidade do áudio.\n   - Registro dos participantes presentes.\n   - Anotação dos pontos principais para validação posterior.\n\n3. **Pós-Reunião**:\n   - Finalização adequada da gravação.\n   - Aguardo do processamento automático.\n   - Revisão da transcrição gerada.\n   - Validação dos pontos de ação identificados.\n\nEssas etapas visam assegurar que as reuniões sejam registradas de forma completa e precisa, permitindo uma análise eficiente posteriormente. É importante seguir esses procedimentos para garantir a integridade e utilidade das informações discutidas",
+      "tempo_resposta": 5.24275541305542,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 1150,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 8,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:34.687102"
+    },
+    {
+      "pergunta": "Explique a arquitetura do sistema de busca",
+      "categoria": "base_conhecimento",
+      "complexidade": "media",
+      "resposta": "Com base nas informações disponíveis, a arquitetura do sistema de busca envolve a utilização do sistema AURALIS de gestão de reuniões corporativas com inteligência artificial. O sistema AURALIS é responsável por garantir a padronização, eficiência e qualidade no registro e análise de reuniões empresariais. \n\nA base de conhecimento do sistema é alimentada com documentos relevantes para a organização, tais como manuais técnicos e operacionais, políticas e procedimentos internos, estatutos e regulamentos, diretrizes de qualidade e segurança. Esses documentos são essenciais para a correta operação e funcionamento do sistema de busca, pois fornecem as diretrizes necessárias para a busca e recuperação de informações relevantes.\n\nAlém disso, o sistema AURALIS monitora constantemente indicadores de qualidade, como taxa de precisão das transcrições, tempo de processamento, satisfação dos usuários e disponibilidade do sistema. Isso contribui para a melhoria contínua do sistema de busca, garantindo sua eficácia e eficiência.\n\nFonte: MANUAL DE PROCEDIMENTOS OPERACIONAIS - AURALIS CORPORATION, base_conhecimento.txt\n\nConsiderando a importância da manutenção e atualização da base de conhecimento, é fundamental revisar os documentos trimestral",
+      "tempo_resposta": 4.157735586166382,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 1247,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 9,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:39.845378"
+    },
+    {
+      "pergunta": "Quais são as principais funcionalidades do AURALIS?",
+      "categoria": "base_conhecimento",
+      "complexidade": "media",
+      "resposta": "As principais funcionalidades do AURALIS incluem:\n\n1. Gestão de reuniões corporativas: O AURALIS permite a gravação, transcrição e análise de reuniões empresariais, garantindo eficiência e qualidade no registro das informações discutidas.\n\n2. Inteligência Artificial: O sistema utiliza IA para processar as informações das reuniões, facilitando a identificação de pontos-chave, ações a serem tomadas e insights relevantes.\n\n3. Padronização e organização: O AURALIS ajuda a padronizar os procedimentos de gravação, garantindo a consistência e organização das informações ao longo do tempo.\n\n4. Segurança e conformidade: O sistema segue rigorosos padrões de segurança, como criptografia, controle de acesso e conformidade legal, incluindo a Lei Geral de Proteção de Dados (LGPD) e regulamentos setoriais aplicáveis.\n\n5. Suporte e manutenção: O AURALIS oferece canais de suporte, atualizações regulares, verificação de integridade dos dados e treinamento contínuo de usuários para garantir o bom funcionamento do sistema.\n\nFonte: Manual de Procedimentos Operacionais da AURALIS CORPORATION (documento 4: MANUAL - base_conhecimento.txt)\n\nConsiderando a importância da segurança",
+      "tempo_resposta": 5.383124828338623,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 1173,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 9,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:46.228749"
+    },
+    {
+      "pergunta": "Como as reuniões são armazenadas e processadas pelo sistema?",
+      "categoria": "hibrida",
+      "complexidade": "media",
+      "resposta": "As reuniões são armazenadas e processadas pelo sistema AURALIS de gestão de reuniões corporativas com inteligência artificial. De acordo com o Manual de Procedimentos Operacionais da AURALIS CORPORATION, o processo envolve as seguintes etapas:\n\n1. **Gravação**: As reuniões são gravadas a partir do início, com monitoramento da qualidade do áudio e registro dos participantes presentes.\n2. **Transcrição**: Após a finalização da gravação, o sistema realiza o processamento automático para gerar a transcrição do conteúdo discutido na reunião.\n3. **Análise**: A transcrição é revisada para validação dos pontos de ação identificados durante a reunião.\n4. **Armazenamento**: As transcrições e demais dados da reunião são armazenados de forma segura, seguindo padrões de criptografia, controle de acesso e backup regular.\n\nEssas etapas garantem a eficiência, qualidade e segurança no registro e análise das informações discutidas nas reuniões empresariais. Além disso, o sistema AURALIS monitora constantemente indicadores de qualidade, como taxa de precisão das transcrições e satisfação dos usuários, conforme descrito no Manual de Procedimentos Operacionais da AURALIS CORPORATION.\n\nFont",
+      "tempo_resposta": 5.116013050079346,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 1187,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 10,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:52.344953"
+    },
+    {
+      "pergunta": "Existe alguma reunião que discutiu melhorias no sistema AURALIS?",
+      "categoria": "hibrida",
+      "complexidade": "media",
+      "resposta": "Sim, a reunião mais recente que discutiu melhorias no sistema AURALIS foi a \"Reunião de Teste de Sistema\" realizada em 05/01/2025 às 14:30, onde foram tomadas decisões de implementar melhorias incrementais no sistema. Essa reunião validou o sistema para produção e definiu a documentação dos processos. Portanto, essa reunião abordou especificamente melhorias no sistema AURALIS.\n\nFonte: Reunião de Teste de Sistema em 05/01/2025.",
+      "tempo_resposta": 2.975379705429077,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 430,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 9,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:27:56.320570"
+    },
+    {
+      "pergunta": "Como melhorar a eficiência das reuniões corporativas?",
+      "categoria": "sem_contexto",
+      "complexidade": "subjetiva",
+      "resposta": "Para melhorar a eficiência das reuniões corporativas, algumas sugestões podem ser consideradas com base no contexto fornecido:\n\n1. **Implementar Melhorias Incrementais no Sistema AURALIS**: A partir da \"Reunião de Teste de Sistema\" realizada em 05/01/2025, onde foram decididas melhorias incrementais, é importante considerar a utilização de tecnologias como a inteligência artificial para otimizar a gestão e análise das reuniões.\n\n2. **Padronização dos Procedimentos de Gravação e Processamento**: Conforme o \"Manual de Procedimentos Operacionais da AURALIS CORPORATION\", é essencial seguir os passos adequados para a gravação, transcrição e análise das reuniões. Garantir que os participantes estejam cientes da gravação e manter um registro claro dos pontos principais podem contribuir para uma melhor eficiência.\n\n3. **Definição de Responsabilidades e Objetivos Claros**: Como discutido na reunião \"RAPADURA\" de 05/06/2025, é fundamental designar responsáveis por áreas específicas, como fraudes e controles internos. Estabelecer objetivos claros para cada reunião e definir responsáveis por ações e acompanhamento pode aumentar a eficácia dos en",
+      "tempo_resposta": 3.2619223594665527,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 1151,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 7,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:28:00.583022"
+    },
+    {
+      "pergunta": "Me explique isso melhor",
+      "categoria": "ambigua",
+      "complexidade": "dificil",
+      "resposta": "Para esclarecer melhor, o trecho mencionado trata de uma discussão sobre a interpretação de sentenças judiciais e questões relacionadas à moralidade, humor e liberdade de expressão. O contexto aborda a importância da racionalidade em julgamentos, a inversão de valores na sociedade, a percepção distorcida de piadas e a relação entre humor e comportamento agressivo.\n\nEssa discussão levanta questões sobre como as pessoas interpretam informações, a influência da emoção sobre o julgamento racional, a responsabilidade individual em relação às ações e a liberdade de expressão. Além disso, destaca a importância de respeitar minorias, a necessidade de reflexão sobre padrões morais e a complexidade das interações sociais.\n\nFonte: Reunião \"testando reuniao\" em 05/06/2025 às 22:49:00, realizada pelo usuário.",
+      "tempo_resposta": 3.06101393699646,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 807,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 7,
+        "qualidade_geral": 10
+      },
+      "timestamp": "2025-06-06T17:28:04.644226"
+    },
+    {
+      "pergunta": "Liste as últimas reuniões, identifique os temas principais e sugira como o sistema pode ajudar a melhorar o acompanhamento desses temas",
+      "categoria": "complexa",
+      "complexidade": "muito_dificil",
+      "resposta": "As últimas reuniões mencionadas são:\n\n1. **Reunião de Teste de Sistema**\n   - Data: 05/01/2025 às 14:30\n   - Responsável: Sistema Automatizado\n   - Temas Principais:\n     - Teste do sistema de memória contextual\n     - Verificação da limpeza automática de arquivos\n     - Validação do processamento de embeddings\n   - Decisões:\n     - Sistema aprovado para produção\n     - Implementar melhorias incrementais\n     - Documentar processos\n   - Fonte: teste_reuniao_20250605_224322.txt\n\n2. **Reunião \"RAPADURA\"**\n   - Data: 05/06/2025 às 21:32\n   - Responsável: usuário\n   - Temas Principais:\n     - Definição de responsáveis por áreas específicas (fraudes, controles internos)\n     - Alinhamento sobre certificações e objetivos da empresa\n     - Trabalho em equipe, desenvolvimento de sistemas e processos\n   - Observações:\n     - Enfoque em mitigar riscos e manter certificações em dia\n   - Fonte: reuniao_texto_20250605_213349.txt\n\nPara melhorar o acompanhamento desses temas, o sistema AURALIS pode ser utilizado de",
+      "tempo_resposta": 3.4481897354125977,
+      "analise": {
+        "tem_conteudo": true,
+        "tamanho_resposta": 1015,
+        "menciona_fontes": true,
+        "responde_pergunta": true,
+        "clareza": 10,
+        "completude": 6,
+        "qualidade_geral": 9
+      },
+      "timestamp": "2025-06-06T17:28:09.092636"
+    }
+  ]
+}
